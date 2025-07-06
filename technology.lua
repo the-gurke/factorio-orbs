@@ -7,12 +7,11 @@ data:extend({
     name = "orbs-technology",
     icon = "__orbs__/graphics/orb_initial_technology.png",
     icon_size = 1024,
-    prerequisites = {"circuit-network"},
+    prerequisites = {"automation"},
     unit = {
-      count = 50,
+      count = 10,
       ingredients = {
-        {"automation-science-pack", 1},
-        {"logistic-science-pack", 1},
+        {"automation-science-pack", 1}
       },
       time = 30
     },
@@ -110,3 +109,13 @@ data:extend({
     order = "a-h-b"
   }
 })
+
+-- Override circuit network technology to make it cheaper
+data.raw["technology"]["circuit-network"].unit = {
+  count = 10,
+  ingredients = {
+    {"automation-science-pack", 1}
+  },
+  time = 30
+}
+data.raw["technology"]["circuit-network"].prerequisites = {"automation"}
