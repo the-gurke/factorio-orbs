@@ -51,7 +51,7 @@ data:extend({
     ingredients = {
       {type = "item", name = "assembling-machine-1", amount = 1},
       {type = "item", name = "copper-cable", amount = 20},
-      {type = "item", name = "steel-plate", amount = 5},
+      {type = "item", name = "iron-plate", amount = 5},
       {type = "item", name = "conjuration-orb", amount = 1}
     },
     results = {
