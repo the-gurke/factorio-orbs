@@ -1,5 +1,5 @@
 -- recipe.lua
--- Define all the magical recipes with proper categorization and naming
+-- Define all the new recipes
 
 local recipes = {}
 
@@ -8,7 +8,7 @@ local recipes = {}
 table.insert(recipes, {
   type = "recipe",
   name = "conjure-shards-0",
-  category = "orbs", -- Changed to orbs category
+  category = "orbs",
   subgroup = "orbs-conjure",
   energy_required = 1,
   icon = "__orbs__/graphics/conjure-shards.png",
@@ -30,7 +30,7 @@ for i, n in ipairs(conjure_inputs) do
   table.insert(recipes, {
     type = "recipe",
     name = "conjure-shards-" .. n,
-    category = "orbs", -- Changed to orbs category
+    category = "orbs",
     subgroup = "orbs-conjure",
     energy_required = n,
     icon = "__orbs__/graphics/conjure-shards.png",
