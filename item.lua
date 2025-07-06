@@ -48,6 +48,20 @@ data:extend({
     stack_size = 5
   },
 
+  -- Conjuration Research Pack
+  {
+    type = "tool",
+    name = "conjuration-research-pack",
+    icon = "__orbs__/graphics/conjuration-research-pack.png",
+    icon_size = 1024,
+    subgroup = "orbs-research",
+    order = "a[conjuration-research-pack]",
+    stack_size = 200,
+    durability = 1,
+    durability_description_key = "description.science-pack-remaining-amount-key",
+    durability_description_value = "description.science-pack-remaining-amount-value"
+  },
+
   -- Haste Orb (also a module)
   {
     type = "module",
@@ -57,7 +71,7 @@ data:extend({
     subgroup = "orbs-manifest",
     category = "orb-speed", -- Custom category for orb modules
     tier = 1,
-    order = "e[haste-orb]",
+    order = "f[haste-orb]",
     stack_size = 5,
     effect = {
       speed = 0.2

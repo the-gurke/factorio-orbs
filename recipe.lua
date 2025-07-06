@@ -130,7 +130,7 @@ table.insert(recipes, {
   order = "a[manifest-orb]"
 })
 
--- Transfigure to Conjurationg Orb
+-- Transfigure to Conjuration Orb
 table.insert(recipes, {
   type = "recipe",
   name = "transfigure-conjuration-orb",
@@ -147,7 +147,27 @@ table.insert(recipes, {
     {type = "item", name = "conjuration-orb", amount = 1}
   },
   enabled = true,
-  order = "b[transfigure-conjugating-orb]"
+  order = "b[transfigure-conjuration-orb]"
+})
+
+-- Conjuration Research Pack
+table.insert(recipes, {
+  type = "recipe",
+  name = "conjuration-research-pack",
+  category = "orbs",
+  subgroup = "orbs-research",
+  energy_required = 25,
+  icon = "__orbs__/graphics/conjuration-research-pack.png",
+  icon_size = 1024,
+  ingredients = {
+    {type = "item", name = "active-magic-shard", amount = 20},
+    {type = "item", name = "copper-cable", amount = 4}
+  },
+  results = {
+    {type = "item", name = "conjuration-research-pack", amount = 1}
+  },
+  enabled = true,
+  order = "a[conjuration-research-pack]"
 })
 
 -- Transfigure to Haste Orb
@@ -166,8 +186,8 @@ table.insert(recipes, {
     {type = "item", name = "magic-orb", amount = 1},
     {type = "item", name = "haste-orb", amount = 1}
   },
-  enabled = true,
-  order = "c[transfigure-haste-orb]"
+  enabled = false, -- Disabled until research is completed
+  order = "d[transfigure-haste-orb]"
 })
 
 -- Neutralize Haste Orb
@@ -185,8 +205,8 @@ table.insert(recipes, {
   results = {
     {type = "item", name = "magic-orb", amount = 1}
   },
-  enabled = true,
-  order = "d[neutralize-haste-orb]"
+  enabled = false, -- Disabled until research is completed
+  order = "e[neutralize-haste-orb]"
 })
 
 -- Neutralize Conjuration Orb
@@ -205,7 +225,7 @@ table.insert(recipes, {
     {type = "item", name = "magic-orb", amount = 1}
   },
   enabled = true,
-  order = "e[neutralize-conjuration-orb]"
+  order = "f[neutralize-conjuration-orb]"
 })
 
 -- Extend all recipes

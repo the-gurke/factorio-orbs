@@ -24,17 +24,37 @@ conjuration_machine.module_specification = {
 conjuration_machine.allowed_module_categories = {"orb-speed"} -- Only allow orb-speed modules (haste orbs)
 conjuration_machine.module_slots = 3
 
--- Create the item for the conjuration machine
+-- Create the conjuration lab
+local conjuration_lab = util.table.deepcopy(data.raw["lab"]["lab"])
+
+conjuration_lab.name = "conjuration-lab"
+conjuration_lab.minable = {mining_time = 0.2, result = "conjuration-lab"}
+conjuration_lab.energy_source = {type = "void"} -- No power required
+conjuration_lab.energy_usage = "1W" -- Minimal energy usage
+conjuration_lab.researching_speed = 1
+conjuration_lab.inputs = {"conjuration-research-pack"} -- Only accepts conjuration research packs
+
 data:extend({
   conjuration_machine,
+  conjuration_lab,
   {
     type = "item",
     name = "conjuration-machine",
     icon = "__base__/graphics/icons/assembling-machine-2.png",
     icon_size = 64,
     subgroup = "orbs-machines", -- New subgroup for machines
-    order = "z[conjuration-machine]",
+    order = "a[conjuration-machine]",
     place_result = "conjuration-machine",
+    stack_size = 50
+  },
+  {
+    type = "item",
+    name = "conjuration-lab",
+    icon = "__base__/graphics/icons/lab.png",
+    icon_size = 64,
+    subgroup = "orbs-machines",
+    order = "b[conjuration-lab]",
+    place_result = "conjuration-lab",
     stack_size = 50
   }
 })
@@ -56,6 +76,22 @@ data:extend({
     },
     results = {
       {type = "item", name = "conjuration-machine", amount = 1}
+    },
+    enabled = true
+  },
+  {
+    type = "recipe",
+    name = "craft-conjuration-lab",
+    category = "crafting",
+    energy_required = 5,
+    icon = "__base__/graphics/icons/lab.png",
+    icon_size = 64,
+    ingredients = {
+      {type = "item", name = "lab", amount = 1},
+      {type = "item", name = "magic-orb", amount = 2}
+    },
+    results = {
+      {type = "item", name = "conjuration-lab", amount = 1}
     },
     enabled = true
   }

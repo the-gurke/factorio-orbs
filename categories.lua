@@ -50,8 +50,14 @@ data:extend({
   },
   {
     type = "item-subgroup",
-    name = "orbs-machines",
+    name = "orbs-research",
     group = "orbs",
     order = "d"
+  },
+  {
+    type = "item-subgroup",
+    name = "orbs-machines",
+    group = "orbs",
+    order = "e"
   }
 })
