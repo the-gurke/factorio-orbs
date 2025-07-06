@@ -77,7 +77,7 @@ data:extend({
     results = {
       {type = "item", name = "conjuration-machine", amount = 1}
     },
-    enabled = true
+    enabled = false
   },
   {
     type = "recipe",
@@ -93,6 +93,6 @@ data:extend({
     results = {
       {type = "item", name = "conjuration-lab", amount = 1}
     },
-    enabled = true
+    enabled = false
   }
 })
