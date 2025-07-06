@@ -18,7 +18,7 @@ table.insert(recipes, {
   },
   results = {
     {type = "item", name = "magic-orb", amount = 1},
-    {type = "item", name = "active-magic-shard", amount = 1, probability = 0.2}
+    {type = "item", name = "active-magic-shard", amount = 1, probability = 0.05}
   },
   enabled = true,
   order = "a[conjure-shards]-a[0]"
