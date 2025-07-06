@@ -72,6 +72,14 @@ data:extend({
       {
         type = "unlock-recipe",
         recipe = "conjuration-research-pack"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "craft-conjuration-machine"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "craft-conjuration-lab"
       }
     },
     order = "a-h-a"
