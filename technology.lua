@@ -110,6 +110,48 @@ data:extend({
   }
 })
 
+-- Telekinesis technologies (10 tiers)
+local telekinesis_technologies = {}
+for i = 1, 10 do
+  table.insert(telekinesis_technologies, {
+    type = "technology",
+    name = "telekinesis-" .. i,
+    localised_name = {"technology-name.telekinesis-" .. i},
+    localised_description = {"technology-description.telekinesis-" .. i},
+    icon = "__orbs__/graphics/telekinesis_technology.png",
+    icon_size = 1024,
+    prerequisites = i == 1 and {"orbs-technology"} or {"telekinesis-" .. (i-1)},
+    unit = {
+      count = math.pow(2, i-1), -- 2^(i-1): 1, 2, 4, 8, 16, 32, 64, 128, 256, 512
+      ingredients = {
+        {"conjuration-research-pack", 1}
+      },
+      time = 30
+    },
+    effects = {
+      {
+        type = "character-build-distance",
+        modifier = 9 -- +9 build distance per tier (90 total)
+      },
+      {
+        type = "character-reach-distance", 
+        modifier = 9 -- +9 reach distance per tier (90 total)
+      },
+      {
+        type = "character-resource-reach-distance",
+        modifier = 9 -- +9 resource reach distance per tier (90 total)
+      },
+      {
+        type = "character-item-drop-distance",
+        modifier = 9 -- +9 item drop distance per tier (90 total)
+      }
+    },
+    order = "a-h-c-" .. string.format("%02d", i)
+  })
+end
+
+data:extend(telekinesis_technologies)
+
 -- Override circuit network technology to make it cheaper
 data.raw["technology"]["circuit-network"].unit = {
   count = 10,
