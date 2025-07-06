@@ -228,5 +228,87 @@ table.insert(recipes, {
   order = "f[neutralize-conjuration-orb]"
 })
 
+-- Conjure Unstable Orb
+table.insert(recipes, {
+  type = "recipe",
+  name = "conjure-unstable-orb",
+  category = "orbs",
+  subgroup = "orbs-conjure",
+  energy_required = 10,
+  icon = "__orbs__/graphics/unstable-orb-alpha.png",
+  icon_size = 1024,
+  ingredients = {
+    {type = "item", name = "magic-orb", amount = 1},
+    {type = "item", name = "active-magic-shard", amount = 50}
+  },
+  results = {
+    {type = "item", name = "magic-orb", amount = 1},
+    {type = "item", name = "unstable-orb-alpha", amount = 10, probability = 0.01}
+  },
+  enabled = true,
+  order = "z[conjure-unstable-orb]"
+})
+
+-- Align Unstable Orb
+table.insert(recipes, {
+  type = "recipe",
+  name = "align-unstable-orb",
+  category = "orbs",
+  subgroup = "orbs-manifest",
+  energy_required = 2,
+  icon = "__orbs__/graphics/unstable-orb-alpha.png",
+  icon_size = 1024,
+  ingredients = {
+    {type = "item", name = "unstable-orb-alpha", amount = 1}
+  },
+  results = {
+    {type = "item", name = "unstable-orb-alpha", amount = 1}
+  },
+  reset_freshness_on_craft = true,
+  enabled = true,
+  order = "g[align-unstable-orb]"
+})
+
+-- Conjure Divination Essence
+table.insert(recipes, {
+  type = "recipe",
+  name = "conjure-divination-essence",
+  category = "orbs",
+  subgroup = "orbs-conjure",
+  energy_required = 5,
+  icon = "__orbs__/graphics/divination-essence.png",
+  icon_size = 1024,
+  ingredients = {
+    {type = "item", name = "unstable-orb-beta", amount = 1},
+    {type = "item", name = "unstable-orb-gamma", amount = 1}
+  },
+  results = {
+    {type = "item", name = "unstable-orb-alpha", amount = 2},
+    {type = "item", name = "divination-essence", amount = 4, probability = 0.5}
+  },
+  enabled = true,
+  order = "z[conjure-divination-essence]"
+})
+
+-- Stabilize Divination Essence
+table.insert(recipes, {
+  type = "recipe",
+  name = "stabilize-divination-essence",
+  category = "orbs",
+  subgroup = "orbs-manifest",
+  energy_required = 1,
+  icon = "__orbs__/graphics/divination-essence.png",
+  icon_size = 1024,
+  ingredients = {
+    {type = "item", name = "divination-essence", amount = 1}
+  },
+  results = {
+    {type = "item", name = "divination-essence", amount = 1}
+  },
+  reset_freshness_on_craft = true,
+  enabled = true,
+  order = "k[stabilize-divination-essence]"
+})
+
 -- Extend all recipes
 data:extend(recipes)
