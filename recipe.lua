@@ -20,7 +20,7 @@ table.insert(recipes, {
     {type = "item", name = "magic-orb", amount = 1},
     {type = "item", name = "active-magic-shard", amount = 1, probability = 0.05}
   },
-  enabled = true,
+  enabled = false,
   order = "a[conjure-shards]-a[0]"
 })
 
@@ -42,7 +42,7 @@ for i, n in ipairs(conjure_inputs) do
       {type = "item", name = "magic-orb", amount = 1},
       {type = "item", name = "active-magic-shard", amount = n * n}
     },
-    enabled = true,
+    enabled = false,
     order = "a[conjure-shards]-" .. string.char(97 + i) .. "[" .. n .. "]"
   })
 end
@@ -65,7 +65,7 @@ table.insert(recipes, {
     {type = "item", name = "active-magic-shard", amount = 1},
     {type = "item", name = "active-magic-shard", amount = 1, probability = 0.5}
   },
-  enabled = true,
+  enabled = false,
   order = "a[replicate-shards]"
 })
 
@@ -87,7 +87,7 @@ table.insert(recipes, {
     {type = "item", name = "active-magic-shard", amount = 10},
     {type = "item", name = "active-magic-shard", amount_min = 2, amount_max = 4}
   },
-  enabled = true,
+  enabled = false,
   order = "b[replicate-shards-2]"
 })
 
@@ -107,7 +107,7 @@ table.insert(recipes, {
   results = {
     {type = "item", name = "magic-orb", amount = 1}
   },
-  enabled = true,
+  enabled = false,
   order = "c[banish-shards]"
 })
 
@@ -126,7 +126,7 @@ table.insert(recipes, {
   results = {
     {type = "item", name = "magic-orb", amount = 1}
   },
-  enabled = true,
+  enabled = false,
   order = "a[manifest-orb]"
 })
 
@@ -146,7 +146,7 @@ table.insert(recipes, {
     {type = "item", name = "magic-orb", amount = 1},
     {type = "item", name = "conjuration-orb", amount = 1}
   },
-  enabled = true,
+  enabled = false,
   order = "b[transfigure-conjuration-orb]"
 })
 
@@ -166,7 +166,7 @@ table.insert(recipes, {
   results = {
     {type = "item", name = "conjuration-research-pack", amount = 1}
   },
-  enabled = true,
+  enabled = false,
   order = "a[conjuration-research-pack]"
 })
 
@@ -186,8 +186,8 @@ table.insert(recipes, {
     {type = "item", name = "magic-orb", amount = 1},
     {type = "item", name = "haste-orb", amount = 1}
   },
-  enabled = false, -- Disabled until research is completed
-  order = "d[transfigure-haste-orb]"
+  enabled = false,
+  order = "c[transfigure-haste-orb]"
 })
 
 -- Neutralize Haste Orb
@@ -205,8 +205,8 @@ table.insert(recipes, {
   results = {
     {type = "item", name = "magic-orb", amount = 1}
   },
-  enabled = false, -- Disabled until research is completed
-  order = "e[neutralize-haste-orb]"
+  enabled = false,
+  order = "d[neutralize-haste-orb]"
 })
 
 -- Neutralize Conjuration Orb
@@ -224,8 +224,8 @@ table.insert(recipes, {
   results = {
     {type = "item", name = "magic-orb", amount = 1}
   },
-  enabled = true,
-  order = "f[neutralize-conjuration-orb]"
+  enabled = false,
+  order = "e[neutralize-conjuration-orb]"
 })
 
 -- Extend all recipes
