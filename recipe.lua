@@ -245,7 +245,7 @@ table.insert(recipes, {
     {type = "item", name = "magic-orb", amount = 1},
     {type = "item", name = "unstable-orb-alpha", amount = 10, probability = 0.01}
   },
-  enabled = true,
+  enabled = false,
   order = "f[conjure-unstable-orb]"
 })
 
@@ -265,7 +265,7 @@ table.insert(recipes, {
     {type = "item", name = "unstable-orb-alpha", amount = 1}
   },
   reset_freshness_on_craft = true,
-  enabled = true,
+  enabled = false,
   order = "g[align-unstable-orb]"
 })
 
@@ -286,7 +286,7 @@ table.insert(recipes, {
     {type = "item", name = "unstable-orb-alpha", amount = 2},
     {type = "item", name = "divination-essence", amount = 4, probability = 0.5}
   },
-  enabled = true,
+  enabled = false,
   order = "a[conjure-divination-essence]"
 })
 
@@ -306,7 +306,7 @@ table.insert(recipes, {
     {type = "item", name = "divination-essence", amount = 1}
   },
   reset_freshness_on_craft = true,
-  enabled = true,
+  enabled = false,
   order = "b[stabilize-divination-essence]"
 })
 
