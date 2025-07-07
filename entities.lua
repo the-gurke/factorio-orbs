@@ -34,9 +34,54 @@ conjuration_lab.energy_usage = "1W"
 conjuration_lab.researching_speed = 1
 conjuration_lab.inputs = {"conjuration-research-pack", "divination-research-pack"}
 
+-- Create the soul collector (based on iron chest)
+local soul_collector = util.table.deepcopy(data.raw["container"]["iron-chest"])
+
+soul_collector.name = "soul-collector"
+soul_collector.minable = {mining_time = 1, result = "soul-collector"}
+soul_collector.inventory_size = 1 -- Only one stack slot
+soul_collector.icon = "__orbs__/graphics/soul-collector.png"
+soul_collector.icon_size = 1024
+soul_collector.picture = {
+  layers = {
+    {
+      filename = "__orbs__/graphics/soul-collector-entity.png",
+      priority = "extra-high",
+      width = 1024,
+      height = 1024,
+      scale = 0.2,
+      shift = {
+            0,
+            -2
+      }
+    }
+  }
+}
+soul_collector.collision_box = {
+  {
+    -0.8,
+    -0.8
+  },
+  {
+    0.8,
+    0.8
+  }
+}
+soul_collector.selection_box = {
+  {
+    -1,
+    -1
+  },
+  {
+    1,
+    1
+  }
+}
+
 data:extend({
   conjuration_machine,
   conjuration_lab,
+  soul_collector,
   {
     type = "item",
     name = "conjuration-machine",
@@ -92,6 +137,24 @@ data:extend({
     },
     results = {
       {type = "item", name = "conjuration-lab", amount = 1}
+    },
+    enabled = false
+  },
+  -- Soul Collector Recipe
+  {
+    type = "recipe",
+    name = "craft-soul-collector",
+    category = "crafting",
+    energy_required = 5,
+    icon = "__orbs__/graphics/soul-collector.png",
+    icon_size = 1024,
+    ingredients = {
+      {type = "item", name = "iron-chest", amount = 1},
+      {type = "item", name = "magic-orb", amount = 1},
+      {type = "item", name = "divination-essence", amount = 10}
+    },
+    results = {
+      {type = "item", name = "soul-collector", amount = 1}
     },
     enabled = false
   }
