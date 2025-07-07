@@ -62,14 +62,9 @@ if mods["Nanobots2"] then
     end
   end
   
-  -- Override roboport interface technology if it exists
+  -- Remove roboport interface technology completely
   if data.raw.technology["roboport-interface"] then
-    local tech = data.raw.technology["roboport-interface"]
-    tech.prerequisites = {"nanobots"}
-    tech.unit.count = 100
-    tech.unit.ingredients = {{"conjuration-research-pack", 1}}
-    tech.localised_name = {"technology-name.mystic-network-interface"}
-    tech.localised_description = {"technology-description.mystic-network-interface"}
+    data.raw.technology["roboport-interface"] = nil
   end
   
   -- Override nano gun item
