@@ -30,7 +30,7 @@ local conjuration_lab = util.table.deepcopy(data.raw["lab"]["lab"])
 conjuration_lab.name = "conjuration-lab"
 conjuration_lab.minable = {mining_time = 0.2, result = "conjuration-lab"}
 conjuration_lab.energy_source = {type = "void"} -- No power required
-conjuration_lab.energy_usage = "1W" -- Minimal energy usage
+conjuration_lab.energy_usage = "1W"
 conjuration_lab.researching_speed = 1
 conjuration_lab.inputs = {"conjuration-research-pack", "divination-research-pack"}
 
@@ -42,7 +42,7 @@ data:extend({
     name = "conjuration-machine",
     icon = "__base__/graphics/icons/assembling-machine-2.png",
     icon_size = 64,
-    subgroup = "orbs-machines", -- New subgroup for machines
+    subgroup = "orbs-machines",
     order = "a[conjuration-machine]",
     place_result = "conjuration-machine",
     stack_size = 50
@@ -95,4 +95,126 @@ data:extend({
     },
     enabled = false
   }
+})
+
+
+-- Magic Grenade Projectile
+local magic_grenade_projectile = {
+  type = "projectile",
+  name = "magic-grenade-projectile",
+  flags = {"not-on-map"},
+  hidden = true,
+  acceleration = 0.005,
+  animation = {
+    filename = "__base__/graphics/entity/grenade/grenade.png",
+    frame_count = 15,
+    width = 48,
+    height = 54,
+    line_length = 8,
+    animation_speed = 0.25,
+    priority = "high",
+    scale = 0.5,
+    shift = {0.015625, 0.015625},
+    draw_as_glow = true,
+    tint = {r = 1.0, g = 0.4, b = 1.0, a = 1.0} -- Pink tint
+  },
+  shadow = {
+    filename = "__base__/graphics/entity/grenade/grenade-shadow.png",
+    frame_count = 15,
+    width = 50,
+    height = 40,
+    line_length = 8,
+    animation_speed = 0.25,
+    priority = "high",
+    scale = 0.5,
+    shift = {0.0625, 0.1875},
+    draw_as_shadow = true
+  },
+  light = {
+    intensity = 0.7,
+    size = 6,
+    color = {r = 1.0, g = 0.4, b = 1.0} -- Pink light
+  },
+  action = {
+    {
+      type = "direct",
+      action_delivery = {
+        type = "instant",
+        target_effects = {
+          {
+            type = "create-entity",
+            entity_name = "magic-grenade-explosion"
+          },
+          {
+            type = "create-entity",
+            entity_name = "small-scorchmark-tintable",
+            check_buildability = true
+          },
+          {
+            type = "invoke-tile-trigger",
+            repeat_count = 1
+          },
+          {
+            type = "destroy-decoratives",
+            from_render_layer = "decorative",
+            to_render_layer = "object",
+            include_soft_decoratives = true,
+            include_decals = false,
+            invoke_decorative_trigger = true,
+            decoratives_with_trigger_only = false,
+            radius = 4.0
+          }
+        }
+      }
+    },
+    {
+      type = "area",
+      radius = 16,
+      action_delivery = {
+        type = "instant",
+        target_effects = {
+          {
+            type = "damage",
+            damage = {
+              amount = 45,
+              type = "explosion"
+            }
+          },
+          {
+            type = "create-entity",
+            entity_name = "magic-explosion"
+          }
+        }
+      }
+    }
+  }
+}
+
+-- Magic Grenade Explosion Entity
+local magic_grenade_explosion = util.table.deepcopy(data.raw["explosion"]["grenade-explosion"])
+magic_grenade_explosion.name = "magic-grenade-explosion"
+-- Safely set light properties
+if not magic_grenade_explosion.light then
+  magic_grenade_explosion.light = {}
+end
+magic_grenade_explosion.light.color = {r = 1.0, g = 0.4, b = 1.0}
+magic_grenade_explosion.light.intensity = 1.0
+magic_grenade_explosion.light.size = 20
+
+-- Magic Explosion Entity (for area damage)
+local magic_explosion = util.table.deepcopy(data.raw["explosion"]["explosion"])
+magic_explosion.name = "magic-explosion"
+-- Safely set light properties
+if not magic_explosion.light then
+  magic_explosion.light = {}
+end
+magic_explosion.light.color = {r = 1.0, g = 0.4, b = 1.0}
+magic_explosion.light.intensity = 0.8
+magic_explosion.light.size = 15
+
+-- Extend the entities
+data:extend({
+  magic_grenade_projectile,
+  magic_grenade_explosion,
+  magic_explosion
 })

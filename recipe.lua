@@ -375,5 +375,26 @@ table.insert(recipes, {
   order = "b[divination-research-pack]"
 })
 
+-- Magic Grenade Recipe
+table.insert(recipes, {
+  type = "recipe",
+  name = "magic-grenade",
+  category = "crafting",
+  subgroup = "capsule",
+  energy_required = 3,
+  icon = "__orbs__/graphics/magic-grenade.png",
+  icon_size = 1024,
+  ingredients = {
+    {type = "item", name = "unstable-orb-alpha", amount = 1},
+    {type = "item", name = "iron-plate", amount = 5},
+    {type = "item", name = "active-magic-shard", amount = 5}
+  },
+  results = {
+    {type = "item", name = "magic-grenade", amount = 1}
+  },
+  enabled = false,
+  order = "a[grenade]-b[normal]"
+})
+
 -- Extend all recipes
 data:extend(recipes)

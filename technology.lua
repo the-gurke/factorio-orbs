@@ -310,6 +310,27 @@ data:extend({
       }
     },
     order = "a-h-m"
+  },
+  {
+    type = "technology",
+    name = "magic-grenade",
+    icon = "__orbs__/graphics/magic-grenade.png",
+    icon_size = 1024,
+    prerequisites = {"orbs-technology"},
+    unit = {
+      count = 50,
+      ingredients = {
+        {"conjuration-research-pack", 1}
+      },
+      time = 30
+    },
+    effects = {
+      {
+        type = "unlock-recipe",
+        recipe = "magic-grenade"
+      }
+    },
+    order = "a-h-z"
   }
 })
 
@@ -337,7 +358,7 @@ for i = 1, 10 do
         modifier = 9 -- +9 build distance per tier (90 total)
       },
       {
-        type = "character-reach-distance", 
+        type = "character-reach-distance",
         modifier = 9 -- +9 reach distance per tier (90 total)
       },
       {
