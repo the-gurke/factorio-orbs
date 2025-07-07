@@ -1,5 +1,4 @@
 -- item.lua
--- Define all the magical items
 
 data:extend({
   -- Magic Orb
@@ -170,5 +169,41 @@ data:extend({
     stack_size = 50,
     spoil_ticks = 5 * 60, -- 5 seconds * 60 ticks per second
     spoil_result = "stone"
+  },
+
+  -- Magic Grenade / Glitter bomb (capsule item)
+  {
+    type = "capsule",
+    name = "magic-grenade",
+    icon = "__orbs__/graphics/magic-grenade.png",
+    icon_size = 1024,
+    subgroup = "capsule",
+    order = "a[grenade]-b[normal]",
+    stack_size = 100,
+    weight = 10000,
+    capsule_action = {
+      type = "throw",
+      attack_parameters = {
+        type = "projectile",
+        activation_type = "throw",
+        ammo_category = "grenade",
+        cooldown = 30,
+        projectile_creation_distance = 0.6,
+        range = 15,
+        ammo_type = {
+          target_type = "position",
+          action = {
+            {
+              type = "direct",
+              action_delivery = {
+                type = "projectile",
+                projectile = "magic-grenade-projectile",
+                starting_speed = 0.3
+              }
+            }
+          }
+        }
+      }
+    }
   }
 })
