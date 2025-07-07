@@ -7,7 +7,7 @@ if mods["Nanobots2"] then
   -- Override main nanobots technology
   if data.raw.technology["nanobots"] then
     local tech = data.raw.technology["nanobots"]
-    tech.icon = "__orbs__/graphics/summoning_technology.png"
+    tech.icon = "__orbs__/graphics/summoning-technology.png"
     tech.icon_size = 1024
     tech.prerequisites = {"orbs-technology"}
     tech.unit.count = 20
@@ -19,7 +19,7 @@ if mods["Nanobots2"] then
   -- Override nanobots cliff technology
   if data.raw.technology["nanobots-cliff"] then
     local tech = data.raw.technology["nanobots-cliff"]
-    tech.icon = "__orbs__/graphics/cliff_explosion.png"
+    tech.icon = "__orbs__/graphics/cliff-explosion.png"
     tech.icon_size = 1024
     tech.prerequisites = {"nanobots"}
     tech.unit.count = 50
@@ -75,7 +75,7 @@ if mods["Nanobots2"] then
   -- Override nano gun item
   if data.raw.gun["gun-nano-emitter"] then
     local gun = data.raw.gun["gun-nano-emitter"]
-    gun.icon = "__orbs__/graphics/magic_wand.png"
+    gun.icon = "__orbs__/graphics/magic-wand.png"
     gun.icon_size = 1024
     gun.localised_name = {"item-name.magic-wand"}
     gun.localised_description = {"item-description.magic-wand"}
@@ -84,7 +84,7 @@ if mods["Nanobots2"] then
   -- Override nano gun recipe
   if data.raw.recipe["gun-nano-emitter"] then
     local recipe = data.raw.recipe["gun-nano-emitter"]
-    recipe.icon = "__orbs__/graphics/magic_wand.png"
+    recipe.icon = "__orbs__/graphics/magic-wand.png"
     recipe.icon_size = 1024
     recipe.localised_name = {"item-name.magic-wand"}
     recipe.localised_description = {"item-description.magic-wand"}
