@@ -11,6 +11,7 @@ table.insert(recipes, {
   category = "orbs",
   subgroup = "orbs-conjure",
   energy_required = 1,
+  hide_from_signal_gui = false,
   icon = "__orbs__/graphics/conjure-shards.png",
   icon_size = 1024,
   ingredients = {
@@ -21,7 +22,8 @@ table.insert(recipes, {
     {type = "item", name = "active-magic-shard", amount = 1, probability = 0.05}
   },
   enabled = false,
-  order = "a[conjure-shards]-a[0]"
+  main_product = "",
+  order = "b[conjure-shards]-a[0]"
 })
 
 -- Then the existing conjure recipes with proper ordering
@@ -34,6 +36,7 @@ for i, n in ipairs(conjure_inputs) do
     subgroup = "orbs-conjure",
     energy_required = n,
     icon = "__orbs__/graphics/conjure-shards.png",
+    hide_from_signal_gui = false,
     icon_size = 1024,
     ingredients = {
       {type = "item", name = "magic-orb", amount = n + 1}
@@ -43,7 +46,8 @@ for i, n in ipairs(conjure_inputs) do
       {type = "item", name = "active-magic-shard", amount = n * n}
     },
     enabled = false,
-    order = "a[conjure-shards]-" .. string.char(97 + i) .. "[" .. n .. "]"
+    main_product = "",
+    order = "b[conjure-shards]-" .. string.char(97 + i) .. "[" .. n .. "]"
   })
 end
 
@@ -54,6 +58,7 @@ table.insert(recipes, {
   category = "orbs",
   subgroup = "orbs-proliferate",
   energy_required = 1,
+  hide_from_signal_gui = false,
   icon = "__orbs__/graphics/active-magic-shard.png",
   icon_size = 1024,
   ingredients = {
@@ -66,6 +71,7 @@ table.insert(recipes, {
     {type = "item", name = "active-magic-shard", amount = 1, probability = 0.5}
   },
   enabled = false,
+  main_product = "",
   order = "a[replicate-shards]"
 })
 
@@ -76,6 +82,7 @@ table.insert(recipes, {
   category = "orbs",
   subgroup = "orbs-proliferate",
   energy_required = 3,
+  hide_from_signal_gui = false,
   icon = "__orbs__/graphics/active-magic-shard.png",
   icon_size = 1024,
   ingredients = {
@@ -88,6 +95,7 @@ table.insert(recipes, {
     {type = "item", name = "active-magic-shard", amount_min = 2, amount_max = 4}
   },
   enabled = false,
+  main_product = "",
   order = "b[replicate-shards-2]"
 })
 
@@ -118,6 +126,7 @@ table.insert(recipes, {
   category = "orbs",
   subgroup = "orbs-manifest",
   energy_required = 5,
+  hide_from_signal_gui = false,
   icon = "__orbs__/graphics/magic-orb.png",
   icon_size = 1024,
   ingredients = {
