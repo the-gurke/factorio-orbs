@@ -5,7 +5,7 @@ data:extend({
   {
     type = "technology",
     name = "orbs-technology",
-    icon = "__orbs__/graphics/orb_initial_technology.png",
+    icon = "__orbs__/graphics/orb-initial-technology.png",
     icon_size = 1024,
     prerequisites = {"automation"},
     unit = {
@@ -342,7 +342,7 @@ for i = 1, 10 do
     name = "telekinesis-" .. i,
     localised_name = {"technology-name.telekinesis-" .. i},
     localised_description = {"technology-description.telekinesis-" .. i},
-    icon = "__orbs__/graphics/telekinesis_technology.png",
+    icon = "__orbs__/graphics/telekinesis-technology.png",
     icon_size = 1024,
     prerequisites = i == 1 and {"orbs-technology"} or {"telekinesis-" .. (i-1)},
     unit = {
