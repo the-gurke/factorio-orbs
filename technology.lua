@@ -331,6 +331,28 @@ data:extend({
       }
     },
     order = "a-h-z"
+  },
+  {
+    type = "technology",
+    name = "soul-collection",
+    icon_size = 1024,
+    icon = "__orbs__/graphics/soul-collector.png",
+    effects = {
+      {
+        type = "unlock-recipe",
+        recipe = "craft-soul-collector"
+      }
+    },
+    prerequisites = {"divination-essence"},
+    unit = {
+      count = 50,
+      ingredients = {
+        {"conjuration-research-pack", 1},
+        {"divination-research-pack", 1}
+      },
+      time = 30
+    },
+    order = "z-a[soul-collection]"
   }
 })
 
