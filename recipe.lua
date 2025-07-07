@@ -275,7 +275,7 @@ table.insert(recipes, {
   name = "conjure-divination-essence",
   category = "orbs",
   subgroup = "divination",
-  energy_required = 5,
+  energy_required = 1,
   icon = "__orbs__/graphics/divination-essence.png",
   icon_size = 1024,
   ingredients = {
@@ -284,8 +284,9 @@ table.insert(recipes, {
   },
   results = {
     {type = "item", name = "unstable-orb-alpha", amount = 2},
-    {type = "item", name = "divination-essence", amount = 4, probability = 0.5}
+    {type = "item", name = "divination-essence", amount = 1}
   },
+  reset_freshness_on_craft = true,
   enabled = false,
   order = "a[conjure-divination-essence]"
 })
@@ -296,7 +297,7 @@ table.insert(recipes, {
   name = "stabilize-divination-essence",
   category = "orbs",
   subgroup = "divination",
-  energy_required = 1,
+  energy_required = 0.5,
   icon = "__orbs__/graphics/divination-essence.png",
   icon_size = 1024,
   ingredients = {
