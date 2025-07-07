@@ -32,7 +32,7 @@ conjuration_lab.minable = {mining_time = 0.2, result = "conjuration-lab"}
 conjuration_lab.energy_source = {type = "void"} -- No power required
 conjuration_lab.energy_usage = "1W" -- Minimal energy usage
 conjuration_lab.researching_speed = 1
-conjuration_lab.inputs = {"conjuration-research-pack"} -- Only accepts conjuration research packs
+conjuration_lab.inputs = {"conjuration-research-pack", "divination-research-pack"}
 
 data:extend({
   conjuration_machine,
@@ -59,7 +59,7 @@ data:extend({
   }
 })
 
--- Recipe to craft the conjuration machine (stays in crafting category)
+-- Recipe to craft the conjuration machine
 data:extend({
   {
     type = "recipe",

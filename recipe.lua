@@ -300,14 +300,79 @@ table.insert(recipes, {
   icon = "__orbs__/graphics/divination-essence.png",
   icon_size = 1024,
   ingredients = {
-    {type = "item", name = "divination-essence", amount = 1}
+    {type = "item", name = "divination-essence", amount = 1},
+    {type = "item", name = "coal", amount = 1}
   },
   results = {
-    {type = "item", name = "divination-essence", amount = 1}
+    {type = "item", name = "divination-essence", amount = 1},
+    {type = "item", name = "coal", amount = 1, probability = 0.5}
   },
   reset_freshness_on_craft = true,
   enabled = false,
   order = "b[stabilize-divination-essence]"
+})
+
+
+-- Conjure Luck
+table.insert(recipes, {
+  type = "recipe",
+  name = "conjure-luck",
+  category = "orbs",
+  subgroup = "divination",
+  energy_required = 0.25,
+  icon = "__orbs__/graphics/spark-of-luck.png",
+  icon_size = 1024,
+  ingredients = {
+    {type = "item", name = "magic-orb", amount = 1}
+  },
+  results = {
+    {type = "item", name = "magic-orb", amount = 1},
+    {type = "item", name = "spark-of-luck", amount = 1, probability = 0.01}
+  },
+  enabled = true,
+  order = "c[conjure-luck]"
+})
+
+-- Conjure Serendipity
+table.insert(recipes, {
+  type = "recipe",
+  name = "conjure-serendipity",
+  category = "orbs",
+  subgroup = "divination",
+  energy_required = 3,
+  icon = "__orbs__/graphics/dust-of-serendipity.png",
+  icon_size = 1024,
+  ingredients = {
+    {type = "item", name = "stone", amount = 1},
+    {type = "item", name = "magic-orb", amount = 1}
+  },
+  results = {
+    {type = "item", name = "magic-orb", amount = 1},
+    {type = "item", name = "dust-of-serendipity", amount = 1}
+  },
+  enabled = true,
+  order = "d[conjure-serendipity]"
+})
+
+-- Divination Research Pack
+table.insert(recipes, {
+  type = "recipe",
+  name = "divination-research-pack",
+  category = "orbs",
+  subgroup = "orbs-research",
+  energy_required = 15,
+  icon = "__orbs__/graphics/divination-research-pack.png",
+  icon_size = 1024,
+  ingredients = {
+    {type = "item", name = "divination-essence", amount = 1},
+    {type = "item", name = "dust-of-serendipity", amount = 1},
+    {type = "item", name = "spark-of-luck", amount = 1}
+  },
+  results = {
+    {type = "item", name = "divination-research-pack", amount = 1}
+  },
+  enabled = true,
+  order = "b[divination-research-pack]"
 })
 
 -- Extend all recipes

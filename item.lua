@@ -62,6 +62,20 @@ data:extend({
     durability_description_value = "description.science-pack-remaining-amount-value"
   },
 
+  -- Divination Research Pack
+  {
+    type = "tool",
+    name = "divination-research-pack",
+    icon = "__orbs__/graphics/divination-research-pack.png",
+    icon_size = 1024,
+    subgroup = "orbs-research",
+    order = "b[divination-research-pack]",
+    stack_size = 200,
+    durability = 1,
+    durability_description_key = "description.science-pack-remaining-amount-key",
+    durability_description_value = "description.science-pack-remaining-amount-value"
+  },
+
   -- Haste Orb (also a module)
   {
     type = "module",
@@ -125,10 +139,36 @@ data:extend({
     name = "divination-essence",
     icon = "__orbs__/graphics/divination-essence.png",
     icon_size = 1024,
-    subgroup = "orbs-manifest",
-    order = "j[divination-essence]",
+    subgroup = "divination",
+    order = "a[divination-essence]",
     stack_size = 50,
     spoil_ticks = 10 * 60, -- 10 seconds * 60 ticks per second
     spoil_result = nil -- Spoils into nothing
+  },
+
+  -- Spark of Luck (spoils in 1s to nothing)
+  {
+    type = "item",
+    name = "spark-of-luck",
+    icon = "__orbs__/graphics/spark-of-luck.png",
+    icon_size = 1024,
+    subgroup = "divination",
+    order = "b[spark-of-luck]",
+    stack_size = 100,
+    spoil_ticks = 1 * 60, -- 1 second * 60 ticks per second
+    spoil_result = nil -- Spoils into nothing
+  },
+
+  -- Dust of Serendipity (spoils in 5s to stone)
+  {
+    type = "item",
+    name = "dust-of-serendipity",
+    icon = "__orbs__/graphics/dust-of-serendipity.png",
+    icon_size = 1024,
+    subgroup = "divination",
+    order = "c[dust-of-serendipity]",
+    stack_size = 50,
+    spoil_ticks = 5 * 60, -- 5 seconds * 60 ticks per second
+    spoil_result = "stone"
   }
 })
