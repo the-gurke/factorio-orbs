@@ -4,7 +4,7 @@
 local recipes = {}
 
 -- Conjure Shards recipes (conjure-shards subgroup)
--- Start with conjure-shards-0 for the 1:1 ratio with 20% chance
+-- Start with conjure-shards-0 for the 1:1 ratio with 5% chance
 table.insert(recipes, {
   type = "recipe",
   name = "conjure-shards-0",
