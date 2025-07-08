@@ -90,7 +90,7 @@ data:extend({
     subgroup = "orbs-machines",
     order = "a[conjuration-machine]",
     place_result = "conjuration-machine",
-    stack_size = 50
+    stack_size = 20
   },
   {
     type = "item",
@@ -100,7 +100,7 @@ data:extend({
     subgroup = "orbs-machines",
     order = "b[conjuration-lab]",
     place_result = "conjuration-lab",
-    stack_size = 50
+    stack_size = 20
   },
   {
     type = "item",
