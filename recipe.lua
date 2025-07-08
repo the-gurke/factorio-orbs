@@ -264,7 +264,7 @@ table.insert(recipes, {
   name = "align-unstable-orb",
   category = "orbs",
   subgroup = "orbs-manifest",
-  energy_required = 2,
+  energy_required = 0.8,
   icon = "__orbs__/graphics/unstable-orb-alpha.png",
   icon_size = 1024,
   ingredients = {
@@ -370,7 +370,7 @@ table.insert(recipes, {
   name = "divination-research-pack",
   category = "orbs",
   subgroup = "orbs-research",
-  energy_required = 15,
+  energy_required = 5,
   icon = "__orbs__/graphics/divination-research-pack.png",
   icon_size = 1024,
   ingredients = {
