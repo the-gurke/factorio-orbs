@@ -99,7 +99,7 @@ table.insert(recipes, {
   order = "b[replicate-shards-2]"
 })
 
--- Shard Cleanup
+-- Banish Shards
 table.insert(recipes, {
   type = "recipe",
   name = "banish-shards",
