@@ -218,17 +218,5 @@ data:extend({
     stack_size = 1,
     spoil_ticks = 2 * 60 * 60 * 60, -- 2 hours * 60 minutes * 60 seconds * 60 ticks per second
     spoil_result = nil -- Spoils into nothing
-  },
-
-  -- Soul Collector Item
-  {
-    type = "item",
-    name = "soul-collector",
-    icon = "__orbs__/graphics/soul-collector.png",
-    icon_size = 1024,
-    subgroup = "souls",
-    order = "b[soul]",
-    place_result = "soul-collector",
-    stack_size = 10
   }
 })

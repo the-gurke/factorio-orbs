@@ -101,6 +101,16 @@ data:extend({
     order = "b[conjuration-lab]",
     place_result = "conjuration-lab",
     stack_size = 50
+  },
+  {
+    type = "item",
+    name = "soul-collector",
+    icon = "__orbs__/graphics/soul-collector.png",
+    icon_size = 1024,
+    subgroup = "orbs-machines",
+    order = "c[soul-collector]",
+    place_result = "soul-collector",
+    stack_size = 10
   }
 })
 
