@@ -348,15 +348,15 @@ data:extend({
     effects = {
       {
         type = "unlock-recipe",
+        recipe = "conjure-serendipity"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "conjure-luck"
+      },
+      {
+        type = "unlock-recipe",
         recipe = "divination-research-pack"
-      },
-      {
-        type = "unlock-recipe",
-        recipe = "spark-of-luck"
-      },
-      {
-        type = "unlock-recipe",
-        recipe = "dust-of-serendipity"
       }
     },
     order = "a-h-n"
