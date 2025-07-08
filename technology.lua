@@ -334,6 +334,35 @@ data:extend({
   },
   {
     type = "technology",
+    name = "divination",
+    icon = "__orbs__/graphics/divination-research-pack.png",
+    icon_size = 1024,
+    prerequisites = {"divination-essence"},
+    unit = {
+      count = 200,
+      ingredients = {
+        {"conjuration-research-pack", 1}
+      },
+      time = 30
+    },
+    effects = {
+      {
+        type = "unlock-recipe",
+        recipe = "divination-research-pack"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "spark-of-luck"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "dust-of-serendipity"
+      }
+    },
+    order = "a-h-n"
+  },
+  {
+    type = "technology",
     name = "soul-collection",
     icon_size = 1024,
     icon = "__orbs__/graphics/soul-collector.png",
@@ -343,7 +372,7 @@ data:extend({
         recipe = "craft-soul-collector"
       }
     },
-    prerequisites = {"divination-essence"},
+    prerequisites = {"divination"},
     unit = {
       count = 50,
       ingredients = {
