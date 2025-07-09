@@ -233,18 +233,42 @@ data:extend({
   }
 })
 
--- Generate volatile orb variants 2-12
-for i = 2, 12 do
+-- Generate volatile orb variants 2-6 with Latin letter names
+local volatile_orb_names = {
+  [2] = "Q",
+  [3] = "R", 
+  [4] = "S",
+  [5] = "T",
+  [6] = "U"
+}
+
+for i = 2, 6 do
+  local letter_name = volatile_orb_names[i]
+  local letter_icons = {}
+  
+  -- Base orb icon
+  table.insert(letter_icons, {
+    icon = "__orbs__/graphics/volatile-orb.png",
+    icon_size = 1024
+  })
+  
+  -- Add letter overlay using signal icons (small, lower left)
+  table.insert(letter_icons, {
+    icon = "__base__/graphics/icons/signal/signal_" .. letter_name .. ".png",
+    icon_size = 64,
+    scale = 0.3,
+    shift = {-16, 16}
+  })
+  
   data:extend({
     {
       type = "item",
-      name = "volatile-orb-" .. i,
-      icon = "__orbs__/graphics/volatile-orb.png",
-      icon_size = 1024,
+      name = "volatile-orb-" .. letter_name,
+      icons = letter_icons,
       subgroup = "orbs-manifest",
       order = "j[volatile-orb-" .. string.format("%02d", i) .. "]",
       stack_size = 5,
-      spoil_ticks = 12 * 60, -- 12 seconds * 60 ticks per second
+      spoil_ticks = 120 * 60, -- 12 seconds * 60 ticks per second
       spoil_result = nil, -- Spoils into nothing
       spoil_to_trigger_result = {
         items_per_trigger = 1,

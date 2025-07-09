@@ -447,6 +447,14 @@ data:extend(telekinesis_technologies)
 -- Add volatile orb recipes to the stability-extraction technology
 local volatile_orb_tech = data.raw["technology"]["stability-extraction"]
 if volatile_orb_tech then
+  local volatile_orb_names = {
+    [2] = "Q",
+    [3] = "R", 
+    [4] = "S",
+    [5] = "T",
+    [6] = "U"
+  }
+  
   -- Add extract stability recipe
   table.insert(volatile_orb_tech.effects, {
     type = "unlock-recipe",
@@ -454,30 +462,30 @@ if volatile_orb_tech then
   })
   
   -- Add copy recipes for all volatile orbs
-  for i = 2, 12 do
+  for i = 2, 6 do
     table.insert(volatile_orb_tech.effects, {
       type = "unlock-recipe",
-      recipe = "copy-volatile-orb-" .. i
+      recipe = "copy-volatile-orb-" .. volatile_orb_names[i]
     })
   end
   
-  -- Add multiplication and neutralization recipes
-  for i = 2, 12 do
-    for j = i, 12 do
-      local result = (i * j) % 13
-      if result == 0 then result = 13 end
+  -- Add manipulation and neutralization recipes
+  for i = 2, 6 do
+    for j = i, 6 do
+      local result = (i * j) % 7
+      if result == 0 then result = 7 end
       
       if result == 1 then
         -- Neutralization recipe
         table.insert(volatile_orb_tech.effects, {
           type = "unlock-recipe",
-          recipe = "neutralize-volatile-orb-" .. i .. "-" .. j
+          recipe = "neutralize-volatile-orb-" .. volatile_orb_names[i] .. "-" .. volatile_orb_names[j]
         })
       else
-        -- Multiplication recipe
+        -- Manipulation recipe
         table.insert(volatile_orb_tech.effects, {
           type = "unlock-recipe",
-          recipe = "multiply-volatile-orb-" .. i .. "-" .. j
+          recipe = "volatile-orb-manipulation-" .. volatile_orb_names[i] .. "-" .. volatile_orb_names[j]
         })
       end
     end

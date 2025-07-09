@@ -422,35 +422,127 @@ table.insert(recipes, {
   },
   results = {
     {type = "item", name = "element-of-stability", amount = 1},
-    {type = "item", name = "volatile-orb-2", amount = 1, probability = 1/11},
-    {type = "item", name = "volatile-orb-3", amount = 1, probability = 1/11},
-    {type = "item", name = "volatile-orb-4", amount = 1, probability = 1/11},
-    {type = "item", name = "volatile-orb-5", amount = 1, probability = 1/11},
-    {type = "item", name = "volatile-orb-6", amount = 1, probability = 1/11},
-    {type = "item", name = "volatile-orb-7", amount = 1, probability = 1/11},
-    {type = "item", name = "volatile-orb-8", amount = 1, probability = 1/11},
-    {type = "item", name = "volatile-orb-9", amount = 1, probability = 1/11},
-    {type = "item", name = "volatile-orb-10", amount = 1, probability = 1/11},
-    {type = "item", name = "volatile-orb-11", amount = 1, probability = 1/11},
-    {type = "item", name = "volatile-orb-12", amount = 1, probability = 1/11}
+    {type = "item", name = "volatile-orb-Q", amount = 1, probability = 1/5},
+    {type = "item", name = "volatile-orb-R", amount = 1, probability = 1/5},
+    {type = "item", name = "volatile-orb-S", amount = 1, probability = 1/5},
+    {type = "item", name = "volatile-orb-T", amount = 1, probability = 1/5},
+    {type = "item", name = "volatile-orb-U", amount = 1, probability = 1/5}
   },
   enabled = false,
   order = "l[extract-stability]"
 })
 
--- Generate volatile orb multiplication recipes
--- For each pair of orbs i and j, the result is (i * j) % 13
+-- Generate volatile orb manipulation recipes
+-- For each pair of orbs i and j, the result is (i * j) % 7
 -- If result is 1, create neutralize recipe that gives 2 magic orbs
--- Note: volatile-orb is treated as volatile-orb-1 for calculations
+
+local volatile_orb_names = {
+  [2] = "Q",
+  [3] = "R", 
+  [4] = "S",
+  [5] = "T",
+  [6] = "U"
+}
 
 local function get_orb_name(index)
-  return "volatile-orb-" .. index
+  return "volatile-orb-" .. volatile_orb_names[index]
 end
 
-for i = 2, 12 do
-  for j = i, 12 do -- Only create recipes for j >= i to avoid duplicates
-    local result = (i * j) % 13
-    if result == 0 then result = 13 end -- Handle modulo 0 case
+-- Helper function to create manipulation recipe icons showing "A × B" at top and result at bottom
+local function create_manipulation_icon(base_icon, base_icon_size, input_a, input_b, result)
+  local icons = {
+    {
+      icon = base_icon,
+      icon_size = base_icon_size
+    }
+  }
+  
+  -- Add input A (top left)
+  table.insert(icons, {
+    icon = "__base__/graphics/icons/signal/signal_" .. volatile_orb_names[input_a] .. ".png",
+    icon_size = 64,
+    scale = 0.35,
+    shift = {-12, -16}
+  })
+  
+  -- Add × symbol (top center) - use signal-X
+  table.insert(icons, {
+    icon = "__base__/graphics/icons/signal/signal_X.png",
+    icon_size = 64,
+    scale = 0.25,
+    shift = {0, -16}
+  })
+  
+  -- Add input B (top right)
+  table.insert(icons, {
+    icon = "__base__/graphics/icons/signal/signal_" .. volatile_orb_names[input_b] .. ".png",
+    icon_size = 64,
+    scale = 0.35,
+    shift = {12, -16}
+  })
+  
+  -- Add result (bottom center)
+  if result == 1 then
+    -- For neutralization, show magic orb icon at bottom
+    table.insert(icons, {
+      icon = "__orbs__/graphics/magic-orb.png",
+      icon_size = 1024,
+      scale = 0.08,
+      shift = {0, 16}
+    })
+  else
+    -- For manipulation, show result letter
+    table.insert(icons, {
+      icon = "__base__/graphics/icons/signal/signal_" .. volatile_orb_names[result] .. ".png",
+      icon_size = 64,
+      scale = 0.4,
+      shift = {0, 16}
+    })
+  end
+  
+  return icons
+end
+
+-- Helper function to create copy recipe icons showing magic orb + volatile orb + letter
+local function create_copy_icon(base_icon, base_icon_size, letter_index)
+  local icons = {
+    {
+      icon = base_icon,
+      icon_size = base_icon_size
+    }
+  }
+  
+  -- Add magic orb (top left)
+  table.insert(icons, {
+    icon = "__orbs__/graphics/magic-orb.png",
+    icon_size = 1024,
+    scale = 0.08,
+    shift = {-8, -16}
+  })
+  
+  -- Add volatile orb (top right)
+  table.insert(icons, {
+    icon = "__orbs__/graphics/volatile-orb.png",
+    icon_size = 1024,
+    scale = 0.1,
+    shift = {8, -16}
+  })
+  
+  -- Add letter (bottom center)
+  table.insert(icons, {
+    icon = "__base__/graphics/icons/signal/signal_" .. volatile_orb_names[letter_index] .. ".png",
+    icon_size = 64,
+    scale = 0.5,
+    shift = {0, 16}
+  })
+  
+  return icons
+end
+
+for i = 2, 6 do
+  for j = i, 6 do -- Only create recipes for j >= i to avoid duplicates
+    local result = (i * j) % 7
+    if result == 0 then result = 7 end -- Handle modulo 0 case but won't happen in 2-6 range
     
     local orb_i = get_orb_name(i)
     local orb_j = get_orb_name(j)
@@ -468,38 +560,36 @@ for i = 2, 12 do
       -- Neutralize recipe - gives 2 magic orbs
       table.insert(recipes, {
         type = "recipe",
-        name = "neutralize-volatile-orb-" .. i .. "-" .. j,
+        name = "neutralize-volatile-orb-" .. volatile_orb_names[i] .. "-" .. volatile_orb_names[j],
         category = "orbs",
         subgroup = "orbs-manifest",
         hide_from_signal_gui = false,
-        energy_required = 1,
-        icon = "__orbs__/graphics/magic-orb.png",
-        icon_size = 1024,
+        energy_required = 0.5,
+        icons = create_manipulation_icon("__orbs__/graphics/volatile-orb.png", 1024, i, j, 1),
         ingredients = ingredients,
         results = {
           {type = "item", name = "magic-orb", amount = 2}
         },
         enabled = false,
-        order = "z[neutralize-volatile-orb-" .. i .. "-" .. j .. "]"
+        order = "z[neutralize-volatile-orb-" .. volatile_orb_names[i] .. "-" .. volatile_orb_names[j] .. "]"
       })
     else
-      -- Multiplication recipe
+      -- Manipulation recipe
       local result_orb = get_orb_name(result)
       table.insert(recipes, {
         type = "recipe",
-        name = "multiply-volatile-orb-" .. i .. "-" .. j,
+        name = "volatile-orb-manipulation-" .. volatile_orb_names[i] .. "-" .. volatile_orb_names[j],
         category = "orbs",
         subgroup = "orbs-manifest",
         hide_from_signal_gui = false,
-        energy_required = 1,
-        icon = "__orbs__/graphics/volatile-orb.png",
-        icon_size = 1024,
+        energy_required = 0.5,
+        icons = create_manipulation_icon("__orbs__/graphics/volatile-orb.png", 1024, i, j, result),
         ingredients = ingredients,
         results = {
           {type = "item", name = result_orb, amount = 1}
         },
         enabled = false,
-        order = "y[multiply-volatile-orb-" .. i .. "-" .. j .. "]"
+        order = "y[volatile-orb-manipulation-" .. volatile_orb_names[i] .. "-" .. volatile_orb_names[j] .. "]"
       })
     end
   end
@@ -507,17 +597,17 @@ end
 
 -- Generate volatile orb copy recipes
 -- Each orb + magic orb = 2 of the same orb
-for i = 2, 12 do
+for i = 2, 6 do
   local orb_name = get_orb_name(i)
+  local letter_name = volatile_orb_names[i]
   table.insert(recipes, {
     type = "recipe",
-    name = "copy-volatile-orb-" .. i,
+    name = "copy-volatile-orb-" .. letter_name,
     hide_from_signal_gui = false,
     category = "orbs",
     subgroup = "orbs-manifest",
     energy_required = 1,
-    icon = "__orbs__/graphics/volatile-orb.png",
-    icon_size = 1024,
+    icons = create_copy_icon("__orbs__/graphics/volatile-orb.png", 1024, i),
     ingredients = {
       {type = "item", name = orb_name, amount = 1},
       {type = "item", name = "magic-orb", amount = 1}
