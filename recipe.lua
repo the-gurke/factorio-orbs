@@ -278,6 +278,8 @@ table.insert(recipes, {
   order = "g[align-unstable-orb]"
 })
 
+
+
 -- Conjure Divination Essence
 table.insert(recipes, {
   type = "recipe",
@@ -405,6 +407,128 @@ table.insert(recipes, {
   enabled = false,
   order = "a[grenade]-b[normal]"
 })
+
+-- Extract Stability from Magic Orb
+table.insert(recipes, {
+  type = "recipe",
+  name = "extract-stability",
+  category = "orbs",
+  subgroup = "orbs-manifest",
+  energy_required = 2,
+  icon = "__orbs__/graphics/element-of-stability.png",
+  icon_size = 1024,
+  ingredients = {
+    {type = "item", name = "magic-orb", amount = 1}
+  },
+  results = {
+    {type = "item", name = "element-of-stability", amount = 1},
+    {type = "item", name = "volatile-orb-2", amount = 1, probability = 1/11},
+    {type = "item", name = "volatile-orb-3", amount = 1, probability = 1/11},
+    {type = "item", name = "volatile-orb-4", amount = 1, probability = 1/11},
+    {type = "item", name = "volatile-orb-5", amount = 1, probability = 1/11},
+    {type = "item", name = "volatile-orb-6", amount = 1, probability = 1/11},
+    {type = "item", name = "volatile-orb-7", amount = 1, probability = 1/11},
+    {type = "item", name = "volatile-orb-8", amount = 1, probability = 1/11},
+    {type = "item", name = "volatile-orb-9", amount = 1, probability = 1/11},
+    {type = "item", name = "volatile-orb-10", amount = 1, probability = 1/11},
+    {type = "item", name = "volatile-orb-11", amount = 1, probability = 1/11},
+    {type = "item", name = "volatile-orb-12", amount = 1, probability = 1/11}
+  },
+  enabled = false,
+  order = "l[extract-stability]"
+})
+
+-- Generate volatile orb multiplication recipes
+-- For each pair of orbs i and j, the result is (i * j) % 13
+-- If result is 1, create neutralize recipe that gives 2 magic orbs
+-- Note: volatile-orb is treated as volatile-orb-1 for calculations
+
+local function get_orb_name(index)
+  return "volatile-orb-" .. index
+end
+
+for i = 2, 12 do
+  for j = i, 12 do -- Only create recipes for j >= i to avoid duplicates
+    local result = (i * j) % 13
+    if result == 0 then result = 13 end -- Handle modulo 0 case
+    
+    local orb_i = get_orb_name(i)
+    local orb_j = get_orb_name(j)
+    
+    -- Create ingredients list - handle case where i = j
+    local ingredients = {}
+    if i == j then
+      table.insert(ingredients, {type = "item", name = orb_i, amount = 2})
+    else
+      table.insert(ingredients, {type = "item", name = orb_i, amount = 1})
+      table.insert(ingredients, {type = "item", name = orb_j, amount = 1})
+    end
+    
+    if result == 1 then
+      -- Neutralize recipe - gives 2 magic orbs
+      table.insert(recipes, {
+        type = "recipe",
+        name = "neutralize-volatile-orb-" .. i .. "-" .. j,
+        category = "orbs",
+        subgroup = "orbs-manifest",
+        hide_from_signal_gui = false,
+        energy_required = 1,
+        icon = "__orbs__/graphics/magic-orb.png",
+        icon_size = 1024,
+        ingredients = ingredients,
+        results = {
+          {type = "item", name = "magic-orb", amount = 2}
+        },
+        enabled = false,
+        order = "z[neutralize-volatile-orb-" .. i .. "-" .. j .. "]"
+      })
+    else
+      -- Multiplication recipe
+      local result_orb = get_orb_name(result)
+      table.insert(recipes, {
+        type = "recipe",
+        name = "multiply-volatile-orb-" .. i .. "-" .. j,
+        category = "orbs",
+        subgroup = "orbs-manifest",
+        hide_from_signal_gui = false,
+        energy_required = 1,
+        icon = "__orbs__/graphics/volatile-orb.png",
+        icon_size = 1024,
+        ingredients = ingredients,
+        results = {
+          {type = "item", name = result_orb, amount = 1}
+        },
+        enabled = false,
+        order = "y[multiply-volatile-orb-" .. i .. "-" .. j .. "]"
+      })
+    end
+  end
+end
+
+-- Generate volatile orb copy recipes
+-- Each orb + magic orb = 2 of the same orb
+for i = 2, 12 do
+  local orb_name = get_orb_name(i)
+  table.insert(recipes, {
+    type = "recipe",
+    name = "copy-volatile-orb-" .. i,
+    hide_from_signal_gui = false,
+    category = "orbs",
+    subgroup = "orbs-manifest",
+    energy_required = 1,
+    icon = "__orbs__/graphics/volatile-orb.png",
+    icon_size = 1024,
+    ingredients = {
+      {type = "item", name = orb_name, amount = 1},
+      {type = "item", name = "magic-orb", amount = 1}
+    },
+    results = {
+      {type = "item", name = orb_name, amount = 2}
+    },
+    enabled = false,
+    order = "x[copy-volatile-orb-" .. string.format("%02d", i) .. "]"
+  })
+end
 
 -- Extend all recipes
 data:extend(recipes)
