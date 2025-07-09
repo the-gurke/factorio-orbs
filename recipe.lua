@@ -252,7 +252,7 @@ table.insert(recipes, {
   },
   results = {
     {type = "item", name = "magic-orb", amount = 1},
-    {type = "item", name = "unstable-orb-alpha", amount = 10, probability = 0.01}
+    {type = "item", name = "unstable-orb-alpha", amount = 10, probability = 0.05}
   },
   enabled = false,
   order = "f[conjure-unstable-orb]"
