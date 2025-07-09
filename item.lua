@@ -220,6 +220,17 @@ data:extend({
     spoil_result = nil -- Spoils into nothing
   },
 
+  -- Element of Stability (does not decay)
+  {
+    type = "item",
+    name = "element-of-stability",
+    icon = "__orbs__/graphics/element-of-stability.png",
+    icon_size = 1024,
+    subgroup = "orbs-manifest",
+    order = "k[element-of-stability]",
+    stack_size = 100
+  }
+
   -- Rage
   {
     type = "fluid",
@@ -267,3 +278,59 @@ data:extend({
     }
   }
 })
+
+-- Generate volatile orb variants 2-6 with Latin letter names
+local volatile_orb_names = {
+  [2] = "Q",
+  [3] = "R",
+  [4] = "S",
+  [5] = "T",
+  [6] = "U"
+}
+
+for i = 2, 6 do
+  local letter_name = volatile_orb_names[i]
+  local letter_icons = {}
+
+  -- Base orb icon
+  table.insert(letter_icons, {
+    icon = "__orbs__/graphics/volatile-orb.png",
+    icon_size = 1024
+  })
+
+  -- Add letter overlay using signal icons (small, lower left)
+  table.insert(letter_icons, {
+    icon = "__base__/graphics/icons/signal/signal_" .. letter_name .. ".png",
+    icon_size = 64,
+    scale = 0.3,
+    shift = {-16, 16}
+  })
+
+  data:extend({
+    {
+      type = "item",
+      name = "volatile-orb-" .. letter_name,
+      icons = letter_icons,
+      subgroup = "orbs-manifest",
+      order = "j[volatile-orb-" .. string.format("%02d", i) .. "]",
+      stack_size = 5,
+      spoil_ticks = 120 * 60, -- 12 seconds * 60 ticks per second
+      spoil_result = nil, -- Spoils into nothing
+      spoil_to_trigger_result = {
+        items_per_trigger = 1,
+        trigger = {
+          type = "direct",
+          action_delivery = {
+            type = "instant",
+            source_effects = {
+              {
+                type = "create-entity",
+                entity_name = "volatile-orb-explosion"
+              }
+            }
+          }
+        }
+      }
+    }
+  })
+end
