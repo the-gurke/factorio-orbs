@@ -382,6 +382,23 @@ data:extend({
       time = 30
     },
     order = "z-a[soul-collection]"
+  },
+  {
+    type = "technology",
+    name = "stability-extraction",
+    icon_size = 1024,
+    icon = "__orbs__/graphics/element-of-stability.png",
+    effects = {},
+    prerequisites = {"divination"},
+    unit = {
+      count = 100,
+      ingredients = {
+        {"conjuration-research-pack", 1},
+        {"divination-research-pack", 1}
+      },
+      time = 30
+    },
+    order = "z-b[stability-extraction]"
   }
 })
 
@@ -426,6 +443,46 @@ for i = 1, 10 do
 end
 
 data:extend(telekinesis_technologies)
+
+-- Add volatile orb recipes to the stability-extraction technology
+local volatile_orb_tech = data.raw["technology"]["stability-extraction"]
+if volatile_orb_tech then
+  -- Add extract stability recipe
+  table.insert(volatile_orb_tech.effects, {
+    type = "unlock-recipe",
+    recipe = "extract-stability"
+  })
+  
+  -- Add copy recipes for all volatile orbs
+  for i = 2, 12 do
+    table.insert(volatile_orb_tech.effects, {
+      type = "unlock-recipe",
+      recipe = "copy-volatile-orb-" .. i
+    })
+  end
+  
+  -- Add multiplication and neutralization recipes
+  for i = 2, 12 do
+    for j = i, 12 do
+      local result = (i * j) % 13
+      if result == 0 then result = 13 end
+      
+      if result == 1 then
+        -- Neutralization recipe
+        table.insert(volatile_orb_tech.effects, {
+          type = "unlock-recipe",
+          recipe = "neutralize-volatile-orb-" .. i .. "-" .. j
+        })
+      else
+        -- Multiplication recipe
+        table.insert(volatile_orb_tech.effects, {
+          type = "unlock-recipe",
+          recipe = "multiply-volatile-orb-" .. i .. "-" .. j
+        })
+      end
+    end
+  end
+end
 
 -- Override circuit network technology to make it cheaper
 data.raw["technology"]["circuit-network"].unit = {

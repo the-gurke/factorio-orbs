@@ -285,9 +285,58 @@ magic_explosion.light.color = {r = 1.0, g = 0.4, b = 1.0}
 magic_explosion.light.intensity = 0.8
 magic_explosion.light.size = 15
 
+-- Volatile Orb Explosion Entity
+local volatile_orb_explosion = util.table.deepcopy(data.raw["explosion"]["grenade-explosion"])
+volatile_orb_explosion.name = "volatile-orb-explosion"
+-- Use the custom explosion icon
+volatile_orb_explosion.icon = "__orbs__/graphics/volatile-orb-explosion.png"
+volatile_orb_explosion.icon_size = 1024
+-- Safely set light properties
+if not volatile_orb_explosion.light then
+  volatile_orb_explosion.light = {}
+end
+volatile_orb_explosion.light.color = {r = 1.0, g = 0.2, b = 0.8}
+volatile_orb_explosion.light.intensity = 1.2
+volatile_orb_explosion.light.size = 12
+
+-- Add area damage effect to the volatile orb explosion
+volatile_orb_explosion.created_effect = {
+  type = "area",
+  radius = 4,
+  action_delivery = {
+    type = "instant",
+    target_effects = {
+      {
+        type = "damage",
+        damage = {
+          amount = 270,
+          type = "explosion"
+        }
+      },
+      {
+        type = "create-entity",
+        entity_name = "volatile-explosion"
+      }
+    }
+  }
+}
+
+-- Volatile Explosion Entity (for area damage visual)
+local volatile_explosion = util.table.deepcopy(data.raw["explosion"]["explosion"])
+volatile_explosion.name = "volatile-explosion"
+-- Safely set light properties
+if not volatile_explosion.light then
+  volatile_explosion.light = {}
+end
+volatile_explosion.light.color = {r = 1.0, g = 0.2, b = 0.8}
+volatile_explosion.light.intensity = 0.9
+volatile_explosion.light.size = 10
+
 -- Extend the entities
 data:extend({
   magic_grenade_projectile,
   magic_grenade_explosion,
-  magic_explosion
+  magic_explosion,
+  volatile_orb_explosion,
+  volatile_explosion
 })

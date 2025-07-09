@@ -218,5 +218,49 @@ data:extend({
     stack_size = 1,
     spoil_ticks = 2 * 60 * 60 * 60, -- 2 hours * 60 minutes * 60 seconds * 60 ticks per second
     spoil_result = nil -- Spoils into nothing
+  },
+
+
+  -- Element of Stability (does not decay)
+  {
+    type = "item",
+    name = "element-of-stability",
+    icon = "__orbs__/graphics/element-of-stability.png",
+    icon_size = 1024,
+    subgroup = "orbs-manifest",
+    order = "k[element-of-stability]",
+    stack_size = 100
   }
 })
+
+-- Generate volatile orb variants 2-12
+for i = 2, 12 do
+  data:extend({
+    {
+      type = "item",
+      name = "volatile-orb-" .. i,
+      icon = "__orbs__/graphics/volatile-orb.png",
+      icon_size = 1024,
+      subgroup = "orbs-manifest",
+      order = "j[volatile-orb-" .. string.format("%02d", i) .. "]",
+      stack_size = 5,
+      spoil_ticks = 12 * 60, -- 12 seconds * 60 ticks per second
+      spoil_result = nil, -- Spoils into nothing
+      spoil_to_trigger_result = {
+        items_per_trigger = 1,
+        trigger = {
+          type = "direct",
+          action_delivery = {
+            type = "instant",
+            source_effects = {
+              {
+                type = "create-entity",
+                entity_name = "volatile-orb-explosion"
+              }
+            }
+          }
+        }
+      }
+    }
+  })
+end
