@@ -218,5 +218,52 @@ data:extend({
     stack_size = 1,
     spoil_ticks = 2 * 60 * 60 * 60, -- 2 hours * 60 minutes * 60 seconds * 60 ticks per second
     spoil_result = nil -- Spoils into nothing
+  },
+
+  -- Rage
+  {
+    type = "fluid",
+    name = "rage",
+    icon = "__base__/graphics/icons/fluid/heavy-oil.png",
+    icon_size = 64,
+    subgroup = "souls",
+    order = "b[rage]",
+    default_temperature = 37,
+    max_temperature = 80,
+    heat_capacity = "0.1kJ",
+    base_color = {r = 1.0, g = 0.1, b = 0.1},
+    flow_color = {r = 1.0, g = 0.2, b = 0.2}
+  },
+
+  -- Rage Orb (spoils in 10 minutes to magic orb, has fuel value, also ammo)
+  {
+    type = "ammo",
+    name = "rage-orb",
+    icon = "__orbs__/graphics/rage-orb.png",
+    icon_size = 1024,
+    ammo_category = "rage-orb",
+    subgroup = "orbs-manifest",
+    order = "j[rage-orb]",
+    stack_size = 5,
+    spoil_ticks = 10 * 60 * 60, -- 10 minutes * 60 seconds * 60 ticks per second
+    spoil_result = "magic-orb",
+    fuel_category = "chemical",
+    fuel_value = "100MJ",
+    burnt_result = "magic-orb",
+    magazine_size = 100,
+    ammo_type = {
+      category = "rage-orb",
+      target_type = "position",
+      clamp_position = true,
+      action = {
+        type = "direct",
+        action_delivery = {
+          type = "stream",
+          stream = "rage-flamethrower-fire-stream",
+          max_length = 15,
+          duration = 480
+        }
+      }
+    }
   }
 })

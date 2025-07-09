@@ -119,7 +119,7 @@ data:extend({
   {
     type = "recipe",
     name = "craft-conjuration-machine",
-    category = "crafting", -- Stays in crafting category so conjuration machine can't craft itself
+    category = "crafting",
     energy_required = 5,
     icon = "__base__/graphics/icons/assembling-machine-2.png",
     icon_size = 64,
@@ -291,3 +291,83 @@ data:extend({
   magic_grenade_explosion,
   magic_explosion
 })
+
+
+-- Create a new rage flamethrower turret based on the regular flamethrower turret
+if data.raw["fluid-turret"]["flamethrower-turret"] then
+  local base_turret = data.raw["fluid-turret"]["flamethrower-turret"]
+  local ragethrower_turret = util.table.deepcopy(base_turret)
+
+  -- Convert to ammo turret
+  ragethrower_turret.type = "ammo-turret"
+  ragethrower_turret.name = "ragethrower-turret"
+  ragethrower_turret.ammo_category = "rage-orb"
+  ragethrower_turret.inventory_size = 1
+  ragethrower_turret.automated_ammo_count = 10
+
+  -- Update attack parameters to use rage-orb ammo category
+  ragethrower_turret.attack_parameters.ammo_category = "rage-orb"
+
+  -- Remove fluid-specific properties
+  ragethrower_turret.fluid_box = nil
+  ragethrower_turret.fluid_buffer_size = nil
+  ragethrower_turret.fluid_buffer_input_flow = nil
+  ragethrower_turret.activation_buffer_ratio = nil
+
+  -- Add the new turret
+  data:extend({ragethrower_turret})
+
+  -- Create item for the new turret
+  local ragethrower_item = util.table.deepcopy(data.raw.item["flamethrower-turret"])
+  ragethrower_item.name = "ragethrower-turret"
+  ragethrower_item.place_result = "ragethrower-turret"
+  ragethrower_item.localised_name = {"item-name.ragethrower-turret"}
+  ragethrower_item.subgroup = "orbs-machines"
+  ragethrower_item.order = "d[ragethrower-turret]"
+
+  data:extend({ragethrower_item})
+
+  -- Create recipe for the new turret
+  data:extend({
+    {
+      type = "recipe",
+      name = "ragethrower-turret",
+      category = "crafting",
+      subgroup = "orbs-machines",
+      energy_required = 10,
+      icon = "__base__/graphics/icons/flamethrower-turret.png",
+      icon_size = 64,
+      ingredients = {
+        {type = "item", name = "engine-unit", amount = 5},
+        {type = "item", name = "iron-gear-wheel", amount = 10},
+        {type = "item", name = "steel-plate", amount = 20},
+        {type = "item", name = "rage-orb", amount = 1}
+      },
+      results = {
+        {type = "item", name = "ragethrower-turret", amount = 1}
+      },
+      enabled = false,
+      order = "d[ragethrower-turret]"
+    }
+  })
+end
+
+-- Create rage orb ammo category
+data:extend({
+  {
+    type = "ammo-category",
+    name = "rage-orb",
+    localised_name = {"ammo-category-name.rage-orb"}
+  }
+})
+
+-- Create rage fire stream (based on flamethrower fire stream)
+local rage_fire_stream = util.table.deepcopy(data.raw.stream["flamethrower-fire-stream"])
+rage_fire_stream.name = "rage-flamethrower-fire-stream"
+
+-- Change particle color to red/orange for rage
+if rage_fire_stream.particle then
+  rage_fire_stream.particle.tint = {r = 1.0, g = 0.3, b = 0.1, a = 1.0}
+end
+
+data:extend({rage_fire_stream})

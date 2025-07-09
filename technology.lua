@@ -382,6 +382,54 @@ data:extend({
       time = 30
     },
     order = "z-a[soul-collection]"
+  },
+  {
+    type = "technology",
+    name = "rage-orb",
+    icon = "__orbs__/graphics/rage-orb.png",
+    icon_size = 1024,
+    prerequisites = {"divination"},
+    unit = {
+      count = 100,
+      ingredients = {
+        {"conjuration-research-pack", 1},
+        {"divination-research-pack", 1}
+      },
+      time = 30
+    },
+    effects = {
+      {
+        type = "unlock-recipe",
+        recipe = "magical-experience"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "rage-orb"
+      }
+    },
+    order = "z-b[rage-orb]"
+  },
+  {
+    type = "technology",
+    name = "ragethrower",
+    icon = "__base__/graphics/technology/flamethrower.png",
+    icon_size = 256,
+    prerequisites = {"rage-orb"},
+    unit = {
+      count = 50,
+      ingredients = {
+        {"conjuration-research-pack", 1},
+        {"divination-research-pack", 1}
+      },
+      time = 30
+    },
+    effects = {
+      {
+        type = "unlock-recipe",
+        recipe = "ragethrower-turret"
+      }
+    },
+    order = "z-c[ragethrower]"
   }
 })
 

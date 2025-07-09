@@ -406,5 +406,46 @@ table.insert(recipes, {
   order = "a[grenade]-b[normal]"
 })
 
+-- Magical Experience Recipe
+table.insert(recipes, {
+  type = "recipe",
+  name = "magical-experience",
+  category = "orbs",
+  subgroup = "souls",
+  energy_required = 60,
+  icon = "__orbs__/graphics/soul.png",
+  icon_size = 1024,
+  ingredients = {
+    {type = "item", name = "soul", amount = 1}
+  },
+  results = {
+    {type = "item", name = "soul", amount = 1},
+    {type = "fluid", name = "rage", amount = 500}
+  },
+  enabled = false,
+  order = "b[magical-experience]"
+})
+
+-- Rage Orb Recipe
+table.insert(recipes, {
+  type = "recipe",
+  name = "rage-orb",
+  category = "orbs",
+  subgroup = "orbs-manifest",
+  energy_required = 5,
+  icon = "__orbs__/graphics/rage-orb.png",
+  icon_size = 1024,
+  ingredients = {
+    {type = "item", name = "magic-orb", amount = 2},
+    {type = "fluid", name = "rage", amount = 50}
+  },
+  results = {
+    {type = "item", name = "magic-orb", amount = 1},
+    {type = "item", name = "rage-orb", amount = 1}
+  },
+  enabled = false,
+  order = "k[rage-orb]"
+})
+
 -- Extend all recipes
 data:extend(recipes)
