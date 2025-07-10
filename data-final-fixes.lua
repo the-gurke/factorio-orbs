@@ -230,8 +230,8 @@ end
 -- Modify burner inserter to use water as fluid fuel
 if data.raw["inserter"]["burner-inserter"] then
   local burner_inserter = data.raw["inserter"]["burner-inserter"]
-  burner_inserter.energy_per_movement = "10W"
-  burner_inserter.energy_per_rotation = "10W"
+  burner_inserter.energy_per_movement = "300W"
+  burner_inserter.energy_per_rotation = "300W"
   burner_inserter.energy_source = {
     type = "fluid",
     effectivity = 1,
