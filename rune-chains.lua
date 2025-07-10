@@ -14,3 +14,18 @@ local rune_transformation_chains = {
 }
 
 return rune_transformation_chains
+
+
+-- rune word ideas:
+-- VITRUM - glass
+-- RITUS - rite
+-- ASTRUM - star
+-- MIRUS - wondrous
+-- ULTRA - beyond
+-- ATRUM - dark
+-- PRIMA - first
+-- VIRTUS, VIS - power, force
+-- IMPURA - unclean
+-- PRISMA - prism
+-- SILVA - forest
+-- RATUS - calculated / reasoned
