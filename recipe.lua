@@ -726,10 +726,10 @@ table.insert(recipes, {
     {type = "item", name = "wood", amount = 1}
   },
   results = {
-    {type = "item", name = "wood", amount = 1},
+    {type = "item", name = "wood", amount = 1, probability=0.9},
     {type = "item", name = "burning-wood", amount = 1, probability = 0.1}
   },
-  energy_required = 2,
+  energy_required = 5,
   enabled = true,
   category = "crafting"
 })
@@ -894,13 +894,24 @@ if data.raw.recipe["assembling-machine-1"] then
   }
 end
 
--- Override burner-inserter recipe
-if data.raw.recipe["burner-inserter"] then
-  data.raw.recipe["burner-inserter"].ingredients = {
-    {type = "item", name = "stick", amount = 2},
-    {type = "item", name = "wooden-gear-wheel", amount = 1}
+-- Create wooden inserter recipe
+data:extend({
+  {
+    type = "recipe",
+    name = "wooden-inserter",
+    ingredients = {
+      {type = "item", name = "stick", amount = 2},
+      {type = "item", name = "wooden-gear-wheel", amount = 1}
+    },
+    results = {
+      {type = "item", name = "wooden-inserter", amount = 1}
+    },
+    enabled = true,
+    category = "crafting",
+    order = "a[inserter]-a[wooden-inserter]"
   }
-end
+})
+
 
 -- Override offshore-pump recipe
 if data.raw.recipe["offshore-pump"] then
@@ -926,12 +937,26 @@ for _, recipe_name in pairs(recipes_to_lock) do
   end
 end
 
--- Ensure assembling-machine-1 and burner-inserter are unlocked
+-- Ensure assembling-machine-1 is unlocked
 if data.raw.recipe["assembling-machine-1"] then
   data.raw.recipe["assembling-machine-1"].enabled = true
 end
-if data.raw.recipe["burner-inserter"] then
-  data.raw.recipe["burner-inserter"].enabled = true
+
+-- Update fast inserter recipe to use new burner inserter
+if data.raw.recipe["fast-inserter"] then
+  data.raw.recipe["fast-inserter"].ingredients = {
+    {type = "item", name = "burner-inserter", amount = 1},
+    {type = "item", name = "copper-cable", amount = 8},
+    {type = "item", name = "iron-plate", amount = 1}
+  }
+end
+
+-- Update long-handed inserter recipe to use burner inserter
+if data.raw.recipe["long-handed-inserter"] then
+  data.raw.recipe["long-handed-inserter"].ingredients = {
+    {type = "item", name = "burner-inserter", amount = 1},
+    {type = "item", name = "iron-stick", amount = 1}
+  }
 end
 
 -- Extend all recipes

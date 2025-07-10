@@ -473,6 +473,14 @@ data:extend({
       {
         type = "unlock-recipe",
         recipe = "iron-gear-wheel"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "iron-stick"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "burner-inserter"
       }
     },
     research_trigger = {

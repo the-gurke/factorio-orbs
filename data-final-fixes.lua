@@ -238,32 +238,168 @@ if data.raw.item.coal then
 end
 
 
--- Modify burner inserter to use water as fluid fuel
-if data.raw["inserter"]["burner-inserter"] then
-  local burner_inserter = data.raw["inserter"]["burner-inserter"]
-  burner_inserter.energy_per_movement = "300W"
-  burner_inserter.energy_per_rotation = "300W"
-  burner_inserter.energy_source = {
-    type = "fluid",
-    effectivity = 1,
-    burns_fluid = true,
-    scale_fluid_usage = true,
-    fluid_box = {
-      production_type = "input-output",
-      pipe_connections = {
-        {
-          flow_direction = "input-output",
-          direction = defines.direction.west,
-          position = {-0.1, 0}
-        },
-        {
-          flow_direction = "input-output",
-          direction = defines.direction.east,
-          position = {0.1, 0}
-        }
+-- Create wooden inserter from burner inserter prototype
+local wooden_inserter = table.deepcopy(data.raw["inserter"]["burner-inserter"])
+wooden_inserter.name = "wooden-inserter"
+wooden_inserter.localised_name = {"item-name.wooden-inserter"}
+wooden_inserter.energy_per_movement = "300W"
+wooden_inserter.energy_per_rotation = "300W"
+
+-- Add brownish tint to the wooden inserter
+if wooden_inserter.hand_base_picture then
+  wooden_inserter.hand_base_picture.tint = {r = 0.7, g = 0.4, b = 0.2, a = 1}
+end
+if wooden_inserter.hand_open_picture then
+  wooden_inserter.hand_open_picture.tint = {r = 0.7, g = 0.4, b = 0.2, a = 1}
+end
+if wooden_inserter.hand_closed_picture then
+  wooden_inserter.hand_closed_picture.tint = {r = 0.7, g = 0.4, b = 0.2, a = 1}
+end
+if wooden_inserter.platform_picture then
+  wooden_inserter.platform_picture.tint = {r = 0.7, g = 0.4, b = 0.2, a = 1}
+end
+
+-- Set wooden inserter to use water as fluid fuel
+wooden_inserter.energy_source = {
+  type = "fluid",
+  effectivity = 1,
+  burns_fluid = true,
+  scale_fluid_usage = true,
+  fluid_box = {
+    production_type = "input-output",
+    pipe_connections = {
+      {
+        flow_direction = "input-output",
+        direction = defines.direction.west,
+        position = {-0.1, 0}
       },
-      volume = 200,
-      filter = "water"
+      {
+        flow_direction = "input-output",
+        direction = defines.direction.east,
+        position = {0.1, 0}
+      }
+    },
+    volume = 200,
+    filter = "water"
+  }
+}
+
+-- Create wooden inserter item
+local wooden_inserter_item = table.deepcopy(data.raw.item["burner-inserter"])
+wooden_inserter_item.name = "wooden-inserter"
+wooden_inserter_item.localised_name = {"item-name.wooden-inserter"}
+wooden_inserter_item.place_result = "wooden-inserter"
+-- Add brownish tint to the item icon
+if not wooden_inserter_item.icons then
+  wooden_inserter_item.icons = {
+    {
+      icon = wooden_inserter_item.icon,
+      icon_size = wooden_inserter_item.icon_size or 64,
+      tint = {r = 0.7, g = 0.4, b = 0.2, a = 1}
     }
   }
+  wooden_inserter_item.icon = nil
+  wooden_inserter_item.icon_size = nil
 end
+
+-- Create new burner inserter from burner inserter prototype with normal inserter speed
+local new_burner_inserter = table.deepcopy(data.raw["inserter"]["burner-inserter"])
+new_burner_inserter.name = "burner-inserter"
+new_burner_inserter.localised_name = {"item-name.burner-inserter"}
+-- Copy speed stats from normal inserter but keep same energy as wooden inserter
+if data.raw["inserter"]["inserter"] then
+  new_burner_inserter.extension_speed = data.raw["inserter"]["inserter"].extension_speed
+  new_burner_inserter.rotation_speed = data.raw["inserter"]["inserter"].rotation_speed
+end
+-- Match energy requirements with wooden inserter
+new_burner_inserter.energy_per_movement = "300W"
+new_burner_inserter.energy_per_rotation = "300W"
+new_burner_inserter.energy_source = {
+  type = "burner",
+  fuel_categories = {"chemical"},
+  initial_fuel = "burning-wood",
+  initial_fuel_percent = 0.125,
+  effectivity = 0.5,
+  fuel_inventory_size = 1,
+  light_flicker = {color = {0,0,0}},
+  smoke = {
+    {
+      name = "smoke",
+      deviation = {0.1, 0.1},
+      frequency = 9
+    }
+  }
+}
+
+-- Create new burner inserter item
+local new_burner_inserter_item = table.deepcopy(data.raw.item["burner-inserter"])
+new_burner_inserter_item.name = "burner-inserter"
+new_burner_inserter_item.localised_name = {"item-name.burner-inserter"}
+new_burner_inserter_item.place_result = "burner-inserter"
+
+-- Update fast inserter to use double fuel consumption
+if data.raw["inserter"]["fast-inserter"] then
+  local fast_inserter = data.raw["inserter"]["fast-inserter"]
+  fast_inserter.energy_per_movement = "600W"
+  fast_inserter.energy_per_rotation = "600W"
+  fast_inserter.energy_source = {
+    type = "burner",
+    fuel_categories = {"chemical"},
+    effectivity = 0.5,
+    fuel_inventory_size = 1
+  }
+end
+
+-- Update long-handed inserter to be a burner inserter
+if data.raw["inserter"]["long-handed-inserter"] then
+  local long_inserter = data.raw["inserter"]["long-handed-inserter"]
+  long_inserter.energy_source = {
+    type = "burner",
+    fuel_categories = {"chemical"},
+    effectivity = 0.5,
+    fuel_inventory_size = 1
+  }
+end
+
+-- Clear all next_upgrade references that point to inserter before hiding it
+for _, prototype_type in pairs({"inserter", "loader-1x1"}) do
+  if data.raw[prototype_type] then
+    for _, entity in pairs(data.raw[prototype_type]) do
+      if entity.next_upgrade == "inserter" then
+        entity.next_upgrade = nil
+      end
+    end
+  end
+end
+
+-- Clear next_upgrade on the inserter itself and hide it
+if data.raw["inserter"]["inserter"] then
+  data.raw["inserter"]["inserter"].next_upgrade = nil
+end
+if data.raw.recipe["inserter"] then
+  data.raw.recipe["inserter"].enabled = false
+  data.raw.recipe["inserter"].hidden = true
+end
+if data.raw.item["inserter"] then
+  data.raw.item["inserter"].hidden = true
+end
+
+-- Set burner inserter to upgrade to fast inserter
+new_burner_inserter.next_upgrade = "fast-inserter"
+
+-- Override the original burner-inserter recipe
+if data.raw.recipe["burner-inserter"] then
+  data.raw.recipe["burner-inserter"].ingredients = {
+    {type = "item", name = "iron-stick", amount = 2},
+    {type = "item", name = "iron-gear-wheel", amount = 1}
+  }
+  data.raw.recipe["burner-inserter"].enabled = false
+end
+
+-- Remove the original burner-inserter entity to avoid conflicts
+data.raw["inserter"]["burner-inserter"] = nil
+data.raw.item["burner-inserter"] = nil
+
+
+-- Add new inserters to data
+data:extend({wooden_inserter, wooden_inserter_item, new_burner_inserter, new_burner_inserter_item})
