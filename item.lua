@@ -383,7 +383,7 @@ data:extend({
   {
     type = "item",
     name = "rune-word-terra",
-    icon = "__base__/graphics/icons/signal/signal_T.png",
+    icon = "__base__/graphics/icons/signal/signal_R.png",
     icon_size = 64,
     subgroup = "orbs-manifest",
     order = "r[rune-word-terra]",
