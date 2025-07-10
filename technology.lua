@@ -399,6 +399,54 @@ data:extend({
       time = 30
     },
     order = "z-b[stability-extraction]"
+  },
+  {
+    type = "technology",
+    name = "rage-orb",
+    icon = "__orbs__/graphics/rage-orb.png",
+    icon_size = 1024,
+    prerequisites = {"divination"},
+    unit = {
+      count = 100,
+      ingredients = {
+        {"conjuration-research-pack", 1},
+        {"divination-research-pack", 1}
+      },
+      time = 30
+    },
+    effects = {
+      {
+        type = "unlock-recipe",
+        recipe = "magical-experience"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "rage-orb"
+      }
+    },
+    order = "z-b[rage-orb]"
+  },
+  {
+    type = "technology",
+    name = "ragethrower",
+    icon = "__base__/graphics/technology/flamethrower.png",
+    icon_size = 256,
+    prerequisites = {"rage-orb"},
+    unit = {
+      count = 50,
+      ingredients = {
+        {"conjuration-research-pack", 1},
+        {"divination-research-pack", 1}
+      },
+      time = 30
+    },
+    effects = {
+      {
+        type = "unlock-recipe",
+        recipe = "ragethrower-turret"
+      }
+    },
+    order = "z-c[ragethrower]"
   }
 })
 
@@ -449,18 +497,18 @@ local volatile_orb_tech = data.raw["technology"]["stability-extraction"]
 if volatile_orb_tech then
   local volatile_orb_names = {
     [2] = "Q",
-    [3] = "R", 
+    [3] = "R",
     [4] = "S",
     [5] = "T",
     [6] = "U"
   }
-  
+
   -- Add extract stability recipe
   table.insert(volatile_orb_tech.effects, {
     type = "unlock-recipe",
     recipe = "extract-stability"
   })
-  
+
   -- Add copy recipes for all volatile orbs
   for i = 2, 6 do
     table.insert(volatile_orb_tech.effects, {
@@ -468,13 +516,13 @@ if volatile_orb_tech then
       recipe = "copy-volatile-orb-" .. volatile_orb_names[i]
     })
   end
-  
+
   -- Add manipulation and neutralization recipes
   for i = 2, 6 do
     for j = i, 6 do
       local result = (i * j) % 7
       if result == 0 then result = 7 end
-      
+
       if result == 1 then
         -- Neutralization recipe
         table.insert(volatile_orb_tech.effects, {
