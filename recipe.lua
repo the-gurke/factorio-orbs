@@ -865,8 +865,9 @@ end
 -- Lock base recipes at start
 local recipes_to_lock = {
   "burner-mining-drill",
-  "stone-furnace", 
   "iron-chest",
+  "firearm-magazine",
+  "light-armor",
   "iron-gear-wheel"
 }
 

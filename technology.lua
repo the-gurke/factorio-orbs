@@ -447,6 +447,40 @@ data:extend({
       }
     },
     order = "z-c[ragethrower]"
+  },
+  {
+    type = "technology",
+    name = "metallurgy",
+    icon = "__orbs__/graphics/metallurgy.png",
+    icon_size = 1024,
+    effects = {
+      {
+        type = "unlock-recipe",
+        recipe = "burner-mining-drill"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "iron-chest"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "firearm-magazine"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "light-armor"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "iron-gear-wheel"
+      }
+    },
+    research_trigger = {
+      type = "craft-item",
+      item = "iron-plate",
+      count = 1
+    },
+    order = "z-d[metallurgy]"
   }
 })
 
