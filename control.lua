@@ -168,50 +168,72 @@ end
 -- Function to enable the current transformation recipe for a rune
 local function enable_current_rune_recipe(rune_name)
   if not global or not global.rune_transformation_indices then
+    game.print("DEBUG: Initializing rune transformation state for enable_current_rune_recipe")
     init_rune_transformation_state()
   end
 
   local current_index = global.rune_transformation_indices[rune_name]
   local target_chain = rune_transformation_chains[rune_name]
 
+  game.print("DEBUG: enable_current_rune_recipe - rune: " .. rune_name .. ", index: " .. tostring(current_index))
+
   if current_index and target_chain and current_index <= #target_chain then
     local target_rune = target_chain[current_index]
     local recipe_name = "transform-" .. rune_name .. "-to-" .. target_rune .. "-" .. current_index
+
+    game.print("DEBUG: Enabling recipe: " .. recipe_name)
 
     -- Enable the current recipe for all forces
     for _, force in pairs(game.forces) do
       if force.recipes[recipe_name] then
         force.recipes[recipe_name].enabled = true
+        game.print("DEBUG: Recipe enabled for force: " .. force.name)
+      else
+        game.print("DEBUG: Recipe not found for force: " .. force.name)
       end
     end
+  else
+    game.print("DEBUG: Cannot enable recipe - missing data")
   end
 end
 
 -- Function to disable all transformation recipes for a rune
 local function disable_all_rune_recipes(rune_name)
   local target_chain = rune_transformation_chains[rune_name]
+
+  game.print("DEBUG: disable_all_rune_recipes - rune: " .. rune_name)
+
   if target_chain then
     for i, target_rune in ipairs(target_chain) do
       local recipe_name = "transform-" .. rune_name .. "-to-" .. target_rune .. "-" .. i
+      game.print("DEBUG: Disabling recipe: " .. recipe_name)
       for _, force in pairs(game.forces) do
         if force.recipes[recipe_name] then
           force.recipes[recipe_name].enabled = false
+          game.print("DEBUG: Recipe disabled for force: " .. force.name)
         end
       end
     end
+  else
+    game.print("DEBUG: No target chain found for rune: " .. rune_name)
   end
 end
 
 -- Function to cycle to the next transformation recipe for a rune
 local function cycle_rune_transformation(rune_name)
   if not global or not global.rune_transformation_indices then
+    game.print("DEBUG: Initializing rune transformation state for cycle_rune_transformation")
     init_rune_transformation_state()
   end
 
   local current_index = global.rune_transformation_indices[rune_name]
   local target_chain = rune_transformation_chains[rune_name]
 
+  game.print("DEBUG: cycle_rune_transformation - rune: " .. rune_name .. ", current_index: " .. tostring(current_index))
+
   if current_index and target_chain then
+    game.print("DEBUG: Cycling from index " .. current_index .. " to next")
+
     -- Disable current recipe
     disable_all_rune_recipes(rune_name)
 
@@ -222,9 +244,12 @@ local function cycle_rune_transformation(rune_name)
     end
 
     global.rune_transformation_indices[rune_name] = current_index
+    game.print("DEBUG: New index: " .. current_index)
 
     -- Enable new recipe
     enable_current_rune_recipe(rune_name)
+  else
+    game.print("DEBUG: Cannot cycle - missing current_index or target_chain")
   end
 end
 
@@ -324,8 +349,8 @@ script.on_nth_tick(5*60-1, function(event)
 end)
 
 -- Periodic check for rune altar crafting
--- Check every 30 ticks if rune altars have the correct rune sequence
-script.on_nth_tick(30, function(event)
+-- Check every 120 ticks if rune altars have the correct rune sequence
+script.on_nth_tick(120, function(event)
   -- Check all rune altars on all surfaces
   for _, surface in pairs(game.surfaces) do
     local rune_altars = surface.find_entities_filtered{name = "rune-altar"}

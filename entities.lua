@@ -505,7 +505,7 @@ local rune_altar_recipe = {
   results = {
     {type = "item", name = "rune-altar", amount = 1}
   },
-  enabled = true
+  enabled = false
 }
 
 data:extend({
