@@ -168,32 +168,22 @@ end
 -- Function to enable the current transformation recipe for a rune
 local function enable_current_rune_recipe(rune_name)
   if not global or not global.rune_transformation_indices then
-    game.print("DEBUG: Initializing rune transformation state for enable_current_rune_recipe")
     init_rune_transformation_state()
   end
 
   local current_index = global.rune_transformation_indices[rune_name]
   local target_chain = rune_transformation_chains[rune_name]
 
-  game.print("DEBUG: enable_current_rune_recipe - rune: " .. rune_name .. ", index: " .. tostring(current_index))
-
   if current_index and target_chain and current_index <= #target_chain then
     local target_rune = target_chain[current_index]
     local recipe_name = "transform-" .. rune_name .. "-to-" .. target_rune .. "-" .. current_index
-
-    game.print("DEBUG: Enabling recipe: " .. recipe_name)
 
     -- Enable the current recipe for all forces
     for _, force in pairs(game.forces) do
       if force.recipes[recipe_name] then
         force.recipes[recipe_name].enabled = true
-        game.print("DEBUG: Recipe enabled for force: " .. force.name)
-      else
-        game.print("DEBUG: Recipe not found for force: " .. force.name)
       end
     end
-  else
-    game.print("DEBUG: Cannot enable recipe - missing data")
   end
 end
 
@@ -201,39 +191,28 @@ end
 local function disable_all_rune_recipes(rune_name)
   local target_chain = rune_transformation_chains[rune_name]
 
-  game.print("DEBUG: disable_all_rune_recipes - rune: " .. rune_name)
-
   if target_chain then
     for i, target_rune in ipairs(target_chain) do
       local recipe_name = "transform-" .. rune_name .. "-to-" .. target_rune .. "-" .. i
-      game.print("DEBUG: Disabling recipe: " .. recipe_name)
       for _, force in pairs(game.forces) do
         if force.recipes[recipe_name] then
           force.recipes[recipe_name].enabled = false
-          game.print("DEBUG: Recipe disabled for force: " .. force.name)
         end
       end
     end
-  else
-    game.print("DEBUG: No target chain found for rune: " .. rune_name)
   end
 end
 
 -- Function to cycle to the next transformation recipe for a rune
 local function cycle_rune_transformation(rune_name)
   if not global or not global.rune_transformation_indices then
-    game.print("DEBUG: Initializing rune transformation state for cycle_rune_transformation")
     init_rune_transformation_state()
   end
 
   local current_index = global.rune_transformation_indices[rune_name]
   local target_chain = rune_transformation_chains[rune_name]
 
-  game.print("DEBUG: cycle_rune_transformation - rune: " .. rune_name .. ", current_index: " .. tostring(current_index))
-
   if current_index and target_chain then
-    game.print("DEBUG: Cycling from index " .. current_index .. " to next")
-
     -- Disable current recipe
     disable_all_rune_recipes(rune_name)
 
@@ -244,37 +223,11 @@ local function cycle_rune_transformation(rune_name)
     end
 
     global.rune_transformation_indices[rune_name] = current_index
-    game.print("DEBUG: New index: " .. current_index)
 
     -- Enable new recipe
     enable_current_rune_recipe(rune_name)
-  else
-    game.print("DEBUG: Cannot cycle - missing current_index or target_chain")
   end
 end
-
--- Handle recipe completion to cycle transformations
-script.on_event(defines.events.on_player_crafted_item, function(event)
-  local recipe = event.recipe
-  local item = event.item_stack
-
-  -- Check if this is a rune transformation recipe
-  if recipe.category == "smelting" and recipe.name:find("transform%-rune%-word%-") then
-    -- Find which rune was used as input
-    for rune_name, _ in pairs(rune_transformation_chains) do
-      if recipe.name:find("transform%-" .. rune_name .. "%-to%-") then
-        -- Cycle to next transformation for this rune
-        cycle_rune_transformation(rune_name)
-        break
-      end
-    end
-  end
-end)
-
--- Also handle machine crafting completions
-script.on_event(defines.events.on_robot_built_entity, function(event)
-  -- Handle robot crafting if needed
-end)
 
 -- Initialize rune transformation state on game start
 script.on_init(function()
@@ -288,26 +241,6 @@ script.on_init(function()
   -- Apply telekinesis bonuses
   for _, force in pairs(game.forces) do
     apply_telekinesis_bonuses_to_force(force)
-  end
-end)
-
--- Handle rune transformer crafting completion
-script.on_event(defines.events.on_pre_player_crafted_item, function(event)
-  local recipe = event.recipe
-
-  -- Check if this is a rune transformation recipe
-  if recipe.category == "smelting" and recipe.name:find("transform%-rune%-word%-") then
-    -- Find which rune was used as input
-    for rune_name, _ in pairs(rune_transformation_chains) do
-      if recipe.name:find("transform%-" .. rune_name .. "%-to%-") then
-        -- Cycle to next transformation for this rune AFTER this craft completes
-        script.on_nth_tick(1, function()
-          cycle_rune_transformation(rune_name)
-          script.on_nth_tick(1, nil) -- Remove this handler
-        end)
-        break
-      end
-    end
   end
 end)
 
@@ -325,21 +258,15 @@ script.on_nth_tick(5*60-1, function(event)
         if recipe and recipe.category == "rune-transformation" then
           -- Check if the recipe is about to complete (progress > 0.95)
           local progress = transformer.crafting_progress
-          game.print("DEBUG: Rune transformer found - Recipe: " .. recipe.name .. ", Progress: " .. progress)
           if progress > 0 then
             -- Extract the rune name from the recipe name
             -- Recipe format: "transform-rune-word-{source}-to-rune-word-{target}-{index}"
             local recipe_name = recipe.name
             local source_rune = recipe_name:match("transform%-(rune%-word%-[^%-]+)%-to")
 
-            game.print("DEBUG: Recipe about to complete - Source rune: " .. tostring(source_rune))
-
             if source_rune and rune_transformation_chains[source_rune] then
-              game.print("DEBUG: Cycling transformation for " .. source_rune)
               -- Cycle to the next transformation for this rune
               cycle_rune_transformation(source_rune)
-            else
-              game.print("DEBUG: No transformation chain found for " .. tostring(source_rune))
             end
           end
         end
