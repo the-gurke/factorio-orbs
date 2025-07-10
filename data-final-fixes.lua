@@ -227,6 +227,17 @@ if data.raw["assembling-machine"]["assembling-machine-1"] then
   }
 end
 
+-- Remove fuel values from wood and coal
+if data.raw.item.wood then
+  data.raw.item.wood.fuel_value = nil
+  data.raw.item.wood.fuel_category = nil
+end
+if data.raw.item.coal then
+  data.raw.item.coal.fuel_value = nil
+  data.raw.item.coal.fuel_category = nil
+end
+
+
 -- Modify burner inserter to use water as fluid fuel
 if data.raw["inserter"]["burner-inserter"] then
   local burner_inserter = data.raw["inserter"]["burner-inserter"]
