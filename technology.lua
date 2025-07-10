@@ -473,7 +473,7 @@ data:extend({
       },
       {
         type = "unlock-recipe",
-        recipe = "rune-research-pack"
+        recipe = "rune-altar"
       }
     },
     order = "z-d[rune-words]"
