@@ -226,3 +226,33 @@ if data.raw["assembling-machine"]["assembling-machine-1"] then
     }
   }
 end
+
+-- Modify burner inserter to use water as fluid fuel
+if data.raw["inserter"]["burner-inserter"] then
+  local burner_inserter = data.raw["inserter"]["burner-inserter"]
+  burner_inserter.energy_per_movement = "10W"
+  burner_inserter.energy_per_rotation = "10W"
+  burner_inserter.energy_source = {
+    type = "fluid",
+    effectivity = 1,
+    burns_fluid = true,
+    scale_fluid_usage = true,
+    fluid_box = {
+      production_type = "input-output",
+      pipe_connections = {
+        {
+          flow_direction = "input-output",
+          direction = defines.direction.west,
+          position = {-0.1, 0}
+        },
+        {
+          flow_direction = "input-output",
+          direction = defines.direction.east,
+          position = {0.1, 0}
+        }
+      },
+      volume = 200,
+      filter = "water"
+    }
+  }
+end

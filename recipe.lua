@@ -845,6 +845,14 @@ if data.raw.recipe["assembling-machine-1"] then
   }
 end
 
+-- Override burner-inserter recipe
+if data.raw.recipe["burner-inserter"] then
+  data.raw.recipe["burner-inserter"].ingredients = {
+    {type = "item", name = "stick", amount = 2},
+    {type = "item", name = "wooden-gear-wheel", amount = 1}
+  }
+end
+
 -- Override offshore-pump recipe
 if data.raw.recipe["offshore-pump"] then
   data.raw.recipe["offshore-pump"].ingredients = {
@@ -858,7 +866,6 @@ end
 local recipes_to_lock = {
   "burner-mining-drill",
   "stone-furnace", 
-  "burner-inserter",
   "iron-chest",
   "iron-gear-wheel"
 }
@@ -869,9 +876,12 @@ for _, recipe_name in pairs(recipes_to_lock) do
   end
 end
 
--- Ensure assembling-machine-1 is unlocked
+-- Ensure assembling-machine-1 and burner-inserter are unlocked
 if data.raw.recipe["assembling-machine-1"] then
   data.raw.recipe["assembling-machine-1"].enabled = true
+end
+if data.raw.recipe["burner-inserter"] then
+  data.raw.recipe["burner-inserter"].enabled = true
 end
 
 -- Extend all recipes
