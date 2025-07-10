@@ -308,7 +308,7 @@ data:extend({
     spoil_result = nil -- Spoils into nothing
   },
   
-  -- Burning Wood (4MJ fuel, decays to glimming remains in 5 min)
+  -- Burning Wood (4MJ fuel, decays to glimming remains in 2 min)
   {
     type = "item",
     name = "burning-wood",
@@ -319,7 +319,7 @@ data:extend({
     stack_size = 50,
     fuel_category = "chemical",
     fuel_value = "4MJ",
-    spoil_ticks = 5 * 60 * 60, -- 5 minutes
+    spoil_ticks = 2 * 60 * 60,
     spoil_result = "glimming-remains"
   },
   
@@ -334,7 +334,7 @@ data:extend({
     stack_size = 50,
     fuel_category = "chemical",
     fuel_value = "8MJ",
-    spoil_ticks = 5 * 60 * 60, -- 5 minutes
+    spoil_ticks = 5 * 60 * 60,
     spoil_result = "glimming-remains"
   },
 
