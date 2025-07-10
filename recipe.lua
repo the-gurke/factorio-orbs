@@ -747,7 +747,7 @@ for source_rune, target_chain in pairs(rune_transformation_chains) do
       name = recipe_name,
       category = "rune-transformation",
       energy_required = 5,
-      icon = "__base__/graphics/icons/signal/signal_" .. string.upper(string.sub(target_rune, -1)) .. ".png",
+      icon = "__base__/graphics/icons/signal/signal_R.png",
       icon_size = 64,
       ingredients = {
         {type = "item", name = source_rune, amount = 1}
