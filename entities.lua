@@ -426,7 +426,7 @@ local rune_transformer = util.table.deepcopy(data.raw["furnace"]["electric-furna
 
 rune_transformer.name = "rune-transformer"
 rune_transformer.minable = {mining_time = 1, result = "rune-transformer"}
-rune_transformer.crafting_categories = {"smelting"}
+rune_transformer.crafting_categories = {"rune-transformation"}
 rune_transformer.crafting_speed = 1
 rune_transformer.energy_source = {type = "void"}
 rune_transformer.energy_usage = "1W"
