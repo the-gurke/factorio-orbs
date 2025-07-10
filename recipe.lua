@@ -917,7 +917,7 @@ table.insert(recipes, {
     {type = "item", name = "rune-word-ignis", amount = 1},
     {type = "item", name = "rune-word-tempus", amount = 1},
     {type = "item", name = "rune-word-terra", amount = 1},
-    {type = "item", name = "rune-word-umbra", amount = 1}
+    {type = "item", name = "rune-word-umbra", amount = 1},
     {type = "item", name = "rune-word-mortis", amount = 1}
   },
   results = {
@@ -939,7 +939,7 @@ for source_rune, target_chain in pairs(rune_transformation_chains) do
     table.insert(rune_recipes, {
       type = "recipe",
       name = recipe_name,
-      category = "smelting",
+      category = "rune-transformation",
       energy_required = 5,
       icon = "__base__/graphics/icons/signal/signal_" .. string.upper(string.sub(target_rune, -1)) .. ".png",
       icon_size = 64,
