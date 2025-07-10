@@ -685,5 +685,194 @@ table.insert(recipes, {
   order = "k[rage-orb]"
 })
 
+-- Stick Recipe
+table.insert(recipes, {
+  type = "recipe",
+  name = "stick",
+  ingredients = {
+    {
+      type = "item",
+      name = "wood",
+      amount = 1
+    }
+  },
+  results = {
+    {
+      type = "item",
+      name = "stick",
+      amount = 8
+    }
+  },
+  energy_required = 0.5,
+  enabled = true,
+  category = "crafting"
+})
+
+-- Wooden Board Recipe
+table.insert(recipes, {
+  type = "recipe",
+  name = "wooden-board",
+  ingredients = {
+    {
+      type = "item",
+      name = "wood",
+      amount = 1
+    }
+  },
+  results = {
+    {
+      type = "item",
+      name = "wooden-board",
+      amount = 4
+    }
+  },
+  energy_required = 0.5,
+  enabled = true,
+  category = "crafting"
+})
+
+-- Wooden Gear Wheel Recipe
+table.insert(recipes, {
+  type = "recipe",
+  name = "wooden-gear-wheel",
+  ingredients = {
+    {
+      type = "item",
+      name = "wooden-board",
+      amount = 1
+    }
+  },
+  results = {
+    {
+      type = "item",
+      name = "wooden-gear-wheel",
+      amount = 2
+    }
+  },
+  enabled = true,
+  category = "crafting"
+})
+
+-- Wooden Transport Belt Recipe
+table.insert(recipes, {
+  type = "recipe",
+  name = "wooden-transport-belt",
+  ingredients = {
+    {
+      type = "item",
+      name = "wooden-board",
+      amount = 1
+    },
+    {
+      type = "item",
+      name = "wooden-gear-wheel",
+      amount = 1
+    }
+  },
+  results = {
+    {
+      type = "item",
+      name = "wooden-transport-belt",
+      amount = 2
+    }
+  },
+  enabled = true,
+  category = "crafting"
+})
+
+-- Wooden Pipe Recipe (equivalent to iron pipe but using wooden boards)
+table.insert(recipes, {
+  type = "recipe",
+  name = "wooden-pipe",
+  ingredients = {
+    {
+      type = "item",
+      name = "wooden-board",
+      amount = 1
+    }
+  },
+  results = {
+    {
+      type = "item",
+      name = "wooden-pipe",
+      amount = 1
+    }
+  },
+  energy_required = 0.25,
+  enabled = true,
+  category = "crafting"
+})
+
+-- Wooden Pipe to Ground Recipe (equivalent to iron pipe to ground but using wooden boards)
+table.insert(recipes, {
+  type = "recipe",
+  name = "wooden-pipe-to-ground",
+  ingredients = {
+    {
+      type = "item",
+      name = "wooden-pipe",
+      amount = 10
+    },
+    {
+      type = "item",
+      name = "wooden-board",
+      amount = 5
+    }
+  },
+  results = {
+    {
+      type = "item",
+      name = "wooden-pipe-to-ground",
+      amount = 2
+    }
+  },
+  energy_required = 0.5,
+  enabled = true,
+  category = "crafting"
+})
+
+-- Give water fuel value
+if data.raw.fluid.water then
+  data.raw.fluid.water.fuel_value = "1J"
+end
+
+-- Override assembling-machine-1 recipe
+if data.raw.recipe["assembling-machine-1"] then
+  data.raw.recipe["assembling-machine-1"].ingredients = {
+    {type = "item", name = "stone", amount = 2},
+    {type = "item", name = "stick", amount = 2},
+    {type = "item", name = "wooden-gear-wheel", amount = 4}
+  }
+end
+
+-- Override offshore-pump recipe
+if data.raw.recipe["offshore-pump"] then
+  data.raw.recipe["offshore-pump"].ingredients = {
+    {type = "item", name = "wooden-gear-wheel", amount = 2},
+    {type = "item", name = "wooden-board", amount = 1}
+  }
+  data.raw.recipe["offshore-pump"].enabled = true
+end
+
+-- Lock base recipes at start
+local recipes_to_lock = {
+  "burner-mining-drill",
+  "stone-furnace", 
+  "burner-inserter",
+  "iron-chest",
+  "iron-gear-wheel"
+}
+
+for _, recipe_name in pairs(recipes_to_lock) do
+  if data.raw.recipe[recipe_name] then
+    data.raw.recipe[recipe_name].enabled = false
+  end
+end
+
+-- Ensure assembling-machine-1 is unlocked
+if data.raw.recipe["assembling-machine-1"] then
+  data.raw.recipe["assembling-machine-1"].enabled = true
+end
+
 -- Extend all recipes
 data:extend(recipes)
