@@ -421,8 +421,8 @@ end
 
 data:extend({rage_fire_stream})
 
--- Create the rune transformer (based on electric furnace)
-local rune_transformer = util.table.deepcopy(data.raw["furnace"]["electric-furnace"])
+-- Create the rune transformer (based on stone furnace)
+local rune_transformer = util.table.deepcopy(data.raw["furnace"]["stone-furnace"])
 
 rune_transformer.name = "rune-transformer"
 rune_transformer.minable = {mining_time = 1, result = "rune-transformer"}
@@ -437,7 +437,7 @@ rune_transformer.source_inventory_size = 1
 local rune_transformer_item = {
   type = "item",
   name = "rune-transformer",
-  icon = "__base__/graphics/icons/electric-furnace.png",
+  icon = "__base__/graphics/icons/stone-furnace.png",
   icon_size = 64,
   subgroup = "orbs-machines",
   order = "e[rune-transformer]",
@@ -451,7 +451,7 @@ local rune_transformer_recipe = {
   name = "rune-transformer",
   category = "crafting",
   energy_required = 5,
-  icon = "__base__/graphics/icons/electric-furnace.png",
+  icon = "__base__/graphics/icons/stone-furnace.png",
   icon_size = 64,
   ingredients = {
     {type = "item", name = "electric-furnace", amount = 1},
