@@ -154,6 +154,9 @@ local rune_transformation_chains = require("rune-chains")
 
 -- Initialize global rune transformation state
 local function init_rune_transformation_state()
+  if not global then
+    global = {}
+  end
   if not global.rune_transformation_indices then
     global.rune_transformation_indices = {}
     for rune_name, _ in pairs(rune_transformation_chains) do
@@ -164,7 +167,7 @@ end
 
 -- Function to enable the current transformation recipe for a rune
 local function enable_current_rune_recipe(rune_name)
-  if not global.rune_transformation_indices then
+  if not global or not global.rune_transformation_indices then
     init_rune_transformation_state()
   end
 
@@ -201,7 +204,7 @@ end
 
 -- Function to cycle to the next transformation recipe for a rune
 local function cycle_rune_transformation(rune_name)
-  if not global.rune_transformation_indices then
+  if not global or not global.rune_transformation_indices then
     init_rune_transformation_state()
   end
 
@@ -312,6 +315,82 @@ script.on_nth_tick(5*60-1, function(event)
               cycle_rune_transformation(source_rune)
             else
               game.print("DEBUG: No transformation chain found for " .. tostring(source_rune))
+            end
+          end
+        end
+      end
+    end
+  end
+end)
+
+-- Periodic check for rune altar crafting
+-- Check every 30 ticks if rune altars have the correct rune sequence
+script.on_nth_tick(30, function(event)
+  -- Check all rune altars on all surfaces
+  for _, surface in pairs(game.surfaces) do
+    local rune_altars = surface.find_entities_filtered{name = "rune-altar"}
+
+    for _, altar in pairs(rune_altars) do
+      if altar.valid then
+        local inventory = altar.get_inventory(defines.inventory.chest)
+        if inventory then
+          -- Check if inventory has exactly 6 items in the correct order
+          local expected_runes = {
+            "rune-word-vitae",
+            "rune-word-ignis",
+            "rune-word-tempus",
+            "rune-word-terra",
+            "rune-word-umbra",
+            "rune-word-mortis"
+          }
+
+          -- Count total items
+          local total_items = 0
+          for i = 1, math.min(inventory.get_bar(), #inventory) do
+            local stack = inventory[i]
+            if stack and stack.valid_for_read then
+              total_items = total_items + stack.count
+            end
+          end
+
+          -- Check if we have exactly 6 items
+          if total_items == 6 then
+            local match = true
+
+            -- Check each slot for the correct rune
+            for i = 1, 6 do
+              if i <= #inventory then
+                local stack = inventory[i]
+                if not stack or not stack.valid_for_read or
+                   stack.name ~= expected_runes[i] or stack.count ~= 1 then
+                  match = false
+                  break
+                end
+              else
+                match = false
+                break
+              end
+            end
+
+            -- Check that slots 7-10 are empty
+            for i = 7, math.min(10, #inventory) do
+              local stack = inventory[i]
+              if stack and stack.valid_for_read then
+                match = false
+                break
+              end
+            end
+
+            if match then
+              -- Remove all runes
+              for i = 1, 6 do
+                if i <= #inventory then
+                  inventory[i].clear()
+                end
+              end
+
+              -- Add rune research pack
+              inventory.insert({name = "rune-research-pack", count = 1})
             end
           end
         end
