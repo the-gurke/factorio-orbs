@@ -719,11 +719,12 @@ table.insert(recipes, {
   icon = "__base__/graphics/icons/utility-science-pack.png",
   icon_size = 64,
   ingredients = {
+    {type = "item", name = "rune-word-vitae", amount = 1},
     {type = "item", name = "rune-word-ignis", amount = 1},
-    {type = "item", name = "rune-word-aqua", amount = 1},
-    {type = "item", name = "rune-word-ventus", amount = 1},
+    {type = "item", name = "rune-word-tempus", amount = 1},
     {type = "item", name = "rune-word-terra", amount = 1},
-    {type = "item", name = "rune-word-lux", amount = 1}
+    {type = "item", name = "rune-word-umbra", amount = 1}
+    {type = "item", name = "rune-word-mortis", amount = 1}
   },
   results = {
     {type = "item", name = "rune-research-pack", amount = 1}
@@ -754,7 +755,7 @@ for source_rune, target_chain in pairs(rune_transformation_chains) do
       results = {
         {type = "item", name = target_rune, amount = 1}
       },
-      enabled = false,
+      enabled = true,
       hidden = true -- Hide from player recipe list
     })
   end
