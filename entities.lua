@@ -476,13 +476,48 @@ local rune_altar = util.table.deepcopy(data.raw["container"]["iron-chest"])
 rune_altar.name = "rune-altar"
 rune_altar.minable = {mining_time = 1, result = "rune-altar"}
 rune_altar.inventory_size = 10
+rune_altar.picture = {
+  layers = {
+    {
+      filename = "__orbs__/graphics/rune-altar.png",
+      priority = "extra-high",
+      width = 1024,
+      height = 1024,
+      scale = 0.06,
+      shift = {
+            0,
+            0
+      }
+    }
+  }
+}
+rune_altar.collision_box = {
+  {
+    -0.65,
+    -0.65
+  },
+  {
+    0.65,
+    0.65
+  }
+}
+rune_altar.selection_box = {
+  {
+    -1,
+    -1
+  },
+  {
+    1,
+    1
+  }
+}
 
 -- Create the rune altar item
 local rune_altar_item = {
   type = "item",
   name = "rune-altar",
-  icon = "__base__/graphics/icons/iron-chest.png",
-  icon_size = 64,
+  icon = "__orbs__/graphics/rune-altar.png",
+  icon_size = 1024,
   subgroup = "orbs-machines",
   order = "f[rune-altar]",
   place_result = "rune-altar",
@@ -495,12 +530,11 @@ local rune_altar_recipe = {
   name = "rune-altar",
   category = "crafting",
   energy_required = 3,
-  icon = "__base__/graphics/icons/iron-chest.png",
-  icon_size = 64,
+  icon = "__orbs__/graphics/rune-altar.png",
+  icon_size = 1024,
   ingredients = {
-    {type = "item", name = "iron-chest", amount = 1},
+    {type = "item", name = "stone-brick", amount = 10},
     {type = "item", name = "magic-orb", amount = 1},
-    {type = "item", name = "active-magic-shard", amount = 10}
   },
   results = {
     {type = "item", name = "rune-altar", amount = 1}
