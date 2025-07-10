@@ -187,3 +187,42 @@ if data.raw.technology["logistics-2"] then
     time = 30
   }
 end
+
+-- Modify assembling machine 1 to require water fuel through pipes
+if data.raw["assembling-machine"]["assembling-machine-1"] then
+  local assembler_1 = data.raw["assembling-machine"]["assembling-machine-1"]
+  assembler_1.energy_usage = "100W"
+  assembler_1.energy_source = {
+    type = "fluid",
+    effectivity = 1,
+    burns_fluid = true,
+    scale_fluid_usage = true,
+    fluid_box = {
+      production_type = "input",
+      pipe_connections = {
+        {
+          flow_direction = "input",
+          direction = defines.direction.north,
+          position = {0, -1}
+        }
+      },
+      volume = 1000,
+      filter = "water"
+    },
+    light_flicker = {
+      color = {0.5, 0.5, 1.0},
+      minimum_intensity = 0.6,
+      maximum_intensity = 0.95
+    },
+    smoke = {
+      {
+        name = "smoke",
+        deviation = {0.1, 0.1},
+        frequency = 5,
+        position = {0.0, -0.8},
+        starting_vertical_speed = 0.08,
+        starting_frame_deviation = 60
+      }
+    }
+  }
+end

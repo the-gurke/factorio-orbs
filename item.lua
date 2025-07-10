@@ -291,10 +291,102 @@ data:extend({
         }
       }
     }
+  },
+
+  -- Stick
+  {
+    type = "item",
+    name = "stick",
+    icon = "__orbs__/graphics/wooden-stick.png",
+    icon_size = 1024,
+    subgroup = "intermediate-product",
+    order = "a[stick]",
+    stack_size = 200
+  },
+
+  -- Wooden Board
+  {
+    type = "item",
+    name = "wooden-board",
+    icon = "__orbs__/graphics/wooden-board.png",
+    icon_size = 1024,
+    subgroup = "intermediate-product",
+    order = "b[wooden-board]",
+    stack_size = 200
+  },
+
+  -- Wooden Gear Wheel
+  {
+    type = "item",
+    name = "wooden-gear-wheel",
+    icon = "__orbs__/graphics/wooden-gear-wheel.png",
+    icon_size = 1024,
+    subgroup = "intermediate-product",
+    order = "c[wooden-gear-wheel]",
+    stack_size = 100
   }
 })
 
 -- Generate volatile orb variants 2-6 with Latin letter names
+-- Wooden Transport Belt
+data:extend({
+  {
+    type = "item",
+    name = "wooden-transport-belt",
+    icons = {
+      {
+        icon = "__base__/graphics/icons/transport-belt.png",
+        icon_size = 64,
+        icon_mipmaps = 4,
+        tint = {r = 0.5, g = 0.3, b = 0.0, a = 1}
+      }
+    },
+    icon_size = 64,
+    subgroup = "belt",
+    order = "_[transport-belt]-a[wooden-transport-belt]",
+    place_result = "wooden-transport-belt",
+    stack_size = 100
+  },
+
+  -- Wooden Pipe
+  {
+    type = "item",
+    name = "wooden-pipe",
+    icons = {
+      {
+        icon = "__base__/graphics/icons/pipe.png",
+        icon_size = 64,
+        icon_mipmaps = 4,
+        tint = {r = 0.5, g = 0.3, b = 0.0, a = 1}
+      }
+    },
+    icon_size = 64,
+    subgroup = "energy-pipe-distribution",
+    order = "a[pipe]-a[wooden-pipe]",
+    place_result = "wooden-pipe",
+    stack_size = 100
+  },
+
+  -- Wooden Pipe to Ground
+  {
+    type = "item",
+    name = "wooden-pipe-to-ground",
+    icons = {
+      {
+        icon = "__base__/graphics/icons/pipe-to-ground.png",
+        icon_size = 64,
+        icon_mipmaps = 4,
+        tint = {r = 0.5, g = 0.3, b = 0.0, a = 1}
+      }
+    },
+    icon_size = 64,
+    subgroup = "energy-pipe-distribution",
+    order = "a[pipe]-b[wooden-pipe-to-ground]",
+    place_result = "wooden-pipe-to-ground",
+    stack_size = 50
+  }
+})
+
 local volatile_orb_names = {
   [2] = "Q",
   [3] = "R",
