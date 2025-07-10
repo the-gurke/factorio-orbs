@@ -420,3 +420,52 @@ if rage_fire_stream.particle then
 end
 
 data:extend({rage_fire_stream})
+
+-- Create the rune transformer (based on electric furnace)
+local rune_transformer = util.table.deepcopy(data.raw["furnace"]["electric-furnace"])
+
+rune_transformer.name = "rune-transformer"
+rune_transformer.minable = {mining_time = 1, result = "rune-transformer"}
+rune_transformer.crafting_categories = {"smelting"}
+rune_transformer.crafting_speed = 1
+rune_transformer.energy_source = {type = "void"}
+rune_transformer.energy_usage = "1W"
+rune_transformer.result_inventory_size = 1
+rune_transformer.source_inventory_size = 1
+
+-- Create the rune transformer item
+local rune_transformer_item = {
+  type = "item",
+  name = "rune-transformer",
+  icon = "__base__/graphics/icons/electric-furnace.png",
+  icon_size = 64,
+  subgroup = "orbs-machines",
+  order = "e[rune-transformer]",
+  place_result = "rune-transformer",
+  stack_size = 10
+}
+
+-- Create the rune transformer recipe
+local rune_transformer_recipe = {
+  type = "recipe",
+  name = "rune-transformer",
+  category = "crafting",
+  energy_required = 5,
+  icon = "__base__/graphics/icons/electric-furnace.png",
+  icon_size = 64,
+  ingredients = {
+    {type = "item", name = "electric-furnace", amount = 1},
+    {type = "item", name = "magic-orb", amount = 3},
+    {type = "item", name = "element-of-stability", amount = 1}
+  },
+  results = {
+    {type = "item", name = "rune-transformer", amount = 1}
+  },
+  enabled = false
+}
+
+data:extend({
+  rune_transformer,
+  rune_transformer_item,
+  rune_transformer_recipe
+})

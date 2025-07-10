@@ -661,5 +661,111 @@ table.insert(recipes, {
   order = "k[rage-orb]"
 })
 
+-- Rune Word Recipes
+-- Expensive recipe for 3 random rune words
+table.insert(recipes, {
+  type = "recipe",
+  name = "conjure-rune-words",
+  category = "orbs",
+  subgroup = "orbs-manifest",
+  energy_required = 30,
+  icon = "__base__/graphics/icons/signal/signal_R.png",
+  icon_size = 64,
+  ingredients = {
+    {type = "item", name = "magic-orb", amount = 10},
+    {type = "item", name = "active-magic-shard", amount = 100},
+    {type = "item", name = "element-of-stability", amount = 5}
+  },
+  results = {
+    {type = "item", name = "rune-word-ignis", amount = 1, probability = 1/9},
+    {type = "item", name = "rune-word-aqua", amount = 1, probability = 1/9},
+    {type = "item", name = "rune-word-ventus", amount = 1, probability = 1/9},
+    {type = "item", name = "rune-word-terra", amount = 1, probability = 1/9},
+    {type = "item", name = "rune-word-umbra", amount = 1, probability = 1/9},
+    {type = "item", name = "rune-word-lux", amount = 1, probability = 1/9},
+    {type = "item", name = "rune-word-tempus", amount = 1, probability = 1/9},
+    {type = "item", name = "rune-word-vitae", amount = 1, probability = 1/9},
+    {type = "item", name = "rune-word-mortis", amount = 1, probability = 1/9},
+    {type = "item", name = "rune-word-ignis", amount = 1, probability = 1/9},
+    {type = "item", name = "rune-word-aqua", amount = 1, probability = 1/9},
+    {type = "item", name = "rune-word-ventus", amount = 1, probability = 1/9},
+    {type = "item", name = "rune-word-terra", amount = 1, probability = 1/9},
+    {type = "item", name = "rune-word-umbra", amount = 1, probability = 1/9},
+    {type = "item", name = "rune-word-lux", amount = 1, probability = 1/9},
+    {type = "item", name = "rune-word-tempus", amount = 1, probability = 1/9},
+    {type = "item", name = "rune-word-vitae", amount = 1, probability = 1/9},
+    {type = "item", name = "rune-word-mortis", amount = 1, probability = 1/9},
+    {type = "item", name = "rune-word-ignis", amount = 1, probability = 1/9},
+    {type = "item", name = "rune-word-aqua", amount = 1, probability = 1/9},
+    {type = "item", name = "rune-word-ventus", amount = 1, probability = 1/9},
+    {type = "item", name = "rune-word-terra", amount = 1, probability = 1/9},
+    {type = "item", name = "rune-word-umbra", amount = 1, probability = 1/9},
+    {type = "item", name = "rune-word-lux", amount = 1, probability = 1/9},
+    {type = "item", name = "rune-word-tempus", amount = 1, probability = 1/9},
+    {type = "item", name = "rune-word-vitae", amount = 1, probability = 1/9},
+    {type = "item", name = "rune-word-mortis", amount = 1, probability = 1/9}
+  },
+  enabled = false,
+  order = "s[conjure-rune-words]"
+})
+
+-- Rune Research Pack recipe (requires 5 specific runes)
+table.insert(recipes, {
+  type = "recipe",
+  name = "rune-research-pack",
+  category = "orbs",
+  subgroup = "orbs-research",
+  energy_required = 20,
+  icon = "__base__/graphics/icons/utility-science-pack.png",
+  icon_size = 64,
+  ingredients = {
+    {type = "item", name = "rune-word-ignis", amount = 1},
+    {type = "item", name = "rune-word-aqua", amount = 1},
+    {type = "item", name = "rune-word-ventus", amount = 1},
+    {type = "item", name = "rune-word-terra", amount = 1},
+    {type = "item", name = "rune-word-lux", amount = 1}
+  },
+  results = {
+    {type = "item", name = "rune-research-pack", amount = 1}
+  },
+  enabled = false,
+  order = "d[rune-research-pack]"
+})
+
+-- Load the rune transformation chains
+local rune_transformation_chains = require("rune-chains")
+
+-- Create all transformation recipes (disabled by default)
+-- Each rune can transform into 5 different runes in sequence
+local rune_recipes = {}
+for source_rune, target_chain in pairs(rune_transformation_chains) do
+  for i, target_rune in ipairs(target_chain) do
+    local recipe_name = "transform-" .. source_rune .. "-to-" .. target_rune .. "-" .. i
+    table.insert(rune_recipes, {
+      type = "recipe",
+      name = recipe_name,
+      category = "smelting",
+      energy_required = 5,
+      icon = "__base__/graphics/icons/signal/signal_" .. string.upper(string.sub(target_rune, -1)) .. ".png",
+      icon_size = 64,
+      ingredients = {
+        {type = "item", name = source_rune, amount = 1}
+      },
+      results = {
+        {type = "item", name = target_rune, amount = 1}
+      },
+      enabled = false,
+      hidden = true -- Hide from player recipe list
+    })
+  end
+end
+
+-- Add all rune transformation recipes
+for _, recipe in pairs(rune_recipes) do
+  table.insert(recipes, recipe)
+end
+
+-- The chains are now loaded from the shared module
+
 -- Extend all recipes
 data:extend(recipes)

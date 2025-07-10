@@ -447,6 +447,36 @@ data:extend({
       }
     },
     order = "z-c[ragethrower]"
+  },
+  {
+    type = "technology",
+    name = "rune-words",
+    icon = "__base__/graphics/icons/signal/signal_R.png",
+    icon_size = 64,
+    prerequisites = {"stability-extraction"},
+    unit = {
+      count = 100,
+      ingredients = {
+        {"conjuration-research-pack", 1},
+        {"divination-research-pack", 1}
+      },
+      time = 60
+    },
+    effects = {
+      {
+        type = "unlock-recipe",
+        recipe = "conjure-rune-words"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "rune-transformer"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "rune-research-pack"
+      }
+    },
+    order = "z-d[rune-words]"
   }
 })
 
