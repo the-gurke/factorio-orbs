@@ -141,14 +141,144 @@ script.on_event({
 end)
 
 -- Apply telekinesis bonuses to all players on init and configuration change
-script.on_init(function()
+-- (This will be overridden by the rune transformation init below)
+
+script.on_configuration_changed(function()
   for _, force in pairs(game.forces) do
     apply_telekinesis_bonuses_to_force(force)
   end
 end)
 
-script.on_configuration_changed(function()
+-- Rune transformation system
+local rune_transformation_chains = require("rune-chains")
+
+-- Initialize global rune transformation state
+local function init_rune_transformation_state()
+  if not global.rune_transformation_indices then
+    global.rune_transformation_indices = {}
+    for rune_name, _ in pairs(rune_transformation_chains) do
+      global.rune_transformation_indices[rune_name] = 1 -- Start at first transformation
+    end
+  end
+end
+
+-- Function to enable the current transformation recipe for a rune
+local function enable_current_rune_recipe(rune_name)
+  if not global.rune_transformation_indices then
+    init_rune_transformation_state()
+  end
+  
+  local current_index = global.rune_transformation_indices[rune_name]
+  local target_chain = rune_transformation_chains[rune_name]
+  
+  if current_index and target_chain and current_index <= #target_chain then
+    local target_rune = target_chain[current_index]
+    local recipe_name = "transform-" .. rune_name .. "-to-" .. target_rune .. "-" .. current_index
+    
+    -- Enable the current recipe for all forces
+    for _, force in pairs(game.forces) do
+      if force.recipes[recipe_name] then
+        force.recipes[recipe_name].enabled = true
+      end
+    end
+  end
+end
+
+-- Function to disable all transformation recipes for a rune
+local function disable_all_rune_recipes(rune_name)
+  local target_chain = rune_transformation_chains[rune_name]
+  if target_chain then
+    for i, target_rune in ipairs(target_chain) do
+      local recipe_name = "transform-" .. rune_name .. "-to-" .. target_rune .. "-" .. i
+      for _, force in pairs(game.forces) do
+        if force.recipes[recipe_name] then
+          force.recipes[recipe_name].enabled = false
+        end
+      end
+    end
+  end
+end
+
+-- Function to cycle to the next transformation recipe for a rune
+local function cycle_rune_transformation(rune_name)
+  if not global.rune_transformation_indices then
+    init_rune_transformation_state()
+  end
+  
+  local current_index = global.rune_transformation_indices[rune_name]
+  local target_chain = rune_transformation_chains[rune_name]
+  
+  if current_index and target_chain then
+    -- Disable current recipe
+    disable_all_rune_recipes(rune_name)
+    
+    -- Move to next recipe in sequence
+    current_index = current_index + 1
+    if current_index > #target_chain then
+      current_index = 1 -- Loop back to first
+    end
+    
+    global.rune_transformation_indices[rune_name] = current_index
+    
+    -- Enable new recipe
+    enable_current_rune_recipe(rune_name)
+  end
+end
+
+-- Handle recipe completion to cycle transformations
+script.on_event(defines.events.on_player_crafted_item, function(event)
+  local recipe = event.recipe
+  local item = event.item_stack
+  
+  -- Check if this is a rune transformation recipe
+  if recipe.category == "smelting" and recipe.name:find("transform%-rune%-word%-") then
+    -- Find which rune was used as input
+    for rune_name, _ in pairs(rune_transformation_chains) do
+      if recipe.name:find("transform%-" .. rune_name .. "%-to%-") then
+        -- Cycle to next transformation for this rune
+        cycle_rune_transformation(rune_name)
+        break
+      end
+    end
+  end
+end)
+
+-- Also handle machine crafting completions
+script.on_event(defines.events.on_robot_built_entity, function(event)
+  -- Handle robot crafting if needed
+end)
+
+-- Initialize rune transformation state on game start
+script.on_init(function()
+  init_rune_transformation_state()
+  
+  -- Enable initial recipes for all runes
+  for rune_name, _ in pairs(rune_transformation_chains) do
+    enable_current_rune_recipe(rune_name)
+  end
+  
+  -- Apply telekinesis bonuses
   for _, force in pairs(game.forces) do
     apply_telekinesis_bonuses_to_force(force)
+  end
+end)
+
+-- Handle rune transformer crafting completion
+script.on_event(defines.events.on_pre_player_crafted_item, function(event)
+  local recipe = event.recipe
+  
+  -- Check if this is a rune transformation recipe
+  if recipe.category == "smelting" and recipe.name:find("transform%-rune%-word%-") then
+    -- Find which rune was used as input
+    for rune_name, _ in pairs(rune_transformation_chains) do
+      if recipe.name:find("transform%-" .. rune_name .. "%-to%-") then
+        -- Cycle to next transformation for this rune AFTER this craft completes
+        script.on_nth_tick(1, function()
+          cycle_rune_transformation(rune_name)
+          script.on_nth_tick(1, nil) -- Remove this handler
+        end)
+        break
+      end
+    end
   end
 end)
