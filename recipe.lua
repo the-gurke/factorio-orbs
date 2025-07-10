@@ -685,6 +685,55 @@ table.insert(recipes, {
   order = "k[rage-orb]"
 })
 
+-- Light Wood on Fire in Furnace (1 second)
+table.insert(recipes, {
+  type = "recipe",
+  name = "light-wood",
+  ingredients = {
+    {type = "item", name = "wood", amount = 1}
+  },
+  results = {
+    {type = "item", name = "burning-wood", amount = 1}
+  },
+  energy_required = 1,
+  enabled = true,
+  category = "smelting"
+})
+
+-- Light Coal on Fire in Furnace (1 second)
+table.insert(recipes, {
+  type = "recipe",
+  name = "light-coal",
+  ingredients = {
+    {type = "item", name = "coal", amount = 1}
+  },
+  results = {
+    {type = "item", name = "burning-coal", amount = 1}
+  },
+  energy_required = 1,
+  enabled = true,
+  category = "smelting"
+})
+
+-- Fire through Friction (assembler 1 only)
+table.insert(recipes, {
+  type = "recipe",
+  name = "fire-through-friction",
+  icon = "__orbs__/graphics/burning_wood.png",
+  icon_size = 1024,
+  ingredients = {
+    {type = "item", name = "stick", amount = 1},
+    {type = "item", name = "wood", amount = 1}
+  },
+  results = {
+    {type = "item", name = "wood", amount = 1},
+    {type = "item", name = "burning-wood", amount = 1, probability = 0.1}
+  },
+  energy_required = 2,
+  enabled = true,
+  category = "crafting"
+})
+
 -- Stick Recipe
 table.insert(recipes, {
   type = "recipe",

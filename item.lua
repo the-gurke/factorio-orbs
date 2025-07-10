@@ -293,6 +293,51 @@ data:extend({
     }
   },
 
+  -- Glimming Remains (low fuel value, lasts 1 hour)
+  {
+    type = "item",
+    name = "glimming-remains",
+    icon = "__orbs__/graphics/glimming-remains.png",
+    icon_size = 1024,
+    subgroup = "intermediate-product",
+    order = "z[glimming-remains]",
+    stack_size = 50,
+    fuel_category = "chemical",
+    fuel_value = "100kJ",
+    spoil_ticks = 60 * 60 * 60, -- 1 hour
+    spoil_result = nil -- Spoils into nothing
+  },
+  
+  -- Burning Wood (4MJ fuel, decays to glimming remains in 5 min)
+  {
+    type = "item",
+    name = "burning-wood",
+    icon = "__orbs__/graphics/burning_wood.png",
+    icon_size = 1024,
+    subgroup = "intermediate-product", 
+    order = "z[burning-wood]",
+    stack_size = 50,
+    fuel_category = "chemical",
+    fuel_value = "4MJ",
+    spoil_ticks = 5 * 60 * 60, -- 5 minutes
+    spoil_result = "glimming-remains"
+  },
+  
+  -- Burning Coal (8MJ fuel, decays to glimming remains in 5 min)
+  {
+    type = "item",
+    name = "burning-coal",
+    icon = "__orbs__/graphics/bruning-coal.png",
+    icon_size = 1024,
+    subgroup = "intermediate-product",
+    order = "z[burning-coal]", 
+    stack_size = 50,
+    fuel_category = "chemical",
+    fuel_value = "8MJ",
+    spoil_ticks = 5 * 60 * 60, -- 5 minutes
+    spoil_result = "glimming-remains"
+  },
+
   -- Stick
   {
     type = "item",
