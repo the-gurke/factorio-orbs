@@ -231,6 +231,21 @@ data:extend({
     stack_size = 100
   },
 
+  -- Stability (liquid)
+  {
+    type = "fluid",
+    name = "stability",
+    icon = "__orbs__/graphics/stability-liquid.png",
+    icon_size = 1024,
+    subgroup = "orbs-manifest",
+    order = "l[stability]",
+    default_temperature = 15,
+    max_temperature = 30,
+    heat_capacity = "0.1kJ",
+    base_color = {r = 0.95, g = 0.95, b = 0.9},
+    flow_color = {r = 1.0, g = 1.0, b = 0.95}
+  },
+
   -- Rage
   {
     type = "fluid",
@@ -314,7 +329,7 @@ for i = 2, 6 do
       subgroup = "orbs-manifest",
       order = "j[volatile-orb-" .. string.format("%02d", i) .. "]",
       stack_size = 5,
-      spoil_ticks = 10 * 60, -- 12 seconds * 60 ticks per second
+      spoil_ticks = 40 * 60, -- 40 seconds * 60 ticks per second
       spoil_result = nil, -- Spoils into nothing
       spoil_to_trigger_result = {
         items_per_trigger = 1,

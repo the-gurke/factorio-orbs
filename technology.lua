@@ -508,6 +508,12 @@ if volatile_orb_tech then
     type = "unlock-recipe",
     recipe = "extract-stability"
   })
+  
+  -- Add liquify stability recipe
+  table.insert(volatile_orb_tech.effects, {
+    type = "unlock-recipe",
+    recipe = "liquify-stability"
+  })
 
   -- Add copy recipes for all volatile orbs
   for i = 2, 6 do

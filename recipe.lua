@@ -414,9 +414,10 @@ table.insert(recipes, {
   name = "extract-stability",
   category = "orbs",
   subgroup = "orbs-manifest",
-  energy_required = 2,
+  energy_required = 60,
   icon = "__orbs__/graphics/element-of-stability.png",
   icon_size = 1024,
+  reset_freshness_on_craft = true,
   ingredients = {
     {type = "item", name = "magic-orb", amount = 1}
   },
@@ -430,6 +431,25 @@ table.insert(recipes, {
   },
   enabled = false,
   order = "l[extract-stability]"
+})
+
+-- Liquify Stability Element
+table.insert(recipes, {
+  type = "recipe",
+  name = "liquify-stability",
+  category = "orbs",
+  subgroup = "orbs-manifest",
+  energy_required = 3,
+  icon = "__orbs__/graphics/stability-liquid.png",
+  icon_size = 1024,
+  ingredients = {
+    {type = "item", name = "element-of-stability", amount = 1}
+  },
+  results = {
+    {type = "fluid", name = "stability", amount = 225}
+  },
+  enabled = false,
+  order = "m[liquify-stability]"
 })
 
 -- Generate volatile orb manipulation recipes
@@ -555,6 +575,8 @@ for i = 2, 6 do
       table.insert(ingredients, {type = "item", name = orb_i, amount = 1})
       table.insert(ingredients, {type = "item", name = orb_j, amount = 1})
     end
+    -- Add stability liquid requirement
+    table.insert(ingredients, {type = "fluid", name = "stability", amount = 50})
 
     if result == 1 then
       -- Neutralize recipe - gives 2 magic orbs
@@ -564,7 +586,7 @@ for i = 2, 6 do
         category = "orbs",
         subgroup = "orbs-manifest",
         hide_from_signal_gui = false,
-        energy_required = 0.5,
+        energy_required = 4.,
         icons = create_manipulation_icon("__orbs__/graphics/volatile-orb.png", 1024, i, j, 1),
         ingredients = ingredients,
         results = {
@@ -582,11 +604,12 @@ for i = 2, 6 do
         category = "orbs",
         subgroup = "orbs-manifest",
         hide_from_signal_gui = false,
-        energy_required = 0.5,
+        energy_required = 4.,
         icons = create_manipulation_icon("__orbs__/graphics/volatile-orb.png", 1024, i, j, result),
         ingredients = ingredients,
         results = {
-          {type = "item", name = result_orb, amount = 1}
+          {type = "item", name = result_orb, amount = 1},
+          {type = "item", name = "magic-orb", amount = 1}
         },
         enabled = false,
         order = "y[volatile-orb-manipulation-" .. volatile_orb_names[i] .. "-" .. volatile_orb_names[j] .. "]"
@@ -606,11 +629,12 @@ for i = 2, 6 do
     hide_from_signal_gui = false,
     category = "orbs",
     subgroup = "orbs-manifest",
-    energy_required = 1,
+    energy_required = 2,
     icons = create_copy_icon("__orbs__/graphics/volatile-orb.png", 1024, i),
     ingredients = {
       {type = "item", name = orb_name, amount = 1},
-      {type = "item", name = "magic-orb", amount = 1}
+      {type = "item", name = "magic-orb", amount = 1},
+      {type = "fluid", name = "stability", amount = 50}
     },
     results = {
       {type = "item", name = orb_name, amount = 2}
