@@ -469,3 +469,47 @@ data:extend({
   rune_transformer_item,
   rune_transformer_recipe
 })
+
+-- Create the rune altar (based on iron chest)
+local rune_altar = util.table.deepcopy(data.raw["container"]["iron-chest"])
+
+rune_altar.name = "rune-altar"
+rune_altar.minable = {mining_time = 1, result = "rune-altar"}
+rune_altar.inventory_size = 10
+
+-- Create the rune altar item
+local rune_altar_item = {
+  type = "item",
+  name = "rune-altar",
+  icon = "__base__/graphics/icons/iron-chest.png",
+  icon_size = 64,
+  subgroup = "orbs-machines",
+  order = "f[rune-altar]",
+  place_result = "rune-altar",
+  stack_size = 10
+}
+
+-- Create the rune altar recipe
+local rune_altar_recipe = {
+  type = "recipe",
+  name = "rune-altar",
+  category = "crafting",
+  energy_required = 3,
+  icon = "__base__/graphics/icons/iron-chest.png",
+  icon_size = 64,
+  ingredients = {
+    {type = "item", name = "iron-chest", amount = 1},
+    {type = "item", name = "magic-orb", amount = 1},
+    {type = "item", name = "active-magic-shard", amount = 10}
+  },
+  results = {
+    {type = "item", name = "rune-altar", amount = 1}
+  },
+  enabled = true
+}
+
+data:extend({
+  rune_altar,
+  rune_altar_item,
+  rune_altar_recipe
+})
