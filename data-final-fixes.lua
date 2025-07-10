@@ -151,3 +151,39 @@ if mods["Nanobots2"] then
   end
   
 end
+
+-- Modify red transport belt recipes to require stability
+if data.raw.recipe["fast-transport-belt"] then
+  data.raw.recipe["fast-transport-belt"].ingredients = {
+    {type = "item", name = "transport-belt", amount = 1},
+    {type = "fluid", name = "stability", amount = 1}
+  }
+end
+
+if data.raw.recipe["fast-splitter"] then
+  data.raw.recipe["fast-splitter"].ingredients = {
+    {type = "item", name = "splitter", amount = 1},
+    {type = "fluid", name = "stability", amount = 1}
+  }
+end
+
+if data.raw.recipe["fast-underground-belt"] then
+  data.raw.recipe["fast-underground-belt"].ingredients = {
+    {type = "item", name = "underground-belt", amount = 1},
+    {type = "fluid", name = "stability", amount = 1}
+  }
+end
+
+-- Modify logistics-2 technology to require stability extraction
+if data.raw.technology["logistics-2"] then
+  local tech = data.raw.technology["logistics-2"]
+  tech.prerequisites = {"logistics", "stability-extraction"}
+  tech.unit = {
+    count = 20,
+    ingredients = {
+      {"conjuration-research-pack", 1},
+      {"divination-research-pack", 1}
+    },
+    time = 30
+  }
+end
