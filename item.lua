@@ -230,6 +230,7 @@ data:extend({
     order = "k[element-of-stability]",
     stack_size = 100
   },
+<<<<<<< HEAD
 
   -- Stability (liquid)
   {
@@ -245,6 +246,8 @@ data:extend({
     base_color = {r = 0.95, g = 0.95, b = 0.9},
     flow_color = {r = 1.0, g = 1.0, b = 0.95}
   },
+=======
+>>>>>>> 11a58f2 (first version of runes, doesn't work yet)
 
   -- Rage
   {
@@ -307,14 +310,14 @@ data:extend({
     spoil_ticks = 60 * 60 * 60, -- 1 hour
     spoil_result = nil -- Spoils into nothing
   },
-  
+
   -- Burning Wood (4MJ fuel, decays to glimming remains in 2 min)
   {
     type = "item",
     name = "burning-wood",
     icon = "__orbs__/graphics/burning-wood.png",
     icon_size = 1024,
-    subgroup = "intermediate-product", 
+    subgroup = "intermediate-product",
     order = "z[burning-wood]",
     stack_size = 50,
     fuel_category = "chemical",
@@ -322,7 +325,7 @@ data:extend({
     spoil_ticks = 2 * 60 * 60,
     spoil_result = "glimming-remains"
   },
-  
+
   -- Burning Coal (8MJ fuel, decays to glimming remains in 5 min)
   {
     type = "item",
@@ -330,7 +333,7 @@ data:extend({
     icon = "__orbs__/graphics/burning-coal.png",
     icon_size = 1024,
     subgroup = "intermediate-product",
-    order = "z[burning-coal]", 
+    order = "z[burning-coal]",
     stack_size = 50,
     fuel_category = "chemical",
     fuel_value = "8MJ",
@@ -349,6 +352,102 @@ data:extend({
     stack_size = 200
   },
 
+  -- Rune Word Items (9 different)
+  {
+    type = "item",
+    name = "rune-word-ignis",
+    icon = "__base__/graphics/icons/signal/signal_I.png",
+    icon_size = 64,
+    subgroup = "orbs-manifest",
+    order = "r[rune-word-ignis]",
+    stack_size = 1
+  },
+  {
+    type = "item",
+    name = "rune-word-aqua",
+    icon = "__base__/graphics/icons/signal/signal_A.png",
+    icon_size = 64,
+    subgroup = "orbs-manifest",
+    order = "r[rune-word-aqua]",
+    stack_size = 1
+  },
+  {
+    type = "item",
+    name = "rune-word-ventus",
+    icon = "__base__/graphics/icons/signal/signal_S.png",
+    icon_size = 64,
+    subgroup = "orbs-manifest",
+    order = "r[rune-word-ventus]",
+    stack_size = 1
+  },
+  {
+    type = "item",
+    name = "rune-word-terra",
+    icon = "__base__/graphics/icons/signal/signal_T.png",
+    icon_size = 64,
+    subgroup = "orbs-manifest",
+    order = "r[rune-word-terra]",
+    stack_size = 1
+  },
+  {
+    type = "item",
+    name = "rune-word-umbra",
+    icon = "__base__/graphics/icons/signal/signal_U.png",
+    icon_size = 64,
+    subgroup = "orbs-manifest",
+    order = "r[rune-word-umbra]",
+    stack_size = 1
+  },
+  {
+    type = "item",
+    name = "rune-word-lux",
+    icon = "__base__/graphics/icons/signal/signal_L.png",
+    icon_size = 64,
+    subgroup = "orbs-manifest",
+    order = "r[rune-word-lux]",
+    stack_size = 1
+  },
+  {
+    type = "item",
+    name = "rune-word-tempus",
+    icon = "__base__/graphics/icons/signal/signal_T.png",
+    icon_size = 64,
+    subgroup = "orbs-manifest",
+    order = "r[rune-word-tempus]",
+    stack_size = 1
+  },
+  {
+    type = "item",
+    name = "rune-word-vitae",
+    icon = "__base__/graphics/icons/signal/signal_V.png",
+    icon_size = 64,
+    subgroup = "orbs-manifest",
+    order = "r[rune-word-vitae]",
+    stack_size = 1
+  },
+  {
+    type = "item",
+    name = "rune-word-mortis",
+    icon = "__base__/graphics/icons/signal/signal_M.png",
+    icon_size = 64,
+    subgroup = "orbs-manifest",
+    order = "r[rune-word-mortis]",
+    stack_size = 1
+  },
+
+  -- Rune Research Pack (requires 5 specific runes)
+  {
+    type = "tool",
+    name = "rune-research-pack",
+    icon = "__base__/graphics/icons/utility-science-pack.png",
+    icon_size = 64,
+    subgroup = "orbs-research",
+    order = "c[rune-research-pack]",
+    stack_size = 200,
+    durability = 1,
+    durability_description_key = "description.science-pack-remaining-amount-key",
+    durability_description_value = "description.science-pack-remaining-amount-value"
+  }
 })
 
 -- Generate volatile orb variants 2-6 with Latin letter names
