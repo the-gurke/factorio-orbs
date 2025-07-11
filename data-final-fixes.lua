@@ -442,3 +442,31 @@ magic_fast_inserter_item.hidden = nil
 
 -- Add new inserters to data
 data:extend({wooden_inserter, wooden_inserter_item, new_burner_inserter, new_burner_inserter_item, magic_inserter, magic_inserter_item, magic_fast_inserter, magic_fast_inserter_item})
+
+-- Update automation science pack to contraption science pack (it's a tool, not item!)
+data.raw.tool["automation-science-pack"].localised_name = {"item-name.contraption-science-pack"}
+data.raw.tool["automation-science-pack"].icon = "__orbs__/graphics/contraption-science-pack.png"
+data.raw.tool["automation-science-pack"].icon_size = 1024
+data.raw.tool["automation-science-pack"].icon_mipmaps = nil
+data.raw.tool["automation-science-pack"].icons = nil
+
+-- Update automation science pack recipe
+data.raw.recipe["automation-science-pack"].localised_name = {"recipe-name.contraption-science-pack"}
+data.raw.recipe["automation-science-pack"].ingredients = {
+  {type = "item", name = "wooden-gear-wheel", amount = 1},
+  {type = "item", name = "iron-stick", amount = 2},
+  {type = "item", name = "copper-cable", amount = 1}
+}
+data.raw.recipe["automation-science-pack"].icon = "__orbs__/graphics/contraption-science-pack.png"
+data.raw.recipe["automation-science-pack"].icon_size = 1024
+data.raw.recipe["automation-science-pack"].icon_mipmaps = nil
+data.raw.recipe["automation-science-pack"].icons = nil
+
+-- Update automation-science-pack technology (the one that unlocks automation science pack)
+data.raw.technology["automation-science-pack"].localised_name = {"technology-name.contraption-science"}
+data.raw.technology["automation-science-pack"].icon = "__orbs__/graphics/contraption-science-pack.png"
+data.raw.technology["automation-science-pack"].icon_size = 1024
+data.raw.technology["automation-science-pack"].icon_mipmaps = nil
+data.raw.technology["automation-science-pack"].icons = nil
+
+
