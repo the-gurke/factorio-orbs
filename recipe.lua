@@ -882,7 +882,7 @@ table.insert(recipes, {
 
 -- Give water fuel value
 if data.raw.fluid.water then
-  data.raw.fluid.water.fuel_value = "1J"
+  data.raw.fluid.water.fuel_value = "10J"
 end
 
 -- Override assembling-machine-1 recipe
@@ -958,6 +958,43 @@ if data.raw.recipe["long-handed-inserter"] then
     {type = "item", name = "iron-stick", amount = 1}
   }
 end
+
+-- Magic inserter recipes
+table.insert(recipes, {
+  type = "recipe",
+  name = "magic-inserter",
+  category = "crafting",
+  energy_required = 3,
+  icon = "__base__/graphics/icons/inserter.png",
+  icon_size = 64,
+  ingredients = {
+    {type = "item", name = "inserter", amount = 1},
+    {type = "item", name = "magic-orb", amount = 2}
+  },
+  results = {
+    {type = "item", name = "magic-inserter", amount = 1},
+    {type = "item", name = "magic-orb", amount = 1}
+  },
+  enabled = false
+})
+
+table.insert(recipes, {
+  type = "recipe",
+  name = "magic-fast-inserter",
+  category = "crafting",
+  energy_required = 3,
+  icon = "__base__/graphics/icons/fast-inserter.png",
+  icon_size = 64,
+  ingredients = {
+    {type = "item", name = "fast-inserter", amount = 1},
+    {type = "item", name = "magic-orb", amount = 2}
+  },
+  results = {
+    {type = "item", name = "magic-fast-inserter", amount = 1},
+    {type = "item", name = "magic-orb", amount = 1}
+  },
+  enabled = false
+})
 
 -- Extend all recipes
 data:extend(recipes)
