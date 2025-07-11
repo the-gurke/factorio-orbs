@@ -191,7 +191,7 @@ end
 -- Modify assembling machine 1 to require water fuel through pipes
 if data.raw["assembling-machine"]["assembling-machine-1"] then
   local assembler_1 = data.raw["assembling-machine"]["assembling-machine-1"]
-  assembler_1.energy_usage = "100W"
+  assembler_1.energy_usage = "1kW"
   assembler_1.energy_source = {
     type = "fluid",
     effectivity = 1,
@@ -242,8 +242,8 @@ end
 local wooden_inserter = table.deepcopy(data.raw["inserter"]["burner-inserter"])
 wooden_inserter.name = "wooden-inserter"
 wooden_inserter.localised_name = {"item-name.wooden-inserter"}
-wooden_inserter.energy_per_movement = "300W"
-wooden_inserter.energy_per_rotation = "300W"
+wooden_inserter.energy_per_movement = "4kW"
+wooden_inserter.energy_per_rotation = "4kW"
 
 -- Add brownish tint to the wooden inserter
 if wooden_inserter.hand_base_picture then
@@ -311,14 +311,14 @@ if data.raw["inserter"]["inserter"] then
   new_burner_inserter.extension_speed = data.raw["inserter"]["inserter"].extension_speed
   new_burner_inserter.rotation_speed = data.raw["inserter"]["inserter"].rotation_speed
 end
--- Match energy requirements with wooden inserter
-new_burner_inserter.energy_per_movement = "300W"
-new_burner_inserter.energy_per_rotation = "300W"
+-- in-game 8kW corresponds to 786W somehow
+new_burner_inserter.energy_per_movement = "8kW"
+new_burner_inserter.energy_per_rotation = "8kW"
 new_burner_inserter.energy_source = {
   type = "burner",
   fuel_categories = {"chemical"},
-  initial_fuel = "burning-wood",
-  initial_fuel_percent = 0.125,
+  initial_fuel = "glimming-remains",
+  initial_fuel_percent = 0.1,
   effectivity = 0.5,
   fuel_inventory_size = 1,
   light_flicker = {color = {0,0,0}},
@@ -340,11 +340,13 @@ new_burner_inserter_item.place_result = "burner-inserter"
 -- Update fast inserter to use double fuel consumption
 if data.raw["inserter"]["fast-inserter"] then
   local fast_inserter = data.raw["inserter"]["fast-inserter"]
-  fast_inserter.energy_per_movement = "600W"
-  fast_inserter.energy_per_rotation = "600W"
+  fast_inserter.energy_per_movement = "16kW"
+  fast_inserter.energy_per_rotation = "16kW"
   fast_inserter.energy_source = {
     type = "burner",
     fuel_categories = {"chemical"},
+    initial_fuel = "glimming-remains",
+    initial_fuel_percent = 0.1,
     effectivity = 0.5,
     fuel_inventory_size = 1
   }
@@ -401,5 +403,42 @@ data.raw["inserter"]["burner-inserter"] = nil
 data.raw.item["burner-inserter"] = nil
 
 
+-- Create magic inserter from regular inserter
+local magic_inserter = table.deepcopy(data.raw["inserter"]["inserter"])
+magic_inserter.name = "magic-inserter"
+magic_inserter.localised_name = {"entity-name.magic-inserter"}
+magic_inserter.minable.result = "magic-inserter"
+magic_inserter.energy_source = {
+  type = "void"
+}
+magic_inserter.energy_per_movement = "0kW"
+magic_inserter.energy_per_rotation = "0kW"
+magic_inserter.next_upgrade = "magic-fast-inserter"
+
+-- Create magic inserter item
+local magic_inserter_item = table.deepcopy(data.raw.item["inserter"])
+magic_inserter_item.name = "magic-inserter"
+magic_inserter_item.localised_name = {"item-name.magic-inserter"}
+magic_inserter_item.place_result = "magic-inserter"
+magic_inserter_item.hidden = nil
+
+-- Create magic fast inserter from fast inserter
+local magic_fast_inserter = table.deepcopy(data.raw["inserter"]["fast-inserter"])
+magic_fast_inserter.name = "magic-fast-inserter"
+magic_fast_inserter.localised_name = {"entity-name.magic-fast-inserter"}
+magic_fast_inserter.minable.result = "magic-fast-inserter"
+magic_fast_inserter.energy_source = {
+  type = "void"
+}
+magic_fast_inserter.energy_per_movement = "0kW"
+magic_fast_inserter.energy_per_rotation = "0kW"
+
+-- Create magic fast inserter item
+local magic_fast_inserter_item = table.deepcopy(data.raw.item["fast-inserter"])
+magic_fast_inserter_item.name = "magic-fast-inserter"
+magic_fast_inserter_item.localised_name = {"item-name.magic-fast-inserter"}
+magic_fast_inserter_item.place_result = "magic-fast-inserter"
+magic_fast_inserter_item.hidden = nil
+
 -- Add new inserters to data
-data:extend({wooden_inserter, wooden_inserter_item, new_burner_inserter, new_burner_inserter_item})
+data:extend({wooden_inserter, wooden_inserter_item, new_burner_inserter, new_burner_inserter_item, magic_inserter, magic_inserter_item, magic_fast_inserter, magic_fast_inserter_item})

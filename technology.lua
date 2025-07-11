@@ -508,7 +508,7 @@ for i = 1, 10 do
       ingredients = {
         {"conjuration-research-pack", 1}
       },
-      time = 30
+      time = 15
     },
     effects = {
       {
@@ -587,6 +587,37 @@ if volatile_orb_tech then
     end
   end
 end
+
+-- Magic Inserters Technology
+data:extend({
+  {
+    type = "technology",
+    name = "magic-inserters",
+    localised_name = {"technology-name.magic-inserters"},
+    localised_description = {"technology-description.magic-inserters"},
+    icon = "__base__/graphics/technology/inserter-capacity.png",
+    icon_size = 256,
+    prerequisites = {"orbs-technology"},
+    unit = {
+      count = 10,
+      ingredients = {
+        {"conjuration-research-pack", 1}
+      },
+      time = 15
+    },
+    effects = {
+      {
+        type = "unlock-recipe",
+        recipe = "magic-inserter"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "magic-fast-inserter"
+      }
+    },
+    order = "a-h-d"
+  }
+})
 
 -- Override circuit network technology to make it cheaper
 data.raw["technology"]["circuit-network"].unit = {
