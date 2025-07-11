@@ -469,4 +469,24 @@ data.raw.technology["automation-science-pack"].icon_size = 1024
 data.raw.technology["automation-science-pack"].icon_mipmaps = nil
 data.raw.technology["automation-science-pack"].icons = nil
 
+-- Remove steam power and electronics technologies
+data.raw.technology["steam-power"] = nil
+data.raw.technology["electronics"] = nil
+
+-- Remove or update shortcuts that reference deleted technologies
+if data.raw.shortcut["give-copper-wire"] then
+  data.raw.shortcut["give-copper-wire"].technology_to_unlock = "metallurgy"
+end
+
+-- Update automation-science-pack prerequisites (remove steam-power and electronics)
+data.raw.technology["automation-science-pack"].prerequisites = {"metallurgy"}
+
+-- Move copper wire recipe to metallurgy technology
+if data.raw.technology["metallurgy"] and data.raw.technology["metallurgy"].effects then
+  table.insert(data.raw.technology["metallurgy"].effects, {
+    type = "unlock-recipe",
+    recipe = "copper-cable"
+  })
+end
+
 
