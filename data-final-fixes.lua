@@ -188,29 +188,17 @@ if data.raw.technology["logistics-2"] then
   }
 end
 
--- Modify assembling machine 1 to require water fuel through pipes
+-- Modify assembling machine 1 to require coal fuel
 if data.raw["assembling-machine"]["assembling-machine-1"] then
   local assembler_1 = data.raw["assembling-machine"]["assembling-machine-1"]
-  assembler_1.energy_usage = "1kW"
+  assembler_1.energy_usage = "150kW"
   assembler_1.energy_source = {
-    type = "fluid",
+    type = "burner",
+    fuel_categories = {"chemical"},
     effectivity = 1,
-    burns_fluid = true,
-    scale_fluid_usage = true,
-    fluid_box = {
-      production_type = "input",
-      pipe_connections = {
-        {
-          flow_direction = "input",
-          direction = defines.direction.north,
-          position = {0, -1}
-        }
-      },
-      volume = 1000,
-      filter = "water"
-    },
+    fuel_inventory_size = 1,
     light_flicker = {
-      color = {0.5, 0.5, 1.0},
+      color = {1, 0.5, 0},
       minimum_intensity = 0.6,
       maximum_intensity = 0.95
     },
@@ -238,69 +226,6 @@ if data.raw.item.coal then
 end
 
 
--- Create wooden inserter from burner inserter prototype
-local wooden_inserter = table.deepcopy(data.raw["inserter"]["burner-inserter"])
-wooden_inserter.name = "wooden-inserter"
-wooden_inserter.localised_name = {"item-name.wooden-inserter"}
-wooden_inserter.energy_per_movement = "4kW"
-wooden_inserter.energy_per_rotation = "4kW"
-
--- Add brownish tint to the wooden inserter
-if wooden_inserter.hand_base_picture then
-  wooden_inserter.hand_base_picture.tint = {r = 0.7, g = 0.4, b = 0.2, a = 1}
-end
-if wooden_inserter.hand_open_picture then
-  wooden_inserter.hand_open_picture.tint = {r = 0.7, g = 0.4, b = 0.2, a = 1}
-end
-if wooden_inserter.hand_closed_picture then
-  wooden_inserter.hand_closed_picture.tint = {r = 0.7, g = 0.4, b = 0.2, a = 1}
-end
-if wooden_inserter.platform_picture then
-  wooden_inserter.platform_picture.tint = {r = 0.7, g = 0.4, b = 0.2, a = 1}
-end
-
--- Set wooden inserter to use water as fluid fuel
-wooden_inserter.energy_source = {
-  type = "fluid",
-  effectivity = 1,
-  burns_fluid = true,
-  scale_fluid_usage = true,
-  fluid_box = {
-    production_type = "input-output",
-    pipe_connections = {
-      {
-        flow_direction = "input-output",
-        direction = defines.direction.west,
-        position = {-0.1, 0}
-      },
-      {
-        flow_direction = "input-output",
-        direction = defines.direction.east,
-        position = {0.1, 0}
-      }
-    },
-    volume = 200,
-    filter = "water"
-  }
-}
-
--- Create wooden inserter item
-local wooden_inserter_item = table.deepcopy(data.raw.item["burner-inserter"])
-wooden_inserter_item.name = "wooden-inserter"
-wooden_inserter_item.localised_name = {"item-name.wooden-inserter"}
-wooden_inserter_item.place_result = "wooden-inserter"
--- Add brownish tint to the item icon
-if not wooden_inserter_item.icons then
-  wooden_inserter_item.icons = {
-    {
-      icon = wooden_inserter_item.icon,
-      icon_size = wooden_inserter_item.icon_size or 64,
-      tint = {r = 0.7, g = 0.4, b = 0.2, a = 1}
-    }
-  }
-  wooden_inserter_item.icon = nil
-  wooden_inserter_item.icon_size = nil
-end
 
 -- Create new burner inserter from burner inserter prototype with normal inserter speed
 local new_burner_inserter = table.deepcopy(data.raw["inserter"]["burner-inserter"])
@@ -441,7 +366,7 @@ magic_fast_inserter_item.place_result = "magic-fast-inserter"
 magic_fast_inserter_item.hidden = nil
 
 -- Add new inserters to data
-data:extend({wooden_inserter, wooden_inserter_item, new_burner_inserter, new_burner_inserter_item, magic_inserter, magic_inserter_item, magic_fast_inserter, magic_fast_inserter_item})
+data:extend({new_burner_inserter, new_burner_inserter_item, magic_inserter, magic_inserter_item, magic_fast_inserter, magic_fast_inserter_item})
 
 -- Update automation science pack to contraption science pack (it's a tool, not item!)
 data.raw.tool["automation-science-pack"].localised_name = {"item-name.contraption-science-pack"}
@@ -453,9 +378,9 @@ data.raw.tool["automation-science-pack"].icons = nil
 -- Update automation science pack recipe
 data.raw.recipe["automation-science-pack"].localised_name = {"recipe-name.contraption-science-pack"}
 data.raw.recipe["automation-science-pack"].ingredients = {
-  {type = "item", name = "wooden-gear-wheel", amount = 1},
+  {type = "item", name = "iron-gear-wheel", amount = 1},
   {type = "item", name = "iron-stick", amount = 2},
-  {type = "item", name = "copper-cable", amount = 1}
+  {type = "item", name = "copper-cable", amount = 3}
 }
 data.raw.recipe["automation-science-pack"].icon = "__orbs__/graphics/contraption-science-pack.png"
 data.raw.recipe["automation-science-pack"].icon_size = 1024
@@ -490,6 +415,85 @@ if data.raw.technology["metallurgy"] and data.raw.technology["metallurgy"].effec
     type = "unlock-recipe",
     recipe = "copper-cable"
   })
+end
+
+-- Modify fluid handling technology to use contraption science only
+if data.raw.technology["fluid-handling"] then
+  local tech = data.raw.technology["fluid-handling"]
+  tech.prerequisites = {"automation-science-pack"}
+  tech.unit = {
+    count = 10,
+    ingredients = {
+      {"automation-science-pack", 1}
+    },
+    time = 30
+  }
+  -- Add offshore pump to fluid handling technology
+  if not tech.effects then
+    tech.effects = {}
+  end
+  table.insert(tech.effects, {
+    type = "unlock-recipe",
+    recipe = "offshore-pump"
+  })
+end
+
+-- Lock stone furnace recipe initially (unlocked by fire science technology)
+if data.raw.recipe["stone-furnace"] then
+  data.raw.recipe["stone-furnace"].enabled = false
+end
+
+-- Lock recipes behind metallurgy technology
+if data.raw.recipe["assembling-machine-1"] then
+  data.raw.recipe["assembling-machine-1"].enabled = false
+end
+
+if data.raw.recipe["transport-belt"] then
+  data.raw.recipe["transport-belt"].enabled = false
+end
+
+if data.raw.recipe["offshore-pump"] then
+  data.raw.recipe["offshore-pump"].enabled = false
+end
+
+if data.raw.recipe["lab"] then
+  data.raw.recipe["lab"].enabled = false
+  data.raw.recipe["lab"].ingredients = {
+    {type = "item", name = "iron-gear-wheel", amount = 10},
+    {type = "item", name = "iron-stick", amount = 20},
+    {type = "item", name = "copper-cable", amount = 8}
+  }
+end
+
+-- Override splitter recipe to use copper cable instead of electronic circuits
+if data.raw.recipe["splitter"] then
+  data.raw.recipe["splitter"].ingredients = {
+    {type = "item", name = "electronic-circuit", amount = 5},
+    {type = "item", name = "iron-plate", amount = 5},
+    {type = "item", name = "transport-belt", amount = 4}
+  }
+  -- Replace electronic-circuit with copper-cable
+  for i, ingredient in pairs(data.raw.recipe["splitter"].ingredients) do
+    if ingredient.name == "electronic-circuit" then
+      data.raw.recipe["splitter"].ingredients[i] = {type = "item", name = "copper-cable", amount = 8}
+      break
+    end
+  end
+end
+
+-- Override repair pack recipe to use copper cable instead of electronic circuits
+if data.raw.recipe["repair-pack"] then
+  data.raw.recipe["repair-pack"].ingredients = {
+    {type = "item", name = "electronic-circuit", amount = 2},
+    {type = "item", name = "iron-gear-wheel", amount = 2}
+  }
+  -- Replace electronic-circuit with copper-cable
+  for i, ingredient in pairs(data.raw.recipe["repair-pack"].ingredients) do
+    if ingredient.name == "electronic-circuit" then
+      data.raw.recipe["repair-pack"].ingredients[i] = {type = "item", name = "copper-cable", amount = 4}
+      break
+    end
+  end
 end
 
 

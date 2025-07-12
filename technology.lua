@@ -481,6 +481,14 @@ data:extend({
       {
         type = "unlock-recipe",
         recipe = "burner-inserter"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "transport-belt"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "lab"
       }
     },
     research_trigger = {
