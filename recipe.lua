@@ -719,7 +719,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "fire-through-friction",
-  icon = "__orbs__/graphics/burning_wood.png",
+  icon = "__orbs__/graphics/burning-wood.png",
   icon_size = 1024,
   ingredients = {
     {type = "item", name = "stick", amount = 1},
