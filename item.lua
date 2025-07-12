@@ -312,7 +312,7 @@ data:extend({
   {
     type = "item",
     name = "burning-wood",
-    icon = "__orbs__/graphics/burning_wood.png",
+    icon = "__orbs__/graphics/burning-wood.png",
     icon_size = 1024,
     subgroup = "intermediate-product", 
     order = "z[burning-wood]",
@@ -327,7 +327,7 @@ data:extend({
   {
     type = "item",
     name = "burning-coal",
-    icon = "__orbs__/graphics/bruning-coal.png",
+    icon = "__orbs__/graphics/burning-coal.png",
     icon_size = 1024,
     subgroup = "intermediate-product",
     order = "z[burning-coal]", 

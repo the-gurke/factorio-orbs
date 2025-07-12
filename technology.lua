@@ -616,6 +616,34 @@ data:extend({
       }
     },
     order = "a-h-d"
+  },
+  -- Fire Science Technology
+  {
+    type = "technology",
+    name = "fire-science",
+    localised_name = {"technology-name.fire-science"},
+    localised_description = {"technology-description.fire-science"},
+    icon = "__orbs__/graphics/burning-wood.png",
+    icon_size = 1024,
+    effects = {
+      {
+        type = "unlock-recipe",
+        recipe = "stone-furnace"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "light-wood"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "light-coal"
+      }
+    },
+    research_trigger = {
+      type = "craft-item",
+      item = "burning-wood"
+    },
+    order = "a-a-a"
   }
 })
 

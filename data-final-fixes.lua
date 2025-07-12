@@ -481,6 +481,9 @@ end
 -- Update automation-science-pack prerequisites (remove steam-power and electronics)
 data.raw.technology["automation-science-pack"].prerequisites = {"metallurgy"}
 
+-- Update metallurgy to depend on fire-science
+data.raw.technology["metallurgy"].prerequisites = {"fire-science"}
+
 -- Move copper wire recipe to metallurgy technology
 if data.raw.technology["metallurgy"] and data.raw.technology["metallurgy"].effects then
   table.insert(data.raw.technology["metallurgy"].effects, {
