@@ -501,6 +501,28 @@ data:extend({
       condition_size = 1,
       condition = {layers = {}}
     }
+  },
+
+  -- Sand
+  {
+    type = "item",
+    name = "sand",
+    icon = "__orbs__/graphics/sand.png",
+    icon_size = 1024,
+    subgroup = "intermediate-product",
+    order = "b[sand]",
+    stack_size = 100
+  },
+
+  -- Glass
+  {
+    type = "item",
+    name = "glass",
+    icon = "__orbs__/graphics/glass.png",
+    icon_size = 1024,
+    subgroup = "intermediate-product",
+    order = "c[glass]",
+    stack_size = 100
   }
 })
 

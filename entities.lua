@@ -137,9 +137,35 @@ if data.raw["assembling-machine"]["assembling-machine-1"] then
   data.raw["assembling-machine"]["assembling-machine-1"].crafting_speed = 1
 end
 
+-- Create the distillery (based on assembling machine)
+local distillery = util.table.deepcopy(data.raw["assembling-machine"]["assembling-machine-1"])
+
+distillery.name = "distillery"
+distillery.minable = {mining_time = 0.2, result = "distillery"}
+distillery.crafting_categories = {"distilling"}
+distillery.crafting_speed = 1
+distillery.energy_source = {type = "void"}
+distillery.energy_usage = "1W"
+distillery.icon = "__orbs__/graphics/distillery.png"
+distillery.icon_size = 1024
+
+-- Create the crusher (based on assembling machine)
+local crusher = util.table.deepcopy(data.raw["assembling-machine"]["assembling-machine-1"])
+
+crusher.name = "crusher"
+crusher.minable = {mining_time = 0.2, result = "crusher"}
+crusher.crafting_categories = {"crushing"}
+crusher.crafting_speed = 1
+crusher.energy_source = {type = "void"}
+crusher.energy_usage = "1W"
+crusher.icon = "__orbs__/graphics/crusher.png"
+crusher.icon_size = 1024
+
 data:extend({
   conjuration_machine,
   soul_collector,
+  distillery,
+  crusher,
   {
     type = "item",
     name = "conjuration-machine",
@@ -159,6 +185,26 @@ data:extend({
     order = "c[soul-collector]",
     place_result = "soul-collector",
     stack_size = 10
+  },
+  {
+    type = "item",
+    name = "distillery",
+    icon = "__orbs__/graphics/distillery.png",
+    icon_size = 1024,
+    subgroup = "orbs-machines",
+    order = "e[distillery]",
+    place_result = "distillery",
+    stack_size = 20
+  },
+  {
+    type = "item",
+    name = "crusher",
+    icon = "__orbs__/graphics/crusher.png",
+    icon_size = 1024,
+    subgroup = "orbs-machines",
+    order = "d[crusher]",
+    place_result = "crusher",
+    stack_size = 20
   }
 })
 
@@ -197,6 +243,40 @@ data:extend({
     },
     results = {
       {type = "item", name = "soul-collector", amount = 1}
+    },
+    enabled = false
+  },
+  -- Distillery Recipe
+  {
+    type = "recipe",
+    name = "distillery",
+    category = "crafting",
+    energy_required = 5,
+    icon = "__orbs__/graphics/distillery.png",
+    icon_size = 1024,
+    ingredients = {
+      {type = "item", name = "copper-plate", amount = 2},
+      {type = "item", name = "glass", amount = 4}
+    },
+    results = {
+      {type = "item", name = "distillery", amount = 1}
+    },
+    enabled = false
+  },
+  -- Crusher Recipe
+  {
+    type = "recipe",
+    name = "crusher",
+    category = "crafting",
+    energy_required = 5,
+    icon = "__orbs__/graphics/crusher.png",
+    icon_size = 1024,
+    ingredients = {
+      {type = "item", name = "iron-plate", amount = 4},
+      {type = "item", name = "iron-gear-wheel", amount = 2}
+    },
+    results = {
+      {type = "item", name = "crusher", amount = 1}
     },
     enabled = false
   }

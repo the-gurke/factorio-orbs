@@ -797,6 +797,41 @@ data:extend({
       }
     },
     order = "a-h-u"
+  },
+  -- Potions Technology
+  {
+    type = "technology",
+    name = "potions",
+    icon = "__orbs__/graphics/distillery.png",
+    icon_size = 1024,
+    prerequisites = {"divination"},
+    unit = {
+      count = 60,
+      ingredients = {
+        {"divination-research-pack", 20},
+        {"conjuration-research-pack", 40}
+      },
+      time = 30
+    },
+    effects = {
+      {
+        type = "unlock-recipe",
+        recipe = "crusher"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "distillery"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "stone-to-sand"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "sand-to-glass"
+      }
+    },
+    order = "z-p[potions]"
   }
 })
 
