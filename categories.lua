@@ -83,6 +83,14 @@ data:extend({
   {
     type = "recipe-category",
     name = "rune-transformation"
+  },
+  {
+    type = "recipe-category",
+    name = "crushing"
+  },
+  {
+    type = "recipe-category",
+    name = "distilling"
   }
 })
 

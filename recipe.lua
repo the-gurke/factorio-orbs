@@ -1065,5 +1065,39 @@ table.insert(recipes, {
   order = "u[transmute-gold-to-copper]"
 })
 
+-- Stone to Sand recipe (for crusher)
+table.insert(recipes, {
+  type = "recipe",
+  name = "stone-to-sand",
+  category = "crushing",
+  energy_required = 2,
+  icon = "__orbs__/graphics/sand.png",
+  icon_size = 1024,
+  ingredients = {
+    {type = "item", name = "stone", amount = 1}
+  },
+  results = {
+    {type = "item", name = "sand", amount = 2}
+  },
+  enabled = false
+})
+
+-- Sand to Glass recipe (for furnace)
+table.insert(recipes, {
+  type = "recipe",
+  name = "sand-to-glass",
+  category = "smelting",
+  energy_required = 3,
+  icon = "__orbs__/graphics/glass.png",
+  icon_size = 1024,
+  ingredients = {
+    {type = "item", name = "sand", amount = 1}
+  },
+  results = {
+    {type = "item", name = "glass", amount = 1}
+  },
+  enabled = false
+})
+
 -- Extend all recipes
 data:extend(recipes)
