@@ -829,6 +829,10 @@ data:extend({
       {
         type = "unlock-recipe",
         recipe = "sand-to-glass"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "water-cooler"
       }
     },
     order = "z-p[potions]"
