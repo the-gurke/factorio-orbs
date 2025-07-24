@@ -158,8 +158,8 @@ crusher.crafting_categories = {"crushing"}
 crusher.crafting_speed = 1
 crusher.energy_source = {type = "void"}
 crusher.energy_usage = "1W"
-crusher.icon = "__orbs__/graphics/crusher.png"
-crusher.icon_size = 1024
+crusher.icon = "__space-age__/graphics/icons/crusher.png"
+crusher.icon_size = 64
 
 data:extend({
   conjuration_machine,
@@ -199,8 +199,8 @@ data:extend({
   {
     type = "item",
     name = "crusher",
-    icon = "__orbs__/graphics/crusher.png",
-    icon_size = 1024,
+    icon = "__space-age__/graphics/icons/crusher.png",
+    icon_size = 64,
     subgroup = "orbs-machines",
     order = "d[crusher]",
     place_result = "crusher",
@@ -269,8 +269,8 @@ data:extend({
     name = "crusher",
     category = "crafting",
     energy_required = 5,
-    icon = "__orbs__/graphics/crusher.png",
-    icon_size = 1024,
+    icon = "__space-age__/graphics/icons/crusher.png",
+    icon_size = 64,
     ingredients = {
       {type = "item", name = "iron-plate", amount = 4},
       {type = "item", name = "iron-gear-wheel", amount = 2}
@@ -652,6 +652,131 @@ data:extend({rage_fire_stream})
 
 -- Create the rune transformer (based on stone furnace)
 local rune_transformer = util.table.deepcopy(data.raw["furnace"]["stone-furnace"])
+
+-- Create water-cooler heat exchanger
+local water_cooler = util.table.deepcopy(data.raw["boiler"]["heat-exchanger"])
+
+water_cooler.name = "water-cooler"
+water_cooler.minable = {mining_time = 0.1, result = "water-cooler"}
+water_cooler.fast_replaceable_group = "water-cooler"
+water_cooler.corpse = "heat-exchanger-remnants"
+water_cooler.dying_explosion = "heat-exchanger-explosion"
+water_cooler.target_temperature = 50 -- Target temperature of 50°C
+water_cooler.energy_consumption = "1MW" -- Energy consumed for cooling
+water_cooler.energy_source = {
+  type = "heat",
+  max_temperature = 100, -- Maximum input temperature
+  specific_heat = "1MJ",
+  max_transfer = "1GW",
+  min_working_temperature = 50, -- Minimum working temperature (same as target)
+  connections = {
+    {
+      position = {0, 0.5},
+      direction = defines.direction.south
+    }
+  },
+  pipe_covers = make_4way_animation_from_spritesheet({
+    filename = "__base__/graphics/entity/heat-exchanger/heatex-endings.png",
+    width = 64,
+    height = 64,
+    direction_count = 4,
+    scale = 0.5
+  }),
+  heat_pipe_covers = make_4way_animation_from_spritesheet(
+    apply_heat_pipe_glow{
+      filename = "__base__/graphics/entity/heat-exchanger/heatex-endings-heated.png",
+      width = 64,
+      height = 64,
+      direction_count = 4,
+      scale = 0.5
+    }),
+  heat_picture = {
+    north = apply_heat_pipe_glow{
+      filename = "__base__/graphics/entity/heat-exchanger/heatex-N-heated.png",
+      priority = "extra-high",
+      width = 44,
+      height = 96,
+      shift = util.by_pixel(-0.5, 8.5),
+      scale = 0.5
+    },
+    east = apply_heat_pipe_glow{
+      filename = "__base__/graphics/entity/heat-exchanger/heatex-E-heated.png",
+      priority = "extra-high",
+      width = 80,
+      height = 80,
+      shift = util.by_pixel(-21, -13),
+      scale = 0.5
+    },
+    south = apply_heat_pipe_glow{
+      filename = "__base__/graphics/entity/heat-exchanger/heatex-S-heated.png",
+      priority = "extra-high",
+      width = 28,
+      height = 40,
+      shift = util.by_pixel(-1, -30),
+      scale = 0.5
+    },
+    west = apply_heat_pipe_glow{
+      filename = "__base__/graphics/entity/heat-exchanger/heatex-W-heated.png",
+      priority = "extra-high",
+      width = 64,
+      height = 76,
+      shift = util.by_pixel(23, -13),
+      scale = 0.5
+    }
+  }
+}
+
+-- Configure fluid boxes for water input and output
+water_cooler.fluid_box = {
+  volume = 200,
+  pipe_covers = pipecoverspictures(),
+  pipe_connections = {
+    {flow_direction = "input-output", direction = defines.direction.west, position = {-1, 0.5}},
+    {flow_direction = "input-output", direction = defines.direction.east, position = {1, 0.5}}
+  },
+  production_type = "input",
+  filter = "water"
+}
+
+water_cooler.output_fluid_box = {
+  volume = 200,
+  pipe_covers = pipecoverspictures(),
+  pipe_connections = {
+    {flow_direction = "output", direction = defines.direction.north, position = {0, -0.5}}
+  },
+  production_type = "output",
+  filter = "water"
+}
+
+data:extend({
+  water_cooler,
+  {
+    type = "item",
+    name = "water-cooler",
+    icon = "__base__/graphics/icons/heat-boiler.png",
+    icon_size = 64,
+    subgroup = "orbs-machines",
+    order = "f[water-cooler]",
+    place_result = "water-cooler",
+    stack_size = 20
+  },
+  {
+    type = "recipe",
+    name = "water-cooler",
+    category = "crafting",
+    energy_required = 5,
+    icon = "__base__/graphics/icons/heat-boiler.png",
+    icon_size = 64,
+    ingredients = {
+      {type = "item", name = "copper-plate", amount = 20},
+      {type = "item", name = "pipe", amount = 10}
+    },
+    results = {
+      {type = "item", name = "water-cooler", amount = 1}
+    },
+    enabled = false
+  }
+})
 
 rune_transformer.name = "rune-transformer"
 rune_transformer.minable = {mining_time = 1, result = "rune-transformer"}
