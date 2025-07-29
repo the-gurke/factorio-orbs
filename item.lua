@@ -435,7 +435,7 @@ data:extend({
     stack_size = 1
   },
 
-  -- Rune Research Pack (requires 5 specific runes)
+  -- Rune Research Pack (requires 6 specific runes)
   {
     type = "tool",
     name = "rune-research-pack",
