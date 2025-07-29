@@ -444,6 +444,22 @@ data:extend({
     durability = 1,
     durability_description_key = "description.science-pack-remaining-amount-key",
     durability_description_value = "description.science-pack-remaining-amount-value"
+  },
+
+  -- Gold Plate (placeable tile item)
+  {
+    type = "item",
+    name = "gold-plate",
+    icon = "__orbs__/graphics/gold-plate.png",
+    icon_size = 1024,
+    subgroup = "terrain",
+    order = "b[gold-plate]",
+    stack_size = 100,
+    place_as_tile = {
+      result = "gold-plate-tile",
+      condition_size = 1,
+      condition = {layers = {}}
+    }
   }
 })
 
