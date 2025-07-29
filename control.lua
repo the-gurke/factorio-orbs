@@ -1,6 +1,10 @@
 -- control.lua
 -- Runtime script that handles events during gameplay
 
+--------------------------------------------------------
+--  Telekinesis                                       --
+--------------------------------------------------------
+
 -- Function to apply telekinesis reach bonuses to a player
 function apply_telekinesis_bonuses(player)
   if not player.character then return end
@@ -35,6 +39,30 @@ function apply_telekinesis_bonuses_to_force(force)
   end
 end
 
+-- Apply telekinesis bonuses when players join, respawn, or change forces
+script.on_event({
+  defines.events.on_player_joined_game,
+  defines.events.on_player_respawned,
+  defines.events.on_player_changed_force,
+  defines.events.on_player_created
+}, function(event)
+  local player = game.get_player(event.player_index)
+  if player and player.valid then
+    apply_telekinesis_bonuses(player)
+  end
+end)
+
+-- Apply telekinesis bonuses to all players on configuration change
+script.on_configuration_changed(function()
+  for _, force in pairs(game.forces) do
+    apply_telekinesis_bonuses_to_force(force)
+  end
+end)
+
+--------------------------------------------------------
+--  Soul collectors                                   --
+--------------------------------------------------------
+
 -- Function to find soul collectors within range and add a soul
 function collect_soul_from_death(surface, position, force)
   local soul_collectors = surface.find_entities_filtered{
@@ -61,6 +89,23 @@ function collect_soul_from_death(surface, position, force)
   end
   return false
 end
+
+
+-- Handle player death and soul collection
+script.on_event(defines.events.on_player_died, function(event)
+  local player = game.get_player(event.player_index)
+  if player and player.valid and player.character then
+    -- Check for nearby soul collectors
+    local success = collect_soul_from_death(player.surface, player.character.position, player.force)
+    if success then
+      player.print("Your soul has been collected successfully.")
+    end
+  end
+end)
+
+--------------------------------------------------------
+--  Orbs research                                     --
+--------------------------------------------------------
 
 -- Give orbs to players when they research orbs technology
 script.on_event(defines.events.on_research_finished, function(event)
@@ -115,37 +160,9 @@ script.on_event(defines.events.on_research_finished, function(event)
   end
 end)
 
--- Handle player death and soul collection
-script.on_event(defines.events.on_player_died, function(event)
-  local player = game.get_player(event.player_index)
-  if player and player.valid and player.character then
-    -- Check for nearby soul collectors
-    local success = collect_soul_from_death(player.surface, player.character.position, player.force)
-    if success then
-      player.print("Your soul has been collected successfully.")
-    end
-  end
-end)
-
--- Apply telekinesis bonuses when players join, respawn, or change forces
-script.on_event({
-  defines.events.on_player_joined_game,
-  defines.events.on_player_respawned,
-  defines.events.on_player_changed_force,
-  defines.events.on_player_created
-}, function(event)
-  local player = game.get_player(event.player_index)
-  if player and player.valid then
-    apply_telekinesis_bonuses(player)
-  end
-end)
-
--- Apply telekinesis bonuses to all players on configuration change
-script.on_configuration_changed(function()
-  for _, force in pairs(game.forces) do
-    apply_telekinesis_bonuses_to_force(force)
-  end
-end)
+--------------------------------------------------------
+--  Runes                                             --
+--------------------------------------------------------
 
 -- Rune transformation system
 local rune_transformation_chains = require("rune-chains")
