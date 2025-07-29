@@ -140,9 +140,7 @@ script.on_event({
   end
 end)
 
--- Apply telekinesis bonuses to all players on init and configuration change
--- (This will be overridden by the rune transformation init below)
-
+-- Apply telekinesis bonuses to all players on configuration change
 script.on_configuration_changed(function()
   for _, force in pairs(game.forces) do
     apply_telekinesis_bonuses_to_force(force)
@@ -238,7 +236,7 @@ script.on_init(function()
     enable_current_rune_recipe(rune_name)
   end
 
-  -- Apply telekinesis bonuses
+  -- Apply telekinesis bonuses to all players
   for _, force in pairs(game.forces) do
     apply_telekinesis_bonuses_to_force(force)
   end
