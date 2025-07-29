@@ -685,6 +685,7 @@ table.insert(recipes, {
   order = "k[rage-orb]"
 })
 
+
 -- Light Wood on Fire in Furnace (1 second)
 table.insert(recipes, {
   type = "recipe",
@@ -853,6 +854,84 @@ table.insert(recipes, {
   },
   enabled = false
 })
+
+-- Rune Word Recipes
+table.insert(recipes, {
+  type = "recipe",
+  name = "conjure-rune-word-ventus",
+  category = "orbs",
+  subgroup = "orbs-manifest",
+  energy_required = 2,
+  icon = "__base__/graphics/icons/signal/signal_S.png",
+  icon_size = 64,
+  ingredients = {
+    {type = "item", name = "active-magic-shard", amount = 1},
+    {type = "item", name = "element-of-stability", amount = 1}
+  },
+  results = {
+    {type = "item", name = "rune-word-ventus", amount = 1, probability = 0.2}
+  },
+  enabled = false,
+  order = "s[conjure-rune-word-ventus]"
+})
+
+-- Rune Research Pack recipe (requires 5 specific runes)
+table.insert(recipes, {
+  type = "recipe",
+  name = "rune-research-pack",
+  category = "orbs",
+  subgroup = "orbs-research",
+  energy_required = 20,
+  icon = "__base__/graphics/icons/utility-science-pack.png",
+  icon_size = 64,
+  ingredients = {
+    {type = "item", name = "rune-word-vitae", amount = 1},
+    {type = "item", name = "rune-word-ignis", amount = 1},
+    {type = "item", name = "rune-word-tempus", amount = 1},
+    {type = "item", name = "rune-word-terra", amount = 1},
+    {type = "item", name = "rune-word-umbra", amount = 1},
+    {type = "item", name = "rune-word-mortis", amount = 1}
+  },
+  results = {
+    {type = "item", name = "rune-research-pack", amount = 1}
+  },
+  enabled = false,
+  hidden = true,  -- Created with rune altar, not crafted
+  order = "d[rune-research-pack]"
+})
+
+-- Load the rune transformation chains
+local rune_transformation_chains = require("rune-chains")
+
+-- Create all transformation recipes (disabled by default)
+-- Each rune can transform into 5 different runes in sequence
+local rune_recipes = {}
+for source_rune, target_chain in pairs(rune_transformation_chains) do
+  for i, target_rune in ipairs(target_chain) do
+    local recipe_name = "transform-" .. source_rune .. "-to-" .. target_rune .. "-" .. i
+    table.insert(rune_recipes, {
+      type = "recipe",
+      name = recipe_name,
+      category = "rune-transformation",
+      energy_required = 0.2,
+      icon = "__base__/graphics/icons/signal/signal_R.png",
+      icon_size = 64,
+      ingredients = {
+        {type = "item", name = source_rune, amount = 1}
+      },
+      results = {
+        {type = "item", name = target_rune, amount = 1}
+      },
+      enabled = true,
+      hidden = true -- Hide from player recipe list
+    })
+  end
+end
+
+-- Add all rune transformation recipes
+for _, recipe in pairs(rune_recipes) do
+  table.insert(recipes, recipe)
+end
 
 -- Extend all recipes
 data:extend(recipes)

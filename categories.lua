@@ -63,6 +63,10 @@ data:extend({
   {
     type = "recipe-category",
     name = "orbs"
+  },
+  {
+    type = "recipe-category",
+    name = "rune-transformation"
   }
 })
 
