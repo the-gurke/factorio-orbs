@@ -869,7 +869,7 @@ table.insert(recipes, {
     {type = "item", name = "element-of-stability", amount = 1}
   },
   results = {
-    {type = "item", name = "rune-word-ventus", amount = 1, probability = 0.05}
+    {type = "item", name = "rune-word-ventus", amount = 1, probability = 0.2}
   },
   enabled = false,
   order = "s[conjure-rune-word-ventus]"
