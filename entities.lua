@@ -577,3 +577,77 @@ if gold_plate_tile.variants.transition and gold_plate_tile.variants.transition.o
 end
 
 data:extend({gold_plate_tile})
+
+-- Create sentry ward (based on radar)
+local sentry_ward = util.table.deepcopy(data.raw["radar"]["radar"])
+
+sentry_ward.name = "sentry-ward"
+sentry_ward.minable = {mining_time = 0.5, result = "sentry-ward"}
+sentry_ward.max_health = 50
+sentry_ward.corpse = "small-electric-pole-remnants"
+sentry_ward.energy_source = {type = "void"} -- No power required
+sentry_ward.energy_usage = "1W"
+sentry_ward.max_distance_of_sector_revealed = 0 -- No scanning
+sentry_ward.max_distance_of_nearby_sector_revealed = 2 -- Reveal nearby chunks
+sentry_ward.energy_per_sector = "1J"
+sentry_ward.energy_per_nearby_scan = "1J"
+sentry_ward.rotation_speed = 0 -- Don't rotate
+sentry_ward.radar_range = 2
+
+-- Make it 1x1 size with small bounding boxes
+sentry_ward.collision_box = {{-0.25, -0.25}, {0.25, 0.25}}
+sentry_ward.selection_box = {{-0.35, -0.35}, {0.35, 0.35}}
+
+-- Use custom sentry ward graphics
+sentry_ward.pictures = {
+  layers = {
+    {
+      filename = "__orbs__/graphics/sentry-ward-entity.png",
+      priority = "high",
+      width = 1024,
+      height = 1024,
+      direction_count = 1,
+      frame_count = 1,
+      line_length = 1,
+      scale = 0.05,
+      shift = {0, -0.5}
+    }
+  }
+}
+
+-- Remove shadow
+sentry_ward.integration_patch = nil
+
+data:extend({
+  sentry_ward,
+  {
+    type = "item",
+    name = "sentry-ward",
+    icon = "__orbs__/graphics/sentry-ward.png",
+    icon_size = 1024,
+    subgroup = "orbs-machines",
+    order = "g[sentry-ward]",
+    place_result = "sentry-ward",
+    stack_size = 50
+  }
+})
+
+-- Sentry Ward Recipe
+data:extend({
+  {
+    type = "recipe",
+    name = "craft-sentry-ward",
+    category = "crafting",
+    energy_required = 2,
+    icon = "__orbs__/graphics/sentry-ward.png",
+    icon_size = 1024,
+    ingredients = {
+      {type = "item", name = "magic-orb", amount = 1},
+      {type = "item", name = "wood", amount = 1}
+    },
+    results = {
+      {type = "item", name = "sentry-ward", amount = 1}
+    },
+    enabled = false
+  }
+})
