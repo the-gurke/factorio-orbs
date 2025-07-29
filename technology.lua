@@ -742,6 +742,32 @@ data:extend({
   }
 })
 
+-- Sentry Ward Technology
+data:extend({
+  {
+    type = "technology",
+    name = "sentry-ward",
+    icon = "__orbs__/graphics/sentry-ward.png",
+    icon_size = 1024,
+    prerequisites = {"divination"},
+    unit = {
+      count = 20,
+      ingredients = {
+        {"conjuration-research-pack", 1},
+        {"divination-research-pack", 1}
+      },
+      time = 30
+    },
+    effects = {
+      {
+        type = "unlock-recipe",
+        recipe = "craft-sentry-ward"
+      }
+    },
+    order = "z-e[sentry-ward]"
+  }
+})
+
 -- Override circuit network technology to make it cheaper
 data.raw["technology"]["circuit-network"].unit = {
   count = 10,
