@@ -515,15 +515,15 @@ data:extend({
     effects = {
       {
         type = "unlock-recipe",
-        recipe = "conjure-rune-word-ventus"
-      },
-      {
-        type = "unlock-recipe",
         recipe = "rune-transformer"
       },
       {
         type = "unlock-recipe",
         recipe = "rune-altar"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "conjure-rune-word-ventus"
       },
       {
         type = "unlock-recipe",
