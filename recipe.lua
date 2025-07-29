@@ -933,5 +933,78 @@ for _, recipe in pairs(rune_recipes) do
   table.insert(recipes, recipe)
 end
 
+-- Transmutation recipes
+table.insert(recipes, {
+  type = "recipe",
+  name = "transmute-copper-to-iron",
+  category = "orbs",
+  subgroup = "orbs-manifest",
+  energy_required = 1,
+  icon = "__base__/graphics/icons/iron-plate.png",
+  icon_size = 64,
+  ingredients = {
+    {type = "item", name = "copper-plate", amount = 1}
+  },
+  results = {
+    {type = "item", name = "iron-plate", amount = 1}
+  },
+  enabled = false,
+  order = "t[transmute-copper-to-iron]"
+})
+
+table.insert(recipes, {
+  type = "recipe",
+  name = "transmute-iron-to-copper",
+  category = "orbs",
+  subgroup = "orbs-manifest",
+  energy_required = 1,
+  icon = "__base__/graphics/icons/copper-plate.png",
+  icon_size = 64,
+  ingredients = {
+    {type = "item", name = "iron-plate", amount = 1}
+  },
+  results = {
+    {type = "item", name = "copper-plate", amount = 1}
+  },
+  enabled = false,
+  order = "t[transmute-iron-to-copper]"
+})
+
+table.insert(recipes, {
+  type = "recipe",
+  name = "transmute-copper-to-gold",
+  category = "orbs",
+  subgroup = "orbs-manifest",
+  energy_required = 2,
+  icon = "__orbs__/graphics/gold-plate.png",
+  icon_size = 1024,
+  ingredients = {
+    {type = "item", name = "copper-plate", amount = 1}
+  },
+  results = {
+    {type = "item", name = "gold-plate", amount = 1}
+  },
+  enabled = false,
+  order = "u[transmute-copper-to-gold]"
+})
+
+table.insert(recipes, {
+  type = "recipe",
+  name = "transmute-gold-to-copper",
+  category = "orbs",
+  subgroup = "orbs-manifest",
+  energy_required = 2,
+  icon = "__base__/graphics/icons/copper-plate.png",
+  icon_size = 64,
+  ingredients = {
+    {type = "item", name = "gold-plate", amount = 1}
+  },
+  results = {
+    {type = "item", name = "copper-plate", amount = 1}
+  },
+  enabled = false,
+  order = "u[transmute-gold-to-copper]"
+})
+
 -- Extend all recipes
 data:extend(recipes)

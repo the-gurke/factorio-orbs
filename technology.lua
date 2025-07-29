@@ -686,6 +686,59 @@ data:extend({
       item = "burning-wood"
     },
     order = "a-a-a"
+  },
+  -- Transmutation Technology
+  {
+    type = "technology",
+    name = "transmutation",
+    icon = "__orbs__/graphics/transmutation-research.png",
+    icon_size = 1024,
+    prerequisites = {"orbs-technology"},
+    unit = {
+      count = 20,
+      ingredients = {
+        {"conjuration-research-pack", 1}
+      },
+      time = 30
+    },
+    effects = {
+      {
+        type = "unlock-recipe",
+        recipe = "transmute-copper-to-iron"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "transmute-iron-to-copper"
+      }
+    },
+    order = "a-h-t"
+  },
+  -- Transmutation II Technology
+  {
+    type = "technology",
+    name = "transmutation-ii",
+    icon = "__orbs__/graphics/gold-plate.png",
+    icon_size = 1024,
+    prerequisites = {"transmutation", "divination"},
+    unit = {
+      count = 50,
+      ingredients = {
+        {"conjuration-research-pack", 1},
+        {"divination-research-pack", 1}
+      },
+      time = 30
+    },
+    effects = {
+      {
+        type = "unlock-recipe",
+        recipe = "transmute-copper-to-gold"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "transmute-gold-to-copper"
+      }
+    },
+    order = "a-h-u"
   }
 })
 
