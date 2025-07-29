@@ -856,51 +856,23 @@ table.insert(recipes, {
 })
 
 -- Rune Word Recipes
--- Expensive recipe for 3 random rune words
 table.insert(recipes, {
   type = "recipe",
-  name = "conjure-rune-words",
+  name = "conjure-rune-word-ventus",
   category = "orbs",
   subgroup = "orbs-manifest",
-  energy_required = 30,
-  icon = "__base__/graphics/icons/signal/signal_R.png",
+  energy_required = 2,
+  icon = "__base__/graphics/icons/signal/signal_S.png",
   icon_size = 64,
   ingredients = {
-    {type = "item", name = "magic-orb", amount = 10},
-    {type = "item", name = "active-magic-shard", amount = 100},
-    {type = "item", name = "element-of-stability", amount = 5}
+    {type = "item", name = "active-magic-shard", amount = 1},
+    {type = "item", name = "element-of-stability", amount = 1}
   },
   results = {
-    {type = "item", name = "rune-word-ignis", amount = 1, probability = 1/9},
-    {type = "item", name = "rune-word-aqua", amount = 1, probability = 1/9},
-    {type = "item", name = "rune-word-ventus", amount = 1, probability = 1/9},
-    {type = "item", name = "rune-word-terra", amount = 1, probability = 1/9},
-    {type = "item", name = "rune-word-umbra", amount = 1, probability = 1/9},
-    {type = "item", name = "rune-word-lux", amount = 1, probability = 1/9},
-    {type = "item", name = "rune-word-tempus", amount = 1, probability = 1/9},
-    {type = "item", name = "rune-word-vitae", amount = 1, probability = 1/9},
-    {type = "item", name = "rune-word-mortis", amount = 1, probability = 1/9},
-    {type = "item", name = "rune-word-ignis", amount = 1, probability = 1/9},
-    {type = "item", name = "rune-word-aqua", amount = 1, probability = 1/9},
-    {type = "item", name = "rune-word-ventus", amount = 1, probability = 1/9},
-    {type = "item", name = "rune-word-terra", amount = 1, probability = 1/9},
-    {type = "item", name = "rune-word-umbra", amount = 1, probability = 1/9},
-    {type = "item", name = "rune-word-lux", amount = 1, probability = 1/9},
-    {type = "item", name = "rune-word-tempus", amount = 1, probability = 1/9},
-    {type = "item", name = "rune-word-vitae", amount = 1, probability = 1/9},
-    {type = "item", name = "rune-word-mortis", amount = 1, probability = 1/9},
-    {type = "item", name = "rune-word-ignis", amount = 1, probability = 1/9},
-    {type = "item", name = "rune-word-aqua", amount = 1, probability = 1/9},
-    {type = "item", name = "rune-word-ventus", amount = 1, probability = 1/9},
-    {type = "item", name = "rune-word-terra", amount = 1, probability = 1/9},
-    {type = "item", name = "rune-word-umbra", amount = 1, probability = 1/9},
-    {type = "item", name = "rune-word-lux", amount = 1, probability = 1/9},
-    {type = "item", name = "rune-word-tempus", amount = 1, probability = 1/9},
-    {type = "item", name = "rune-word-vitae", amount = 1, probability = 1/9},
-    {type = "item", name = "rune-word-mortis", amount = 1, probability = 1/9}
+    {type = "item", name = "rune-word-ventus", amount = 1, probability = 0.05}
   },
   enabled = false,
-  order = "s[conjure-rune-words]"
+  order = "s[conjure-rune-word-ventus]"
 })
 
 -- Rune Research Pack recipe (requires 5 specific runes)
@@ -924,6 +896,7 @@ table.insert(recipes, {
     {type = "item", name = "rune-research-pack", amount = 1}
   },
   enabled = false,
+  hidden = true,  -- Created with rune altar, not crafted
   order = "d[rune-research-pack]"
 })
 
@@ -940,7 +913,7 @@ for source_rune, target_chain in pairs(rune_transformation_chains) do
       type = "recipe",
       name = recipe_name,
       category = "rune-transformation",
-      energy_required = 5,
+      energy_required = 0.2,
       icon = "__base__/graphics/icons/signal/signal_R.png",
       icon_size = 64,
       ingredients = {

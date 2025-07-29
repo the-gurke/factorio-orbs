@@ -515,7 +515,7 @@ data:extend({
     effects = {
       {
         type = "unlock-recipe",
-        recipe = "conjure-rune-words"
+        recipe = "conjure-rune-word-ventus"
       },
       {
         type = "unlock-recipe",
@@ -524,6 +524,10 @@ data:extend({
       {
         type = "unlock-recipe",
         recipe = "rune-altar"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "rune-research-pack"
       }
     },
     order = "z-d[rune-words]"

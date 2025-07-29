@@ -245,8 +245,9 @@ script.on_init(function()
 end)
 
 -- Periodic check for rune transformer completion
--- Check every 5*60-1 ticks (just before 5 seconds) to catch completed recipes
-script.on_nth_tick(5*60-1, function(event)
+-- Check every 0.2*60-1 ticks (just before 0.2 seconds) to catch completed recipes
+-- (The Ventus rune crafting recipe completes in 0.2 seconds)
+script.on_nth_tick(0.2*60-1, function(event)
   -- Check all rune transformers on all surfaces
   for _, surface in pairs(game.surfaces) do
     local rune_transformers = surface.find_entities_filtered{name = "rune-transformer"}
