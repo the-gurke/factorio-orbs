@@ -32,7 +32,7 @@ conjuration_lab.minable = {mining_time = 0.2, result = "conjuration-lab"}
 conjuration_lab.energy_source = {type = "void"} -- No power required
 conjuration_lab.energy_usage = "1W"
 conjuration_lab.researching_speed = 1
-conjuration_lab.inputs = {"conjuration-research-pack", "divination-research-pack"}
+conjuration_lab.inputs = {"conjuration-research-pack", "divination-research-pack", "rune-research-pack"}
 
 -- Create the soul collector (based on iron chest)
 local soul_collector = util.table.deepcopy(data.raw["container"]["iron-chest"])
@@ -421,4 +421,130 @@ end
 
 data:extend({rage_fire_stream})
 
+-- Create the rune transformer (based on stone furnace)
+local rune_transformer = util.table.deepcopy(data.raw["furnace"]["stone-furnace"])
 
+rune_transformer.name = "rune-transformer"
+rune_transformer.minable = {mining_time = 1, result = "rune-transformer"}
+rune_transformer.crafting_categories = {"rune-transformation"}
+rune_transformer.crafting_speed = 1
+rune_transformer.energy_source = {type = "void"}
+rune_transformer.energy_usage = "1W"
+rune_transformer.result_inventory_size = 1
+rune_transformer.source_inventory_size = 1
+
+-- Create the rune transformer item
+local rune_transformer_item = {
+  type = "item",
+  name = "rune-transformer",
+  icon = "__base__/graphics/icons/stone-furnace.png",
+  icon_size = 64,
+  subgroup = "orbs-machines",
+  order = "e[rune-transformer]",
+  place_result = "rune-transformer",
+  stack_size = 10
+}
+
+-- Create the rune transformer recipe
+local rune_transformer_recipe = {
+  type = "recipe",
+  name = "rune-transformer",
+  category = "crafting",
+  energy_required = 5,
+  icon = "__base__/graphics/icons/stone-furnace.png",
+  icon_size = 64,
+  ingredients = {
+    {type = "item", name = "stone-brick", amount = 20},
+    {type = "item", name = "iron-plate", amount = 6},
+    {type = "item", name = "magic-orb", amount = 1},
+    {type = "item", name = "element-of-stability", amount = 1}
+  },
+  results = {
+    {type = "item", name = "rune-transformer", amount = 1}
+  },
+  enabled = false
+}
+
+data:extend({
+  rune_transformer,
+  rune_transformer_item,
+  rune_transformer_recipe
+})
+
+-- Create the rune altar (based on iron chest)
+local rune_altar = util.table.deepcopy(data.raw["container"]["iron-chest"])
+
+rune_altar.name = "rune-altar"
+rune_altar.minable = {mining_time = 1, result = "rune-altar"}
+rune_altar.inventory_size = 10
+rune_altar.picture = {
+  layers = {
+    {
+      filename = "__orbs__/graphics/rune-altar.png",
+      priority = "extra-high",
+      width = 1024,
+      height = 1024,
+      scale = 0.06,
+      shift = {
+            0,
+            0
+      }
+    }
+  }
+}
+rune_altar.collision_box = {
+  {
+    -0.65,
+    -0.65
+  },
+  {
+    0.65,
+    0.65
+  }
+}
+rune_altar.selection_box = {
+  {
+    -1,
+    -1
+  },
+  {
+    1,
+    1
+  }
+}
+
+-- Create the rune altar item
+local rune_altar_item = {
+  type = "item",
+  name = "rune-altar",
+  icon = "__orbs__/graphics/rune-altar.png",
+  icon_size = 1024,
+  subgroup = "orbs-machines",
+  order = "f[rune-altar]",
+  place_result = "rune-altar",
+  stack_size = 10
+}
+
+-- Create the rune altar recipe
+local rune_altar_recipe = {
+  type = "recipe",
+  name = "rune-altar",
+  category = "crafting",
+  energy_required = 3,
+  icon = "__orbs__/graphics/rune-altar.png",
+  icon_size = 1024,
+  ingredients = {
+    {type = "item", name = "stone-brick", amount = 10},
+    {type = "item", name = "magic-orb", amount = 1},
+  },
+  results = {
+    {type = "item", name = "rune-altar", amount = 1}
+  },
+  enabled = false
+}
+
+data:extend({
+  rune_altar,
+  rune_altar_item,
+  rune_altar_recipe
+})

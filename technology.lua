@@ -497,6 +497,40 @@ data:extend({
       count = 1
     },
     order = "z-d[metallurgy]"
+  },
+  {
+    type = "technology",
+    name = "rune-words",
+    icon = "__base__/graphics/icons/signal/signal_R.png",
+    icon_size = 64,
+    prerequisites = {"stability-extraction"},
+    unit = {
+      count = 100,
+      ingredients = {
+        {"conjuration-research-pack", 1},
+        {"divination-research-pack", 1}
+      },
+      time = 60
+    },
+    effects = {
+      {
+        type = "unlock-recipe",
+        recipe = "rune-transformer"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "rune-altar"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "conjure-rune-word-ventus"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "rune-research-pack"
+      }
+    },
+    order = "z-d[rune-words]"
   }
 })
 
@@ -558,7 +592,7 @@ if volatile_orb_tech then
     type = "unlock-recipe",
     recipe = "extract-stability"
   })
-  
+
   -- Add liquify stability recipe
   table.insert(volatile_orb_tech.effects, {
     type = "unlock-recipe",
