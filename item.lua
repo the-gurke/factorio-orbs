@@ -230,7 +230,6 @@ data:extend({
     order = "k[element-of-stability]",
     stack_size = 100
   },
-<<<<<<< HEAD
 
   -- Stability (liquid)
   {
@@ -246,8 +245,6 @@ data:extend({
     base_color = {r = 0.95, g = 0.95, b = 0.9},
     flow_color = {r = 1.0, g = 1.0, b = 0.95}
   },
-=======
->>>>>>> 11a58f2 (first version of runes, doesn't work yet)
 
   -- Rage
   {
