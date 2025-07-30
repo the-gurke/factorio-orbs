@@ -32,7 +32,7 @@ conjuration_lab.minable = {mining_time = 0.2, result = "conjuration-lab"}
 conjuration_lab.energy_source = {type = "void"} -- No power required
 conjuration_lab.energy_usage = "1W"
 conjuration_lab.researching_speed = 1
-conjuration_lab.inputs = {"conjuration-research-pack", "divination-research-pack", "rune-research-pack"}
+conjuration_lab.inputs = {"automation-science-pack", "conjuration-research-pack", "divination-research-pack", "rune-research-pack"}
 
 -- Create the soul collector (based on iron chest)
 local soul_collector = util.table.deepcopy(data.raw["container"]["iron-chest"])
