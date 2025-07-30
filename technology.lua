@@ -655,10 +655,6 @@ data:extend({
       {
         type = "unlock-recipe",
         recipe = "magic-inserter"
-      },
-      {
-        type = "unlock-recipe",
-        recipe = "magic-fast-inserter"
       }
     },
     order = "a-h-d"

@@ -824,11 +824,11 @@ table.insert(recipes, {
   name = "magic-inserter",
   category = "crafting",
   energy_required = 3,
-  icon = "__base__/graphics/icons/inserter.png",
+  icon = "__base__/graphics/icons/fast-inserter.png",
   icon_size = 64,
   ingredients = {
-    {type = "item", name = "inserter", amount = 1},
-    {type = "item", name = "magic-orb", amount = 2}
+    {type = "item", name = "burner-inserter", amount = 1},
+    {type = "item", name = "magic-orb", amount = 1}
   },
   results = {
     {type = "item", name = "magic-inserter", amount = 1},
@@ -837,23 +837,6 @@ table.insert(recipes, {
   enabled = false
 })
 
-table.insert(recipes, {
-  type = "recipe",
-  name = "magic-fast-inserter",
-  category = "crafting",
-  energy_required = 3,
-  icon = "__base__/graphics/icons/fast-inserter.png",
-  icon_size = 64,
-  ingredients = {
-    {type = "item", name = "fast-inserter", amount = 1},
-    {type = "item", name = "magic-orb", amount = 2}
-  },
-  results = {
-    {type = "item", name = "magic-fast-inserter", amount = 1},
-    {type = "item", name = "magic-orb", amount = 1}
-  },
-  enabled = false
-})
 
 -- Rune Word Recipes
 table.insert(recipes, {
