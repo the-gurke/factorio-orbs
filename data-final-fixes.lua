@@ -328,8 +328,8 @@ data.raw["inserter"]["burner-inserter"] = nil
 data.raw.item["burner-inserter"] = nil
 
 
--- Create magic inserter from regular inserter
-local magic_inserter = table.deepcopy(data.raw["inserter"]["inserter"])
+-- Create magic inserter from fast inserter
+local magic_inserter = table.deepcopy(data.raw["inserter"]["fast-inserter"])
 magic_inserter.name = "magic-inserter"
 magic_inserter.localised_name = {"entity-name.magic-inserter"}
 magic_inserter.minable.result = "magic-inserter"
@@ -338,35 +338,17 @@ magic_inserter.energy_source = {
 }
 magic_inserter.energy_per_movement = "0kW"
 magic_inserter.energy_per_rotation = "0kW"
-magic_inserter.next_upgrade = "magic-fast-inserter"
 
 -- Create magic inserter item
-local magic_inserter_item = table.deepcopy(data.raw.item["inserter"])
+local magic_inserter_item = table.deepcopy(data.raw.item["fast-inserter"])
 magic_inserter_item.name = "magic-inserter"
 magic_inserter_item.localised_name = {"item-name.magic-inserter"}
 magic_inserter_item.place_result = "magic-inserter"
+magic_inserter_item.subgroup = "orbs-machines"
 magic_inserter_item.hidden = nil
 
--- Create magic fast inserter from fast inserter
-local magic_fast_inserter = table.deepcopy(data.raw["inserter"]["fast-inserter"])
-magic_fast_inserter.name = "magic-fast-inserter"
-magic_fast_inserter.localised_name = {"entity-name.magic-fast-inserter"}
-magic_fast_inserter.minable.result = "magic-fast-inserter"
-magic_fast_inserter.energy_source = {
-  type = "void"
-}
-magic_fast_inserter.energy_per_movement = "0kW"
-magic_fast_inserter.energy_per_rotation = "0kW"
-
--- Create magic fast inserter item
-local magic_fast_inserter_item = table.deepcopy(data.raw.item["fast-inserter"])
-magic_fast_inserter_item.name = "magic-fast-inserter"
-magic_fast_inserter_item.localised_name = {"item-name.magic-fast-inserter"}
-magic_fast_inserter_item.place_result = "magic-fast-inserter"
-magic_fast_inserter_item.hidden = nil
-
 -- Add new inserters to data
-data:extend({new_burner_inserter, new_burner_inserter_item, magic_inserter, magic_inserter_item, magic_fast_inserter, magic_fast_inserter_item})
+data:extend({new_burner_inserter, new_burner_inserter_item, magic_inserter, magic_inserter_item})
 
 -- Update automation science pack to contraption science pack (it's a tool, not item!)
 data.raw.tool["automation-science-pack"].localised_name = {"item-name.contraption-science-pack"}
