@@ -869,7 +869,7 @@ table.insert(recipes, {
     {type = "item", name = "element-of-stability", amount = 1}
   },
   results = {
-    {type = "item", name = "rune-word-ventus", amount = 1, probability = 0.2}
+    {type = "item", name = "rune-word-ventus", amount = 1}
   },
   enabled = false,
   order = "s[conjure-rune-word-ventus]"
@@ -903,19 +903,25 @@ table.insert(recipes, {
 -- Load the rune transformation chains
 local rune_transformation_chains = require("rune-chains")
 
--- Create all transformation recipes (disabled by default)
+-- Create all transformation recipes
 -- Each rune can transform into 5 different runes in sequence
 local rune_recipes = {}
 for source_rune, target_chain in pairs(rune_transformation_chains) do
   for i, target_rune in ipairs(target_chain) do
     local recipe_name = "transform-" .. source_rune .. "-to-" .. target_rune .. "-" .. i
+    
+    -- Get the target rune item's icon properties
+    local target_item = data.raw.item[target_rune]
+    local recipe_icon = target_item and target_item.icon or "__base__/graphics/icons/signal/signal_R.png"
+    local recipe_icon_size = target_item and target_item.icon_size or 64
+    
     table.insert(rune_recipes, {
       type = "recipe",
       name = recipe_name,
       category = "rune-transformation",
       energy_required = 0.2,
-      icon = "__base__/graphics/icons/signal/signal_R.png",
-      icon_size = 64,
+      icon = recipe_icon,
+      icon_size = recipe_icon_size,
       ingredients = {
         {type = "item", name = source_rune, amount = 1}
       },
