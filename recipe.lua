@@ -858,6 +858,26 @@ table.insert(recipes, {
 -- Rune Word Recipes
 table.insert(recipes, {
   type = "recipe",
+  name = "conjure-rune-word-aqua",
+  category = "orbs",
+  subgroup = "orbs-manifest",
+  energy_required = 2,
+  icon = "__base__/graphics/icons/signal/signal_A.png",
+  icon_size = 64,
+  ingredients = {
+    {type = "item", name = "active-magic-shard", amount = 1},
+    {type = "item", name = "element-of-stability", amount = 1},
+    {type = "fluid", name = "water", amount = 100}
+  },
+  results = {
+    {type = "item", name = "rune-word-aqua", amount = 1}
+  },
+  enabled = false,
+  order = "s[conjure-rune-word-aqua]"
+})
+
+table.insert(recipes, {
+  type = "recipe",
   name = "conjure-rune-word-ventus",
   category = "orbs",
   subgroup = "orbs-manifest",
@@ -875,11 +895,11 @@ table.insert(recipes, {
   order = "s[conjure-rune-word-ventus]"
 })
 
--- Rune Research Pack recipe (requires 5 specific runes)
+-- Rune Research Pack recipe (requires 6 specific runes)
 table.insert(recipes, {
   type = "recipe",
   name = "rune-research-pack",
-  category = "orbs",
+  category = "runes",
   subgroup = "orbs-research",
   energy_required = 20,
   icon = "__base__/graphics/icons/utility-science-pack.png",
@@ -896,7 +916,7 @@ table.insert(recipes, {
     {type = "item", name = "rune-research-pack", amount = 1}
   },
   enabled = false,
-  hidden = true,  -- Created with rune altar, not crafted
+  hidden = false,
   order = "d[rune-research-pack]"
 })
 
@@ -909,12 +929,12 @@ local rune_recipes = {}
 for source_rune, target_chain in pairs(rune_transformation_chains) do
   for i, target_rune in ipairs(target_chain) do
     local recipe_name = "transform-" .. source_rune .. "-to-" .. target_rune .. "-" .. i
-    
+
     -- Get the target rune item's icon properties
     local target_item = data.raw.item[target_rune]
     local recipe_icon = target_item and target_item.icon or "__base__/graphics/icons/signal/signal_R.png"
     local recipe_icon_size = target_item and target_item.icon_size or 64
-    
+
     table.insert(rune_recipes, {
       type = "recipe",
       name = recipe_name,
