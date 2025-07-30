@@ -454,7 +454,7 @@ local rune_transformer_recipe = {
   icon = "__base__/graphics/icons/stone-furnace.png",
   icon_size = 64,
   ingredients = {
-    {type = "item", name = "stone-brick", amount = 20},
+    {type = "item", name = "stone-brick", amount = 10},
     {type = "item", name = "iron-plate", amount = 6},
     {type = "item", name = "magic-orb", amount = 1},
     {type = "item", name = "element-of-stability", amount = 1}
@@ -534,7 +534,7 @@ local rune_altar_recipe = {
   icon = "__orbs__/graphics/rune-altar.png",
   icon_size = 1024,
   ingredients = {
-    {type = "item", name = "stone-brick", amount = 10},
+    {type = "item", name = "stone-brick", amount = 20},
     {type = "item", name = "magic-orb", amount = 1},
   },
   results = {
