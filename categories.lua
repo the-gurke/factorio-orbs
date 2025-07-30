@@ -22,39 +22,51 @@ data:extend({
   },
   {
     type = "item-subgroup",
-    name = "orbs-conjure",
+    name = "orbs-shards",
     group = "orbs",
     order = "b"
   },
   {
     type = "item-subgroup",
-    name = "orbs-proliferate",
+    name = "souls",
     group = "orbs",
     order = "c"
   },
   {
     type = "item-subgroup",
-    name = "souls",
+    name = "divination",
     group = "orbs",
     order = "d"
   },
   {
     type = "item-subgroup",
-    name = "divination",
+    name = "orbs-volatile",
     group = "orbs",
     order = "e"
   },
   {
     type = "item-subgroup",
-    name = "orbs-research",
+    name = "orbs-transmutation",
     group = "orbs",
     order = "f"
   },
   {
     type = "item-subgroup",
-    name = "orbs-machines",
+    name = "orbs-runes",
     group = "orbs",
     order = "g"
+  },
+  {
+    type = "item-subgroup",
+    name = "orbs-research",
+    group = "orbs",
+    order = "h"
+  },
+  {
+    type = "item-subgroup",
+    name = "orbs-machines",
+    group = "orbs",
+    order = "i"
   }
 })
 

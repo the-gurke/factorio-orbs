@@ -18,7 +18,7 @@ data:extend({
     name = "active-magic-shard",
     icon = "__orbs__/graphics/active-magic-shard.png",
     icon_size = 1024,
-    subgroup = "orbs-conjure",
+    subgroup = "orbs-shards",
     order = "b[active-magic-shard]",
     stack_size = 200,
     spoil_ticks = 30 * 60, -- 30 seconds * 60 ticks per second
@@ -31,7 +31,7 @@ data:extend({
     name = "inactive-magic-shard",
     icon = "__orbs__/graphics/inactive-magic-shard.png",
     icon_size = 1024,
-    subgroup = "orbs-proliferate",
+    subgroup = "orbs-shards",
     order = "c[inactive-magic-shard]",
     stack_size = 200
   },
@@ -226,7 +226,7 @@ data:extend({
     name = "element-of-stability",
     icon = "__orbs__/graphics/element-of-stability.png",
     icon_size = 1024,
-    subgroup = "orbs-manifest",
+    subgroup = "divination",
     order = "k[element-of-stability]",
     stack_size = 100
   },
@@ -237,7 +237,7 @@ data:extend({
     name = "stability",
     icon = "__orbs__/graphics/stability-liquid.png",
     icon_size = 1024,
-    subgroup = "orbs-manifest",
+    subgroup = "divination",
     order = "l[stability]",
     default_temperature = 15,
     max_temperature = 30,
