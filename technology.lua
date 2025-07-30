@@ -773,3 +773,28 @@ data.raw["technology"]["circuit-network"].unit = {
   time = 30
 }
 data.raw["technology"]["circuit-network"].prerequisites = {"automation"}
+
+-- Magic Axe Technology (replaces removed steel-axe)
+data:extend({
+  {
+    type = "technology",
+    name = "magic-axe",
+    icon = "__base__/graphics/technology/steel-axe.png",
+    icon_size = 256,
+    prerequisites = {"orbs-technology"},
+    unit = {
+      count = 10,
+      ingredients = {
+        {"conjuration-research-pack", 1}
+      },
+      time = 30
+    },
+    effects = {
+      {
+        type = "character-mining-speed",
+        modifier = 1
+      }
+    },
+    order = "a-h-axe"
+  }
+})
