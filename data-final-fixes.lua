@@ -3,7 +3,7 @@
 
 -- Check if Nanobots2 is loaded
 if mods["Nanobots2"] then
-  
+
   -- Override main nanobots technology
   if data.raw.technology["nanobots"] then
     local tech = data.raw.technology["nanobots"]
@@ -15,7 +15,7 @@ if mods["Nanobots2"] then
     tech.localised_name = {"technology-name.summon-machines"}
     tech.localised_description = {"technology-description.summon-machines"}
   end
-  
+
   -- Override nanobots cliff technology
   if data.raw.technology["nanobots-cliff"] then
     local tech = data.raw.technology["nanobots-cliff"]
@@ -27,7 +27,7 @@ if mods["Nanobots2"] then
     tech.localised_name = {"technology-name.mystic-explosives"}
     tech.localised_description = {"technology-description.mystic-explosives"}
   end
-  
+
   -- Override nano range technologies
   for i = 1, 4 do
     if data.raw.technology["nano-range-" .. i] then
@@ -44,7 +44,7 @@ if mods["Nanobots2"] then
       tech.localised_description = {"technology-description.summoning-range-" .. i}
     end
   end
-  
+
   -- Override nano speed technologies
   for i = 1, 4 do
     if data.raw.technology["nano-speed-" .. i] then
@@ -61,12 +61,12 @@ if mods["Nanobots2"] then
       tech.localised_description = {"technology-description.summoning-speed-" .. i}
     end
   end
-  
+
   -- Remove roboport interface technology completely
   if data.raw.technology["roboport-interface"] then
     data.raw.technology["roboport-interface"] = nil
   end
-  
+
   -- Override nano gun item
   if data.raw.gun["gun-nano-emitter"] then
     local gun = data.raw.gun["gun-nano-emitter"]
@@ -75,7 +75,7 @@ if mods["Nanobots2"] then
     gun.localised_name = {"item-name.magic-wand"}
     gun.localised_description = {"item-description.magic-wand"}
   end
-  
+
   -- Override nano gun recipe
   if data.raw.recipe["gun-nano-emitter"] then
     local recipe = data.raw.recipe["gun-nano-emitter"]
@@ -89,22 +89,22 @@ if mods["Nanobots2"] then
       {type = "item", name = "active-magic-shard", amount = 10}
     }
   end
-  
+
   -- Override ammo category
   if data.raw["ammo-category"]["nano-ammo"] then
     local ammo_cat = data.raw["ammo-category"]["nano-ammo"]
     ammo_cat.localised_name = {"ammo-category-name.spirit-ammo"}
     ammo_cat.localised_description = {"ammo-category-description.spirit-ammo"}
   end
-  
+
   -- Update all ammo items to use spirit theming
   local ammo_items = {
     ["ammo-nano-termites"] = "tree-conflagration-essence",
-    ["ammo-nano-scrappers"] = "summoning-essence", 
+    ["ammo-nano-scrappers"] = "summoning-essence",
     ["ammo-nano-constructors"] = "summoning-essence",
     ["ammo-nano-deconstructors"] = "summoning-essence"
   }
-  
+
   for old_name, new_name in pairs(ammo_items) do
     if data.raw.ammo[old_name] then
       local ammo = data.raw.ammo[old_name]
@@ -119,15 +119,15 @@ if mods["Nanobots2"] then
       end
     end
   end
-  
+
   -- Update ammo recipes to use magical ingredients
   local ammo_recipes = {
     "ammo-nano-termites",
-    "ammo-nano-scrappers", 
+    "ammo-nano-scrappers",
     "ammo-nano-constructors",
     "ammo-nano-deconstructors"
   }
-  
+
   for _, recipe_name in pairs(ammo_recipes) do
     if data.raw.recipe[recipe_name] then
       local recipe = data.raw.recipe[recipe_name]
@@ -149,7 +149,7 @@ if mods["Nanobots2"] then
       end
     end
   end
-  
+
 end
 
 -- Modify red transport belt recipes to require stability
@@ -515,4 +515,32 @@ if data.raw.technology["advanced-combinators"] then
   data.raw.technology["advanced-combinators"] = nil
 end
 
+-- Update bulk inserter technology
+if data.raw.technology["bulk-inserter"] then
+  data.raw.technology["bulk-inserter"].prerequisites = {"rune-words"}
+  data.raw.technology["bulk-inserter"].unit = {
+    count = 20,
+    ingredients = {
+      {"automation-science-pack", 5},
+      {"rune-research-pack", 1}
+    },
+    time = 30
+  }
+end
 
+-- Update bulk inserter recipe
+if data.raw.recipe["bulk-inserter"] then
+  data.raw.recipe["bulk-inserter"].ingredients = {
+    {type = "item", name = "magic-inserter", amount = 1},
+    {type = "item", name = "iron-gear-wheel", amount = 10},
+    {type = "item", name = "rune-word-terra", amount = 1},
+    {type = "item", name = "element-of-stability", amount = 1}
+  }
+end
+
+-- Make bulk inserter require no power
+if data.raw["inserter"]["bulk-inserter"] then
+  data.raw["inserter"]["bulk-inserter"].energy_source = {type = "void"}
+  data.raw["inserter"]["bulk-inserter"].energy_per_movement = "0kW"
+  data.raw["inserter"]["bulk-inserter"].energy_per_rotation = "0kW"
+end
