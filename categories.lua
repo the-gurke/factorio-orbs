@@ -66,6 +66,10 @@ data:extend({
   },
   {
     type = "recipe-category",
+    name = "runes"
+  },
+  {
+    type = "recipe-category",
     name = "rune-transformation"
   }
 })

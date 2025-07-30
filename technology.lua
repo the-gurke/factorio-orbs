@@ -523,6 +523,10 @@ data:extend({
       },
       {
         type = "unlock-recipe",
+        recipe = "conjure-rune-word-aqua"
+      },
+      {
+        type = "unlock-recipe",
         recipe = "conjure-rune-word-ventus"
       },
       {
