@@ -24,15 +24,15 @@ conjuration_machine.module_specification = {
 conjuration_machine.allowed_module_categories = {"orb-speed"} -- Only allow orb-speed modules (haste orbs)
 conjuration_machine.module_slots = 3
 
--- Create the conjuration lab
-local conjuration_lab = util.table.deepcopy(data.raw["lab"]["lab"])
-
-conjuration_lab.name = "conjuration-lab"
-conjuration_lab.minable = {mining_time = 0.2, result = "conjuration-lab"}
-conjuration_lab.energy_source = {type = "void"} -- No power required
-conjuration_lab.energy_usage = "1W"
-conjuration_lab.researching_speed = 1
-conjuration_lab.inputs = {"automation-science-pack", "conjuration-research-pack", "divination-research-pack", "rune-research-pack"}
+-- Override the existing lab to be alchemy research laboratory
+if data.raw["lab"]["lab"] then
+  local lab = data.raw["lab"]["lab"]
+  lab.localised_name = {"entity-name.alchemy-research-laboratory"}
+  lab.energy_source = {type = "void"} -- No power required
+  lab.energy_usage = "1W"
+  lab.researching_speed = 1
+  lab.inputs = {"automation-science-pack", "conjuration-research-pack", "divination-research-pack", "rune-research-pack"}
+end
 
 -- Create the soul collector (based on iron chest)
 local soul_collector = util.table.deepcopy(data.raw["container"]["iron-chest"])
@@ -80,7 +80,6 @@ soul_collector.selection_box = {
 
 data:extend({
   conjuration_machine,
-  conjuration_lab,
   soul_collector,
   {
     type = "item",
@@ -90,16 +89,6 @@ data:extend({
     subgroup = "orbs-machines",
     order = "a[conjuration-machine]",
     place_result = "conjuration-machine",
-    stack_size = 20
-  },
-  {
-    type = "item",
-    name = "conjuration-lab",
-    icon = "__base__/graphics/icons/lab.png",
-    icon_size = 64,
-    subgroup = "orbs-machines",
-    order = "b[conjuration-lab]",
-    place_result = "conjuration-lab",
     stack_size = 20
   },
   {
@@ -131,22 +120,6 @@ data:extend({
     },
     results = {
       {type = "item", name = "conjuration-machine", amount = 1}
-    },
-    enabled = false
-  },
-  {
-    type = "recipe",
-    name = "craft-conjuration-lab",
-    category = "crafting",
-    energy_required = 5,
-    icon = "__base__/graphics/icons/lab.png",
-    icon_size = 64,
-    ingredients = {
-      {type = "item", name = "lab", amount = 1},
-      {type = "item", name = "magic-orb", amount = 2}
-    },
-    results = {
-      {type = "item", name = "conjuration-lab", amount = 1}
     },
     enabled = false
   },

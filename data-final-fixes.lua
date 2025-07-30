@@ -440,11 +440,17 @@ end
 
 if data.raw.recipe["lab"] then
   data.raw.recipe["lab"].enabled = false
+  data.raw.recipe["lab"].localised_name = {"recipe-name.alchemy-research-laboratory"}
   data.raw.recipe["lab"].ingredients = {
     {type = "item", name = "iron-gear-wheel", amount = 10},
     {type = "item", name = "iron-stick", amount = 20},
     {type = "item", name = "copper-cable", amount = 8}
   }
+end
+
+-- Override lab item name
+if data.raw.item["lab"] then
+  data.raw.item["lab"].localised_name = {"item-name.alchemy-research-laboratory"}
 end
 
 -- Override splitter recipe to use copper cable instead of electronic circuits
