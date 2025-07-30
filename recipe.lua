@@ -341,7 +341,7 @@ table.insert(recipes, {
     {type = "item", name = "magic-orb", amount = 1},
     {type = "item", name = "spark-of-luck", amount = 1, probability = 0.01}
   },
-  enabled = true,
+  enabled = false,
   order = "c[conjure-luck]"
 })
 
@@ -362,7 +362,7 @@ table.insert(recipes, {
     {type = "item", name = "magic-orb", amount = 1},
     {type = "item", name = "dust-of-serendipity", amount = 1}
   },
-  enabled = true,
+  enabled = false,
   order = "d[conjure-serendipity]"
 })
 
@@ -383,7 +383,7 @@ table.insert(recipes, {
   results = {
     {type = "item", name = "divination-research-pack", amount = 1}
   },
-  enabled = true,
+  enabled = false,
   order = "b[divination-research-pack]"
 })
 
