@@ -496,4 +496,41 @@ if data.raw.recipe["repair-pack"] then
   end
 end
 
+-- Remove power requirements from all combinators
+if data.raw["constant-combinator"]["constant-combinator"] then
+  data.raw["constant-combinator"]["constant-combinator"].energy_source = {type = "void"}
+  data.raw["constant-combinator"]["constant-combinator"].energy_usage = "0kW"
+end
+
+if data.raw["arithmetic-combinator"]["arithmetic-combinator"] then
+  data.raw["arithmetic-combinator"]["arithmetic-combinator"].energy_source = {type = "void"}
+  data.raw["arithmetic-combinator"]["arithmetic-combinator"].energy_usage = "0kW"
+end
+
+if data.raw["decider-combinator"]["decider-combinator"] then
+  data.raw["decider-combinator"]["decider-combinator"].energy_source = {type = "void"}
+  data.raw["decider-combinator"]["decider-combinator"].energy_usage = "0kW"
+end
+
+if data.raw["selector-combinator"]["selector-combinator"] then
+  data.raw["selector-combinator"]["selector-combinator"].energy_source = {type = "void"}
+  data.raw["selector-combinator"]["selector-combinator"].energy_usage = "0kW"
+end
+
+-- Add selector combinator to circuit-network technology and remove advanced-combinators
+if data.raw.technology["circuit-network"] then
+  if not data.raw.technology["circuit-network"].effects then
+    data.raw.technology["circuit-network"].effects = {}
+  end
+  table.insert(data.raw.technology["circuit-network"].effects, {
+    type = "unlock-recipe",
+    recipe = "selector-combinator"
+  })
+end
+
+-- Remove advanced-combinators technology
+if data.raw.technology["advanced-combinators"] then
+  data.raw.technology["advanced-combinators"] = nil
+end
+
 
