@@ -225,8 +225,6 @@ if data.raw.item.coal then
   data.raw.item.coal.fuel_category = nil
 end
 
-
-
 -- Create new burner inserter from burner inserter prototype with normal inserter speed
 local new_burner_inserter = table.deepcopy(data.raw["inserter"]["burner-inserter"])
 new_burner_inserter.name = "burner-inserter"
@@ -353,44 +351,6 @@ magic_inserter_item.hidden = nil
 
 -- Add new inserters to data
 data:extend({new_burner_inserter, new_burner_inserter_item, magic_inserter, magic_inserter_item})
-
--- Update automation science pack to contraption science pack (it's a tool, not item!)
-data.raw.tool["automation-science-pack"].localised_name = {"item-name.contraption-science-pack"}
-data.raw.tool["automation-science-pack"].icon = "__orbs__/graphics/contraption-science-pack.png"
-data.raw.tool["automation-science-pack"].icon_size = 1024
-data.raw.tool["automation-science-pack"].icon_mipmaps = nil
-data.raw.tool["automation-science-pack"].icons = nil
-
--- Update automation science pack recipe
-data.raw.recipe["automation-science-pack"].localised_name = {"recipe-name.contraption-science-pack"}
-data.raw.recipe["automation-science-pack"].ingredients = {
-  {type = "item", name = "iron-gear-wheel", amount = 1},
-  {type = "item", name = "iron-stick", amount = 2},
-  {type = "item", name = "copper-cable", amount = 3}
-}
-data.raw.recipe["automation-science-pack"].icon = "__orbs__/graphics/contraption-science-pack.png"
-data.raw.recipe["automation-science-pack"].icon_size = 1024
-data.raw.recipe["automation-science-pack"].icon_mipmaps = nil
-data.raw.recipe["automation-science-pack"].icons = nil
-
--- Update automation-science-pack technology (the one that unlocks automation science pack)
-data.raw.technology["automation-science-pack"].localised_name = {"technology-name.contraption-science"}
-data.raw.technology["automation-science-pack"].icon = "__orbs__/graphics/contraption-science-pack.png"
-data.raw.technology["automation-science-pack"].icon_size = 1024
-data.raw.technology["automation-science-pack"].icon_mipmaps = nil
-data.raw.technology["automation-science-pack"].icons = nil
-
--- Remove steam power and electronics technologies
-data.raw.technology["steam-power"] = nil
-data.raw.technology["electronics"] = nil
-
--- Remove or update shortcuts that reference deleted technologies
-if data.raw.shortcut["give-copper-wire"] then
-  data.raw.shortcut["give-copper-wire"].technology_to_unlock = "metallurgy"
-end
-
--- Update automation-science-pack prerequisites (remove steam-power and electronics)
-data.raw.technology["automation-science-pack"].prerequisites = {"metallurgy"}
 
 -- Update metallurgy to depend on fire-science
 data.raw.technology["metallurgy"].prerequisites = {"fire-science"}
