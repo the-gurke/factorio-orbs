@@ -101,6 +101,7 @@ if data.raw["assembling-machine"]["assembling-machine-1"] then
     uses_surface_effects = true
   }
   data.raw["assembling-machine"]["assembling-machine-1"].allowed_effects = {"speed", "productivity", "pollution"}
+  data.raw["assembling-machine"]["assembling-machine-1"].crafting_speed = 1
 end
 
 data:extend({
