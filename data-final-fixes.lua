@@ -514,5 +514,10 @@ if data.raw["inserter"]["bulk-inserter"] then
   data.raw["inserter"]["bulk-inserter"].energy_per_rotation = "0kW"
 end
 
+-- Modify burner mining drill to have 4x4 mining area
+if data.raw["mining-drill"]["burner-mining-drill"] then
+  data.raw["mining-drill"]["burner-mining-drill"].resource_searching_radius = 1.99
+end
+
 -- Finally, as a last step, remove all the content we don't want
 require("removals")
