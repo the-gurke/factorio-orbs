@@ -346,7 +346,6 @@ local magic_inserter_item = table.deepcopy(data.raw.item["fast-inserter"])
 magic_inserter_item.name = "magic-inserter"
 magic_inserter_item.localised_name = {"item-name.magic-inserter"}
 magic_inserter_item.place_result = "magic-inserter"
-magic_inserter_item.subgroup = "orbs-machines"
 magic_inserter_item.hidden = nil
 
 -- Add new inserters to data

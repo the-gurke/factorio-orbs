@@ -864,6 +864,7 @@ table.insert(recipes, {
   type = "recipe",
   name = "magic-inserter",
   category = "crafting",
+  subgroup = "inserter",
   energy_required = 3,
   icon = "__base__/graphics/icons/fast-inserter.png",
   icon_size = 64,
@@ -873,9 +874,9 @@ table.insert(recipes, {
   },
   results = {
     {type = "item", name = "magic-inserter", amount = 1},
-    {type = "item", name = "magic-orb", amount = 1}
   },
-  enabled = false
+  enabled = false,
+  order = "d[fast-inserter]"
 })
 
 
