@@ -1,8 +1,8 @@
 {
   "name": "orbs",
-  "version": "0.1.5",
+  "version": "0.2",
   "title": "Orbs",
-  "author": "thegurke",
+  "author": "thegurke, boesemilch",
   "factorio_version": "2.0",
   "dependencies": ["base >= 2.0", "space-age >= 2.0", "Nanobots2 > 3.3"],
   "description": "If you want to ponder your orb, this mod is for you."
