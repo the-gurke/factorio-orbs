@@ -4,7 +4,7 @@
 
 **Orbs** is a comprehensive magical modification for Factorio that introduces a complete magic system centered around orbs, runes, and alchemy. The mod fundamentally transforms the gameplay experience by replacing traditional electricity-based automation with magical alternatives, while maintaining the core factory-building mechanics.
 
-Electricity has been removed from the game entirely.
+For humans: The following contains a lot of spoilers! You might not want to read this.
 
 ## Key Features
 
