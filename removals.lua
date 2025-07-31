@@ -5,10 +5,12 @@
 local technologies_to_remove = {
   "logistic-science-pack",
   "radar",
-  "gun-turret", 
+  "gun-turret",
   "steel-processing",
   "military",
-  "fast-inserter"
+  "fast-inserter",
+  "steam-power",
+  "electronics"
 }
 
 -- Remove all technologies that require logistic-science-pack
@@ -80,8 +82,8 @@ end
 
 -- Clean up UI elements that reference deleted content
 local ui_types = {
-  ["tips-and-tricks-item"] = function(item) 
-    return has_deleted_tech(item.trigger) or has_deleted_tech(item.skip_trigger) 
+  ["tips-and-tricks-item"] = function(item)
+    return has_deleted_tech(item.trigger) or has_deleted_tech(item.skip_trigger)
   end,
   ["research-achievement"] = function(item)
     return item.technology and not data.raw.technology[item.technology]

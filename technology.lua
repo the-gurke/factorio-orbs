@@ -1,6 +1,41 @@
 -- technology.lua
 -- Define research technologies
 
+-- Update automation science pack to contraption research pack
+data.raw.tool["automation-science-pack"].localised_name = {"item-name.contraption-research-pack"}
+data.raw.tool["automation-science-pack"].icon = "__orbs__/graphics/contraption-research-pack.png"
+data.raw.tool["automation-science-pack"].icon_size = 1024
+data.raw.tool["automation-science-pack"].icon_mipmaps = nil
+data.raw.tool["automation-science-pack"].icons = nil
+
+-- Update automation science pack recipe
+data.raw.recipe["automation-science-pack"].localised_name = {"recipe-name.contraption-research-pack"}
+data.raw.recipe["automation-science-pack"].ingredients = {
+  {type = "item", name = "iron-gear-wheel", amount = 1},
+  {type = "item", name = "iron-stick", amount = 2},
+  {type = "item", name = "copper-cable", amount = 3}
+}
+data.raw.recipe["automation-science-pack"].icon = "__orbs__/graphics/contraption-research-pack.png"
+data.raw.recipe["automation-science-pack"].icon_size = 1024
+data.raw.recipe["automation-science-pack"].icon_mipmaps = nil
+data.raw.recipe["automation-science-pack"].icons = nil
+
+-- Update automation-science-pack technology (the one that unlocks automation science pack)
+data.raw.technology["automation-science-pack"].localised_name = {"technology-name.contraption-science"}
+data.raw.technology["automation-science-pack"].icon = "__orbs__/graphics/contraption-research-pack.png"
+data.raw.technology["automation-science-pack"].icon_size = 1024
+data.raw.technology["automation-science-pack"].icon_mipmaps = nil
+data.raw.technology["automation-science-pack"].icons = nil
+
+-- Update automation-science-pack prerequisites
+data.raw.technology["automation-science-pack"].prerequisites = {"metallurgy"}
+
+-- Remove or update shortcuts that reference deleted technologies
+if data.raw.shortcut["give-copper-wire"] then
+  data.raw.shortcut["give-copper-wire"].technology_to_unlock = "metallurgy"
+end
+
+-- Add new technologies
 data:extend({
   {
     type = "technology",
