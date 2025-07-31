@@ -231,10 +231,10 @@ end
 local new_burner_inserter = table.deepcopy(data.raw["inserter"]["burner-inserter"])
 new_burner_inserter.name = "burner-inserter"
 new_burner_inserter.localised_name = {"item-name.burner-inserter"}
--- Copy speed stats from normal inserter but keep same energy as wooden inserter
-if data.raw["inserter"]["inserter"] then
-  new_burner_inserter.extension_speed = data.raw["inserter"]["inserter"].extension_speed
-  new_burner_inserter.rotation_speed = data.raw["inserter"]["inserter"].rotation_speed
+-- Copy speed stats from fast inserter but keep same energy as wooden inserter
+if data.raw["inserter"]["fast-inserter"] then
+  new_burner_inserter.extension_speed = data.raw["inserter"]["fast-inserter"].extension_speed
+  new_burner_inserter.rotation_speed = data.raw["inserter"]["fast-inserter"].rotation_speed
 end
 -- in-game 8kW corresponds to 786W somehow
 new_burner_inserter.energy_per_movement = "8kW"
@@ -280,6 +280,10 @@ end
 -- Update long-handed inserter to be a burner inserter
 if data.raw["inserter"]["long-handed-inserter"] then
   local long_inserter = data.raw["inserter"]["long-handed-inserter"]
+  -- Copy rotation speed from fast inserter
+  if data.raw["inserter"]["fast-inserter"] then
+    long_inserter.rotation_speed = data.raw["inserter"]["fast-inserter"].rotation_speed
+  end
   long_inserter.energy_source = {
     type = "burner",
     fuel_categories = {"chemical"},
