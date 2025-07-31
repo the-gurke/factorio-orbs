@@ -996,7 +996,7 @@ table.insert(recipes, {
   icon = "__base__/graphics/icons/iron-plate.png",
   icon_size = 64,
   ingredients = {
-    {type = "item", name = "copper-plate", amount = 1}
+    {type = "item", name = "copper-plate", amount = 2}
   },
   results = {
     {type = "item", name = "iron-plate", amount = 1}
@@ -1015,7 +1015,7 @@ table.insert(recipes, {
   icon = "__base__/graphics/icons/copper-plate.png",
   icon_size = 64,
   ingredients = {
-    {type = "item", name = "iron-plate", amount = 1}
+    {type = "item", name = "iron-plate", amount = 2}
   },
   results = {
     {type = "item", name = "copper-plate", amount = 1}
@@ -1034,7 +1034,7 @@ table.insert(recipes, {
   icon = "__orbs__/graphics/gold-plate.png",
   icon_size = 1024,
   ingredients = {
-    {type = "item", name = "copper-plate", amount = 1}
+    {type = "item", name = "copper-plate", amount = 3}
   },
   results = {
     {type = "item", name = "gold-plate", amount = 1}
@@ -1053,7 +1053,7 @@ table.insert(recipes, {
   icon = "__base__/graphics/icons/copper-plate.png",
   icon_size = 64,
   ingredients = {
-    {type = "item", name = "gold-plate", amount = 1}
+    {type = "item", name = "gold-plate", amount = 2}
   },
   results = {
     {type = "item", name = "copper-plate", amount = 1}
