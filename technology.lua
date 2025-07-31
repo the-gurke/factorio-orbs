@@ -487,27 +487,15 @@ data:extend({
     effects = {
       {
         type = "unlock-recipe",
-        recipe = "burner-mining-drill"
-      },
-      {
-        type = "unlock-recipe",
-        recipe = "iron-chest"
-      },
-      {
-        type = "unlock-recipe",
-        recipe = "firearm-magazine"
-      },
-      {
-        type = "unlock-recipe",
-        recipe = "light-armor"
-      },
-      {
-        type = "unlock-recipe",
         recipe = "iron-gear-wheel"
       },
       {
         type = "unlock-recipe",
         recipe = "iron-stick"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "iron-chest"
       },
       {
         type = "unlock-recipe",
@@ -519,7 +507,15 @@ data:extend({
       },
       {
         type = "unlock-recipe",
+        recipe = "burner-mining-drill"
+      },
+      {
+        type = "unlock-recipe",
         recipe = "lab"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "light-armor"
       }
     },
     research_trigger = {
