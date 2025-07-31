@@ -9,11 +9,11 @@ conjuration_machine.crafting_categories = {"orbs"} -- ONLY orbs category
 conjuration_machine.crafting_speed = 1
 conjuration_machine.energy_source = {type = "void"} -- No power required
 conjuration_machine.energy_usage = "1W" -- Minimal energy usage
-conjuration_machine.allowed_effects = {"speed"} -- Allow speed effects for haste orbs
+conjuration_machine.allowed_effects = {"speed", "productivity", "pollution"} -- Allow speed, productivity, and pollution effects
 conjuration_machine.effect_receiver = {
   base_effect = {},
   uses_module_effects = true,
-  uses_beacon_effects = false, -- Prevent beacon effects
+  uses_beacon_effects = true, -- Allow beacon effects from resonance spires
   uses_surface_effects = true
 }
 conjuration_machine.module_specification = {
@@ -21,7 +21,7 @@ conjuration_machine.module_specification = {
   module_info_icon_shift = {0, 0.5},
   module_info_multi_row_initial_height_modifier = -0.3
 }
-conjuration_machine.allowed_module_categories = {"orb-speed"} -- Only allow orb-speed modules (haste orbs)
+conjuration_machine.allowed_module_categories = {"orb-speed", "orb-pollution", "orb-productivity"} -- Allow haste orbs and cleansing orbs
 conjuration_machine.module_slots = 3
 
 -- Override the existing lab to be alchemy research laboratory
@@ -32,6 +32,11 @@ if data.raw["lab"]["lab"] then
   lab.energy_usage = "1W"
   lab.researching_speed = 1
   lab.inputs = {"automation-science-pack", "conjuration-research-pack", "divination-research-pack", "rune-research-pack"}
+  lab.effect_receiver = {
+    uses_beacon_effects = true,
+    uses_module_effects = true,
+    uses_surface_effects = true
+  }
 end
 
 -- Create the soul collector (based on iron chest)
@@ -77,6 +82,26 @@ soul_collector.selection_box = {
     1
   }
 }
+
+-- Update stone furnace to accept beacon effects
+if data.raw["furnace"]["stone-furnace"] then
+  data.raw["furnace"]["stone-furnace"].effect_receiver = {
+    uses_beacon_effects = true,
+    uses_module_effects = false,
+    uses_surface_effects = true
+  }
+  data.raw["furnace"]["stone-furnace"].allowed_effects = {"speed", "productivity", "pollution"}
+end
+
+-- Update assembling machine 1 to accept beacon effects
+if data.raw["assembling-machine"]["assembling-machine-1"] then
+  data.raw["assembling-machine"]["assembling-machine-1"].effect_receiver = {
+    uses_beacon_effects = true,
+    uses_module_effects = true,
+    uses_surface_effects = true
+  }
+  data.raw["assembling-machine"]["assembling-machine-1"].allowed_effects = {"speed", "productivity", "pollution"}
+end
 
 data:extend({
   conjuration_machine,
@@ -620,6 +645,99 @@ data:extend({
     },
     results = {
       {type = "item", name = "sentry-ward", amount = 1}
+    },
+    enabled = false
+  }
+})
+
+-- Create the resonance spire (based on beacon)
+local resonance_spire = util.table.deepcopy(data.raw["beacon"]["beacon"])
+
+resonance_spire.name = "resonance-spire"
+resonance_spire.minable = {mining_time = 2, result = "resonance-spire"}
+resonance_spire.energy_source = {type = "void"} -- No power required
+resonance_spire.energy_usage = "1W"
+resonance_spire.supply_area_distance = 7 -- 15x15 area (radius 7)
+resonance_spire.allowed_effects = {"productivity", "pollution", "speed"} -- Allow productivity, pollution, and speed effects
+resonance_spire.module_icons_suppressed = false
+resonance_spire.distribution_effectivity = 1.0
+resonance_spire.effect_receiver = {
+  base_effect = {},
+  uses_module_effects = true,
+  uses_beacon_effects = false,
+  uses_surface_effects = true
+}
+resonance_spire.module_specification = {
+  module_slots = 1,
+  module_info_icon_shift = {0, -0.5},
+  module_info_multi_row_initial_height_modifier = -0.3,
+  module_info_icon_scale = 1.0,
+  module_info_max_icons_per_row = 1,
+  module_info_max_icon_rows = 1
+}
+resonance_spire.allowed_module_categories = {"orb-productivity", "orb-pollution"} -- Only allow productivity and cleansing orbs
+resonance_spire.module_slots = 1
+
+-- Make it 1x1 size but keep reasonable bounding boxes for module display
+resonance_spire.collision_box = {{-0.4, -0.4}, {0.4, 0.4}}
+resonance_spire.selection_box = {{-0.5, -0.8}, {0.5, 0.5}}
+resonance_spire.drawing_box = {{-0.5, -1.0}, {0.5, 0.5}} -- Larger drawing box for better module visibility
+
+-- Update graphics to use custom resonance spire entity graphics
+resonance_spire.graphics_set = {
+  animation_list = {
+    {
+      render_layer = "floor-mechanics",
+      always_draw = true,
+      animation = {
+        layers = {
+          {
+            filename = "__orbs__/graphics/resonance-spire-entity.png",
+            priority = "high",
+            width = 1024,
+            height = 1024,
+            frame_count = 1,
+            line_length = 1,
+            scale = 0.06,
+            shift = {0, -0.5}
+          }
+        }
+      }
+    }
+  }
+}
+
+data:extend({
+  resonance_spire,
+  {
+    type = "item",
+    name = "resonance-spire",
+    icon = "__orbs__/graphics/resonance-spire.png",
+    icon_size = 1024,
+    subgroup = "orbs-machines",
+    order = "h[resonance-spire]",
+    place_result = "resonance-spire",
+    stack_size = 10
+  }
+})
+
+-- Resonance Spire Recipe
+data:extend({
+  {
+    type = "recipe",
+    name = "craft-resonance-spire",
+    category = "crafting",
+    energy_required = 15,
+    icon = "__orbs__/graphics/resonance-spire.png",
+    icon_size = 1024,
+    ingredients = {
+      {type = "item", name = "magic-orb", amount = 1},
+      {type = "item", name = "gold-plate", amount = 10},
+      {type = "item", name = "iron-stick", amount = 1},
+      {type = "item", name = "divination-essence", amount = 4}
+    },
+    results = {
+      {type = "item", name = "resonance-spire", amount = 1}
     },
     enabled = false
   }

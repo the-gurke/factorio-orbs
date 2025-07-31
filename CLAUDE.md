@@ -172,3 +172,4 @@ The divination system requires precise timing and coordination - you need to cap
 ## To keep in mind for Claude
 - Technologies-related code should be added to `technology.lua`, not `data-final-fixes.lua`.
 - Whenever you introduce new items, entities, technologies, etc., you need to add the corresponding locale strings for their names to `locale/en/strings.cfg`.
+- Don't try to run the lua code.

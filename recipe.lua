@@ -22,6 +22,7 @@ table.insert(recipes, {
     {type = "item", name = "active-magic-shard", amount = 1, probability = 0.05}
   },
   enabled = false,
+  allow_productivity = true,
   main_product = "",
   order = "b[conjure-shards]-a[0]"
 })
@@ -46,6 +47,7 @@ for i, n in ipairs(conjure_inputs) do
       {type = "item", name = "active-magic-shard", amount = n * n}
     },
     enabled = false,
+    allow_productivity = true,
     main_product = "",
     order = "d[conjure-shards]-" .. string.char(97 + i) .. "[" .. n .. "]"
   })
@@ -71,6 +73,7 @@ table.insert(recipes, {
     {type = "item", name = "active-magic-shard", amount = 1, probability = 0.5}
   },
   enabled = false,
+  allow_productivity = true,
   main_product = "",
   order = "a[replicate-shards]"
 })
@@ -95,6 +98,7 @@ table.insert(recipes, {
     {type = "item", name = "active-magic-shard", amount_min = 2, amount_max = 4}
   },
   enabled = false,
+  allow_productivity = true,
   main_product = "",
   order = "b[replicate-shards-2]"
 })
@@ -136,6 +140,7 @@ table.insert(recipes, {
     {type = "item", name = "magic-orb", amount = 1}
   },
   enabled = false,
+  allow_productivity = true,
   order = "a[manifest-orb]"
 })
 
@@ -176,6 +181,7 @@ table.insert(recipes, {
     {type = "item", name = "conjuration-research-pack", amount = 1}
   },
   enabled = false,
+  allow_productivity = true,
   order = "a[conjuration-research-pack]"
 })
 
@@ -235,6 +241,49 @@ table.insert(recipes, {
   },
   enabled = false,
   order = "e[neutralize-conjuration-orb]"
+})
+
+-- Conjure Productivity Orb
+table.insert(recipes, {
+  type = "recipe",
+  name = "conjure-productivity-orb",
+  category = "orbs",
+  subgroup = "orbs-manifest",
+  energy_required = 5,
+  icon = "__orbs__/graphics/productivity-orb.png",
+  icon_size = 1024,
+  ingredients = {
+    {type = "item", name = "magic-orb", amount = 1},
+    {type = "item", name = "gold-plate", amount = 4},
+    {type = "item", name = "copper-cable", amount = 2},
+    {type = "item", name = "dust-of-serendipity", amount = 1}
+  },
+  results = {
+    {type = "item", name = "productivity-orb", amount = 1}
+  },
+  enabled = false,
+  order = "f[conjure-productivity-orb]"
+})
+
+-- Conjure Cleansing Orb
+table.insert(recipes, {
+  type = "recipe",
+  name = "conjure-cleansing-orb",
+  category = "orbs",
+  subgroup = "orbs-manifest",
+  energy_required = 3,
+  icon = "__orbs__/graphics/cleansing-orb.png",
+  icon_size = 1024,
+  ingredients = {
+    {type = "item", name = "magic-orb", amount = 1},
+    {type = "item", name = "wood", amount = 5},
+    {type = "item", name = "dust-of-serendipity", amount = 1}
+  },
+  results = {
+    {type = "item", name = "cleansing-orb", amount = 1}
+  },
+  enabled = false,
+  order = "g[conjure-cleansing-orb]"
 })
 
 -- Conjure Unstable Orb
@@ -342,6 +391,7 @@ table.insert(recipes, {
     {type = "item", name = "spark-of-luck", amount = 1, probability = 0.01}
   },
   enabled = false,
+  allow_productivity = true,
   order = "c[conjure-luck]"
 })
 
@@ -384,6 +434,7 @@ table.insert(recipes, {
     {type = "item", name = "divination-research-pack", amount = 1}
   },
   enabled = false,
+  allow_productivity = true,
   order = "b[divination-research-pack]"
 })
 
@@ -449,6 +500,7 @@ table.insert(recipes, {
     {type = "fluid", name = "stability", amount = 225}
   },
   enabled = false,
+  allow_productivity = true,
   order = "m[liquify-stability]"
 })
 
@@ -661,6 +713,7 @@ table.insert(recipes, {
     {type = "fluid", name = "rage", amount = 500}
   },
   enabled = false,
+  allow_productivity = true,
   order = "b[magical-experience]"
 })
 
@@ -856,6 +909,7 @@ table.insert(recipes, {
     {type = "item", name = "rune-word-aqua", amount = 1}
   },
   enabled = false,
+  allow_productivity = true,
   order = "s[conjure-rune-word-aqua]"
 })
 
@@ -875,6 +929,7 @@ table.insert(recipes, {
     {type = "item", name = "rune-word-ventus", amount = 1}
   },
   enabled = false,
+  allow_productivity = true,
   order = "s[conjure-rune-word-ventus]"
 })
 
@@ -899,6 +954,7 @@ table.insert(recipes, {
     {type = "item", name = "rune-research-pack", amount = 1}
   },
   enabled = false,
+  allow_productivity = true,
   hidden = false,
   order = "d[rune-research-pack]"
 })
@@ -958,6 +1014,7 @@ table.insert(recipes, {
     {type = "item", name = "iron-plate", amount = 1}
   },
   enabled = false,
+  allow_productivity = true,
   order = "t[transmute-copper-to-iron]"
 })
 
@@ -976,6 +1033,7 @@ table.insert(recipes, {
     {type = "item", name = "copper-plate", amount = 1}
   },
   enabled = false,
+  allow_productivity = true,
   order = "t[transmute-iron-to-copper]"
 })
 
@@ -994,6 +1052,7 @@ table.insert(recipes, {
     {type = "item", name = "gold-plate", amount = 1}
   },
   enabled = false,
+  allow_productivity = true,
   order = "u[transmute-copper-to-gold]"
 })
 
@@ -1012,6 +1071,7 @@ table.insert(recipes, {
     {type = "item", name = "copper-plate", amount = 1}
   },
   enabled = false,
+  allow_productivity = true,
   order = "u[transmute-gold-to-copper]"
 })
 
