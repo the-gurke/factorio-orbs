@@ -93,6 +93,47 @@ data:extend({
     limitation_message_key = "haste-orb-usable-only-on-conjuration-machines"
   },
 
+  -- Productivity Orb (spoils in 2m to magic orb, +5% productivity, -5% speed)
+  {
+    type = "module",
+    name = "productivity-orb",
+    icon = "__orbs__/graphics/productivity-orb.png",
+    icon_size = 1024,
+    subgroup = "orbs-manifest",
+    category = "orb-productivity", -- Custom category for orb modules
+    tier = 1,
+    order = "f[productivity-orb]",
+    stack_size = 5,
+    spoil_ticks = 2 * 60 * 60, -- 2 minutes * 60 seconds * 60 ticks per second
+    spoil_result = "magic-orb",
+    effect = {
+      productivity = 0.15,
+      speed = -0.15
+    },
+    limitation = {"resonance-spire"}, -- Only works in resonance spires
+    limitation_message_key = "productivity-orb-usable-only-on-resonance-spires"
+  },
+
+  -- Cleansing Orb (spoils in 7m to magic orb, -5% pollution)
+  {
+    type = "module",
+    name = "cleansing-orb",
+    icon = "__orbs__/graphics/cleansing-orb.png",
+    icon_size = 1024,
+    subgroup = "orbs-manifest",
+    category = "orb-pollution", -- Custom category for orb modules
+    tier = 1,
+    order = "f[cleansing-orb]",
+    stack_size = 5,
+    spoil_ticks = 7 * 60 * 60, -- 7 minutes * 60 seconds * 60 ticks per second
+    spoil_result = "magic-orb",
+    effect = {
+      pollution = -0.30
+    },
+    limitation = {"resonance-spire", "conjuration-machine"}, -- Works in resonance spires and conjuration machines
+    limitation_message_key = "cleansing-orb-usable-only-on-resonance-spires-and-conjuration-machines"
+  },
+
   -- Unstable Orb [Alpha State] (spoils in 30s to beta)
   {
     type = "item",

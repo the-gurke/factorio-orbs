@@ -91,5 +91,13 @@ data:extend({
   {
     type = "module-category",
     name = "orb-speed"
+  },
+  {
+    type = "module-category",
+    name = "orb-productivity"
+  },
+  {
+    type = "module-category",
+    name = "orb-pollution"
   }
 })

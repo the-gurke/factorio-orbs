@@ -829,3 +829,80 @@ data:extend({
     order = "a-h-axe"
   }
 })
+
+-- Cleansing Orb Technology
+data:extend({
+  {
+    type = "technology",
+    name = "cleansing-orb",
+    icon = "__orbs__/graphics/cleansing-orb.png",
+    icon_size = 1024,
+    prerequisites = {"orbs-technology"},
+    unit = {
+      count = 20,
+      ingredients = {
+        {"conjuration-research-pack", 1}
+      },
+      time = 30
+    },
+    effects = {
+      {
+        type = "unlock-recipe",
+        recipe = "conjure-cleansing-orb"
+      }
+    },
+    order = "o-c-cleansing"
+  }
+})
+
+-- Resonance Spire Technology
+data:extend({
+  {
+    type = "technology",
+    name = "resonance-spire",
+    icon = "__orbs__/graphics/resonance-spire.png",
+    icon_size = 1024,
+    prerequisites = {"rune-words"},
+    unit = {
+      count = 10,
+      ingredients = {
+        {"conjuration-research-pack", 2},
+        {"rune-research-pack", 1},
+      },
+      time = 30
+    },
+    effects = {
+      {
+        type = "unlock-recipe",
+        recipe = "craft-resonance-spire"
+      }
+    },
+    order = "o-r-resonance"
+  }
+})
+
+-- Productivity Orb Technology
+data:extend({
+  {
+    type = "technology",
+    name = "productivity-orb",
+    icon = "__orbs__/graphics/productivity-orb.png",
+    icon_size = 1024,
+    prerequisites = {"resonance-spire"},
+    unit = {
+      count = 50,
+      ingredients = {
+        {"rune-research-pack", 1},
+        {"conjuration-research-pack", 2}
+      },
+      time = 30
+    },
+    effects = {
+      {
+        type = "unlock-recipe",
+        recipe = "conjure-productivity-orb"
+      }
+    },
+    order = "o-p-productivity"
+  }
+})
