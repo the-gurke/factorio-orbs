@@ -15,10 +15,10 @@ table.insert(recipes, {
   icon = "__orbs__/graphics/conjure-shards.png",
   icon_size = 1024,
   ingredients = {
-    {type = "item", name = "magic-orb", amount = 1}
+    {type = "item", name = "magic-orb", amount = 1, ignored_by_stats = 1}
   },
   results = {
-    {type = "item", name = "magic-orb", amount = 1},
+    {type = "item", name = "magic-orb", amount = 1, ignored_by_stats = 1, ignored_by_productivity = 1},
     {type = "item", name = "active-magic-shard", amount = 1, probability = 0.05}
   },
   enabled = false,
@@ -40,10 +40,10 @@ for i, n in ipairs(conjure_inputs) do
     hide_from_signal_gui = false,
     icon_size = 1024,
     ingredients = {
-      {type = "item", name = "magic-orb", amount = n + 1}
+      {type = "item", name = "magic-orb", amount = n + 1, ignored_by_stats = 1}
     },
     results = {
-      {type = "item", name = "magic-orb", amount = 1},
+      {type = "item", name = "magic-orb", amount = 1, ignored_by_stats = 1, ignored_by_productivity = 1},
       {type = "item", name = "active-magic-shard", amount = n * n}
     },
     enabled = false,
@@ -64,12 +64,12 @@ table.insert(recipes, {
   icon = "__orbs__/graphics/active-magic-shard.png",
   icon_size = 1024,
   ingredients = {
-    {type = "item", name = "magic-orb", amount = 1},
-    {type = "item", name = "active-magic-shard", amount = 1}
+    {type = "item", name = "magic-orb", amount = 1, ignored_by_stats = 1},
+    {type = "item", name = "active-magic-shard", amount = 1, ignored_by_stats = 1}
   },
   results = {
-    {type = "item", name = "magic-orb", amount = 1},
-    {type = "item", name = "active-magic-shard", amount = 1},
+    {type = "item", name = "magic-orb", amount = 1, ignored_by_stats = 1, ignored_by_productivity = 1},
+    {type = "item", name = "active-magic-shard", amount = 1, ignored_by_stats = 1, ignored_by_productivity = 1},
     {type = "item", name = "active-magic-shard", amount = 1, probability = 0.5}
   },
   enabled = false,
@@ -89,12 +89,12 @@ table.insert(recipes, {
   icon = "__orbs__/graphics/active-magic-shard.png",
   icon_size = 1024,
   ingredients = {
-    {type = "item", name = "magic-orb", amount = 2},
-    {type = "item", name = "active-magic-shard", amount = 10}
+    {type = "item", name = "magic-orb", amount = 2, ignored_by_stats = 2},
+    {type = "item", name = "active-magic-shard", amount = 10, ignored_by_stats = 10}
   },
   results = {
-    {type = "item", name = "magic-orb", amount = 2},
-    {type = "item", name = "active-magic-shard", amount = 10},
+    {type = "item", name = "magic-orb", amount = 2, ignored_by_stats = 2, ignored_by_productivity = 2},
+    {type = "item", name = "active-magic-shard", amount = 10, ignored_by_stats = 10, ignored_by_productivity = 10},
     {type = "item", name = "active-magic-shard", amount_min = 2, amount_max = 4}
   },
   enabled = false,
@@ -154,10 +154,9 @@ table.insert(recipes, {
   icon = "__orbs__/graphics/conjuration-orb.png",
   icon_size = 1024,
   ingredients = {
-    {type = "item", name = "magic-orb", amount = 2}
+    {type = "item", name = "magic-orb", amount = 1}
   },
   results = {
-    {type = "item", name = "magic-orb", amount = 1},
     {type = "item", name = "conjuration-orb", amount = 1}
   },
   enabled = false,
@@ -195,10 +194,9 @@ table.insert(recipes, {
   icon = "__orbs__/graphics/haste-orb.png",
   icon_size = 1024,
   ingredients = {
-    {type = "item", name = "magic-orb", amount = 2}
+    {type = "item", name = "magic-orb", amount = 1}
   },
   results = {
-    {type = "item", name = "magic-orb", amount = 1},
     {type = "item", name = "haste-orb", amount = 1}
   },
   enabled = false,
@@ -296,14 +294,15 @@ table.insert(recipes, {
   icon = "__orbs__/graphics/unstable-orb-alpha.png",
   icon_size = 1024,
   ingredients = {
-    {type = "item", name = "magic-orb", amount = 1},
+    {type = "item", name = "magic-orb", amount = 1, ignored_by_stats = 1},
     {type = "item", name = "active-magic-shard", amount = 50}
   },
   results = {
-    {type = "item", name = "magic-orb", amount = 1},
+    {type = "item", name = "magic-orb", amount = 1, ignored_by_stats = 1, ignored_by_productivity = 1},
     {type = "item", name = "unstable-orb-alpha", amount = 10, probability = 0.05}
   },
   enabled = false,
+  allow_productivity = true,
   order = "f[conjure-unstable-orb]"
 })
 
@@ -343,10 +342,11 @@ table.insert(recipes, {
     {type = "item", name = "unstable-orb-gamma", amount = 1}
   },
   results = {
-    {type = "item", name = "unstable-orb-alpha", amount = 2},
+    {type = "item", name = "unstable-orb-alpha", amount = 2, ignored_by_productivity = 2},
     {type = "item", name = "divination-essence", amount = 1}
   },
   reset_freshness_on_craft = true,
+  allow_productivity = true,
   enabled = false,
   order = "a[conjure-divination-essence]"
 })
@@ -361,12 +361,11 @@ table.insert(recipes, {
   icon = "__orbs__/graphics/divination-essence.png",
   icon_size = 1024,
   ingredients = {
-    {type = "item", name = "divination-essence", amount = 1},
+    {type = "item", name = "divination-essence", amount = 2, ignored_by_stats = 2},
     {type = "item", name = "coal", amount = 1}
   },
   results = {
-    {type = "item", name = "divination-essence", amount = 1},
-    {type = "item", name = "coal", amount = 1, probability = 0.5}
+    {type = "item", name = "divination-essence", amount = 2, ignored_by_stats = 2},
   },
   reset_freshness_on_craft = true,
   enabled = false,
@@ -384,10 +383,10 @@ table.insert(recipes, {
   icon = "__orbs__/graphics/spark-of-luck.png",
   icon_size = 1024,
   ingredients = {
-    {type = "item", name = "magic-orb", amount = 1}
+    {type = "item", name = "magic-orb", amount = 1, ignored_by_stats = 1}
   },
   results = {
-    {type = "item", name = "magic-orb", amount = 1},
+    {type = "item", name = "magic-orb", amount = 1, ignored_by_stats = 1, ignored_by_productivity = 1},
     {type = "item", name = "spark-of-luck", amount = 1, probability = 0.01}
   },
   enabled = false,
@@ -406,10 +405,10 @@ table.insert(recipes, {
   icon_size = 1024,
   ingredients = {
     {type = "item", name = "stone", amount = 1},
-    {type = "item", name = "magic-orb", amount = 1}
+    {type = "item", name = "magic-orb", amount = 1, ignored_by_stats = 1}
   },
   results = {
-    {type = "item", name = "magic-orb", amount = 1},
+    {type = "item", name = "magic-orb", amount = 1, ignored_by_stats = 1},
     {type = "item", name = "dust-of-serendipity", amount = 1}
   },
   enabled = false,
@@ -706,10 +705,10 @@ table.insert(recipes, {
   icon = "__orbs__/graphics/soul.png",
   icon_size = 1024,
   ingredients = {
-    {type = "item", name = "soul", amount = 1}
+    {type = "item", name = "soul", amount = 1, ignored_by_stats = 1}
   },
   results = {
-    {type = "item", name = "soul", amount = 1},
+    {type = "item", name = "soul", amount = 1, ignored_by_stats = 1, ignored_by_productivity = 1},
     {type = "fluid", name = "rage", amount = 500}
   },
   enabled = false,
@@ -727,11 +726,10 @@ table.insert(recipes, {
   icon = "__orbs__/graphics/rage-orb.png",
   icon_size = 1024,
   ingredients = {
-    {type = "item", name = "magic-orb", amount = 2},
+    {type = "item", name = "magic-orb", amount = 1},
     {type = "fluid", name = "rage", amount = 50}
   },
   results = {
-    {type = "item", name = "magic-orb", amount = 1},
     {type = "item", name = "rage-orb", amount = 1}
   },
   enabled = false,
@@ -808,16 +806,9 @@ table.insert(recipes, {
   },
   energy_required = 0.5,
   enabled = true,
+  allow_productivity = true,
   category = "crafting"
 })
-
-
-
-
--- Give water fuel value
-if data.raw.fluid.water then
-  data.raw.fluid.water.fuel_value = "10J"
-end
 
 -- Override assembling-machine-1 recipe
 if data.raw.recipe["assembling-machine-1"] then
@@ -827,8 +818,6 @@ if data.raw.recipe["assembling-machine-1"] then
     {type = "item", name = "copper-cable", amount = 6}
   }
 end
-
-
 
 -- Override offshore-pump recipe
 if data.raw.recipe["offshore-pump"] then
@@ -842,7 +831,6 @@ end
 local recipes_to_lock = {
   "burner-mining-drill",
   "iron-chest",
-  "firearm-magazine",
   "light-armor",
   "iron-gear-wheel"
 }
