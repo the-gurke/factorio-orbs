@@ -181,7 +181,7 @@ if data.raw.technology["logistics-2"] then
   tech.unit = {
     count = 20,
     ingredients = {
-      {"conjuration-research-pack", 1},
+      {"automation-science-pack", 3},
       {"divination-research-pack", 1}
     },
     time = 30
