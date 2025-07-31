@@ -554,3 +554,6 @@ if data.raw["inserter"]["bulk-inserter"] then
   data.raw["inserter"]["bulk-inserter"].energy_per_movement = "0kW"
   data.raw["inserter"]["bulk-inserter"].energy_per_rotation = "0kW"
 end
+
+-- Finally, as a last step, remove all the content we don't want
+require("removals")
