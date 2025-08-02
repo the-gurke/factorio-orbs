@@ -9,7 +9,6 @@
 
 # Balancing Notes
 
-* Cleansing orbs take wood to maintain, but there is no renewable source of wood
 * There aren't any early game military options
 * Fluid pump should use burner energy source.
 
