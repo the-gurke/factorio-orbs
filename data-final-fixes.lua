@@ -524,5 +524,36 @@ if data.raw.fluid.steam then
   data.raw.fluid.steam.fuel_value = "30kJ"
 end
 
+-- Modify pump to use chemical fuel and update recipe
+if data.raw.pump.pump then
+  data.raw.pump.pump.energy_source = {
+    type = "burner",
+    fuel_categories = {"chemical"},
+    effectivity = 1,
+    fuel_inventory_size = 1,
+    light_flicker = {
+      color = {1, 0.5, 0},
+      minimum_intensity = 0.6,
+      maximum_intensity = 0.95
+    },
+    smoke = {
+      {
+        name = "smoke",
+        deviation = {0.1, 0.1},
+        frequency = 5
+      }
+    }
+  }
+end
+
+-- Update pump recipe
+if data.raw.recipe.pump then
+  data.raw.recipe.pump.ingredients = {
+    {type = "item", name = "pipe", amount = 2},
+    {type = "item", name = "iron-plate", amount = 4},
+    {type = "item", name = "iron-gear-wheel", amount = 4}
+  }
+end
+
 -- Finally, as a last step, remove all the content we don't want
 require("removals")
