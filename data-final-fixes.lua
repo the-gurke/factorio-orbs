@@ -551,7 +551,46 @@ if data.raw.recipe.pump then
   data.raw.recipe.pump.ingredients = {
     {type = "item", name = "pipe", amount = 2},
     {type = "item", name = "iron-plate", amount = 4},
-    {type = "item", name = "iron-gear-wheel", amount = 4}
+    {type = "item", name = "iron-gear-wheel", amount = 4},
+    {type = "item", name = "stone-furnace", amount = 1}
+  }
+end
+
+-- Modify offshore pump to use chemical fuel
+if data.raw["offshore-pump"]["offshore-pump"] then
+  data.raw["offshore-pump"]["offshore-pump"].energy_source = {
+    type = "burner",
+    fuel_categories = {"chemical"},
+    effectivity = 1,
+    fuel_inventory_size = 1,
+    burnt_inventory_size = 1,
+    fuel_inventory_offset = {0, -1},
+    light_flicker = {
+      color = {1, 0.5, 0},
+      minimum_intensity = 0.6,
+      maximum_intensity = 0.95
+    },
+    smoke = {
+      {
+        name = "smoke",
+        deviation = {0.1, 0.1},
+        frequency = 5,
+        position = {0.0, -0.8},
+        starting_vertical_speed = 0.08,
+        starting_frame_deviation = 60
+      }
+    }
+  }
+  data.raw["offshore-pump"]["offshore-pump"].energy_usage = "30kW"
+end
+
+-- Update offshore pump recipe
+if data.raw.recipe["offshore-pump"] then
+  data.raw.recipe["offshore-pump"].ingredients = {
+    {type = "item", name = "iron-plate", amount = 3},
+    {type = "item", name = "iron-gear-wheel", amount = 4},
+    {type = "item", name = "pipe", amount = 3},
+    {type = "item", name = "stone-furnace", amount = 1}
   }
 end
 
