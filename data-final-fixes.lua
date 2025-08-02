@@ -519,5 +519,10 @@ if data.raw["mining-drill"]["burner-mining-drill"] then
   data.raw["mining-drill"]["burner-mining-drill"].resource_searching_radius = 1.99
 end
 
+-- Set steam fuel value to 30kJ
+if data.raw.fluid.steam then
+  data.raw.fluid.steam.fuel_value = "30kJ"
+end
+
 -- Finally, as a last step, remove all the content we don't want
 require("removals")

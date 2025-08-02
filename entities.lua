@@ -548,6 +548,87 @@ data:extend({
   rune_altar_recipe
 })
 
+-- Create steam-powered miner based on electric mining drill
+if data.raw["mining-drill"]["electric-mining-drill"] then
+  local steam_miner = util.table.deepcopy(data.raw["mining-drill"]["electric-mining-drill"])
+  steam_miner.name = "steam-powered-miner"
+  steam_miner.minable.result = "steam-powered-miner"
+
+  -- Change energy source to steam
+  steam_miner.energy_source = {
+    type = "fluid",
+    effectivity = 1,
+    burns_fluid = true,
+    scale_fluid_usage = true,
+    fluid_box = {
+      production_type = "input",
+      volume = 200,
+      pipe_connections = {
+        {flow_direction = "input-output", direction = 8, position = {0, 1}},
+        {flow_direction = "input-output", direction = 4, position = {1, 0}},
+        {flow_direction = "input-output", direction = 12, position = {-1, 0}}
+      },
+      secondary_draw_orders = {north = -1}
+    },
+    smoke = {
+      {
+        name = "smoke",
+        deviation = {0.1, 0.1},
+        frequency = 3
+      }
+    }
+  }
+  steam_miner.energy_usage = "90kW"
+  
+  -- Remove module slots but keep allowed effects
+  steam_miner.module_slots = 0
+  steam_miner.module_specification = nil
+  steam_miner.allowed_effects = {"speed", "productivity", "pollution"}
+
+  -- Remove input_fluid_box (not needed for fuel)
+  steam_miner.input_fluid_box = nil
+  
+  -- Force use of wet mining graphics by setting resource categories that require fluid
+  steam_miner.resource_categories = {"basic-solid"}
+  
+  -- Override graphics_set to always use wet mining graphics
+  steam_miner.graphics_set = steam_miner.wet_mining_graphics_set
+
+  -- Create steam-powered miner item
+  local steam_miner_item = util.table.deepcopy(data.raw.item["electric-mining-drill"])
+  steam_miner_item.name = "steam-powered-miner"
+  steam_miner_item.place_result = "steam-powered-miner"
+  steam_miner_item.subgroup = "extraction-machine"
+  steam_miner_item.order = "b[mining-drill]-b[steam-powered-miner]"
+
+  -- Create steam-powered miner recipe
+  local steam_miner_recipe = {
+    type = "recipe",
+    name = "steam-powered-miner",
+    category = "crafting",
+    energy_required = 2,
+    icon = "__base__/graphics/icons/electric-mining-drill.png",
+    icon_size = 64,
+    ingredients = {
+      {type = "item", name = "burner-mining-drill", amount = 1},
+      {type = "item", name = "iron-gear-wheel", amount = 10},
+      {type = "item", name = "iron-stick", amount = 4},
+      {type = "item", name = "pipe", amount = 4}
+    },
+    results = {
+      {type = "item", name = "steam-powered-miner", amount = 1}
+    },
+    enabled = false
+  }
+
+  -- Add everything to data
+  data:extend({
+    steam_miner,
+    steam_miner_item,
+    steam_miner_recipe
+  })
+end
+
 -- Create gold plate tile using concrete as base
 local gold_plate_tile = util.table.deepcopy(data.raw["tile"]["concrete"])
 gold_plate_tile.name = "gold-plate-tile"
