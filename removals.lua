@@ -10,6 +10,7 @@ local technologies_to_remove = {
   "military",
   "fast-inserter",
   "steam-power",
+  "electric-mining-drill",
   "electronics"
 }
 

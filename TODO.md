@@ -10,6 +10,8 @@
 # Balancing Notes
 
 * Cleansing orbs take wood to maintain, but there is no renewable source of wood
+* There aren't any early game military options
+* Fluid pump should use burner energy source.
 
 # Art
 
@@ -19,3 +21,4 @@
 * Gold plate floor needs a metal sound when building
 * Gold plate floor needs a better sound when walking on it
 * Need to remove the crashed spaceship in the beginning of the game since that isn't on-theme
+* The burner mining drill should show that its mining area is 4x4 with a rectangle while placing, just as the electric miner does
