@@ -493,24 +493,8 @@ end
 
 if data.raw["arithmetic-combinator"]["arithmetic-combinator"] then
   local entity = data.raw["arithmetic-combinator"]["arithmetic-combinator"]
-  entity.energy_source = {
-    type = "fluid",
-    fluid_box = {
-      production_type = "input-output",
-      pipe_picture = data.raw["assembling-machine"]["assembling-machine-1"].fluid_boxes[1].pipe_picture,
-      pipe_covers = data.raw["assembling-machine"]["assembling-machine-1"].fluid_boxes[1].pipe_covers,
-      volume = 100,
-      pipe_connections = {
-        {flow_direction="input-output", direction = defines.direction.north, position = {0, -1}},
-        {flow_direction="input-output", direction = defines.direction.south, position = {0, 1}}
-      },
-      filter = "steam"
-    },
-    effectivity = 1,
-    burns_fluid = true,
-    scale_fluid_usage = true
-  }
-  entity.energy_usage = "30kW"
+  entity.energy_source = {type = "void"}
+  entity.energy_usage = "0kW"
   entity.localised_name = {"entity-name.analytical-engine"}
 
   if data.raw.item["arithmetic-combinator"] then
@@ -520,24 +504,8 @@ end
 
 if data.raw["decider-combinator"]["decider-combinator"] then
   local entity = data.raw["decider-combinator"]["decider-combinator"]
-  entity.energy_source = {
-    type = "fluid",
-    fluid_box = {
-      production_type = "input-output",
-      pipe_picture = data.raw["assembling-machine"]["assembling-machine-1"].fluid_boxes[1].pipe_picture,
-      pipe_covers = data.raw["assembling-machine"]["assembling-machine-1"].fluid_boxes[1].pipe_covers,
-      volume = 100,
-      pipe_connections = {
-        {flow_direction="input-output", direction = defines.direction.north, position = {0, -1}},
-        {flow_direction="input-output", direction = defines.direction.south, position = {0, 1}}
-      },
-      filter = "steam"
-    },
-    effectivity = 1,
-    burns_fluid = true,
-    scale_fluid_usage = true
-  }
-  entity.energy_usage = "30kW"
+  entity.energy_source = {type = "void"}
+  entity.energy_usage = "0kW"
   entity.localised_name = {"entity-name.decider-engine"}
 
   if data.raw.item["decider-combinator"] then
@@ -547,24 +515,8 @@ end
 
 if data.raw["selector-combinator"]["selector-combinator"] then
   local entity = data.raw["selector-combinator"]["selector-combinator"]
-  entity.energy_source = {
-    type = "fluid",
-    fluid_box = {
-      production_type = "input-output",
-      pipe_picture = data.raw["assembling-machine"]["assembling-machine-1"].fluid_boxes[1].pipe_picture,
-      pipe_covers = data.raw["assembling-machine"]["assembling-machine-1"].fluid_boxes[1].pipe_covers,
-      volume = 100,
-      pipe_connections = {
-        {flow_direction="input-output", direction = defines.direction.north, position = {0, -1}},
-        {flow_direction="input-output", direction = defines.direction.south, position = {0, 1}}
-      },
-      filter = "steam"
-    },
-    effectivity = 1,
-    burns_fluid = true,
-    scale_fluid_usage = true
-  }
-  entity.energy_usage = "30kW"
+  entity.energy_source = {type = "void"}
+  entity.energy_usage = "0kW"
   entity.localised_name = {"entity-name.selector-engine"}
 
   if data.raw.item["selector-combinator"] then
