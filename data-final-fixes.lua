@@ -447,25 +447,129 @@ if data.raw.recipe["repair-pack"] then
   end
 end
 
--- Remove power requirements from all combinators
+-- Modify combinator recipes to use mechanical components
+if data.raw.recipe["constant-combinator"] then
+  data.raw.recipe["constant-combinator"].ingredients = {
+    {type = "item", name = "iron-gear-wheel", amount = 3},
+    {type = "item", name = "iron-plate", amount = 1},
+  }
+end
+
+if data.raw.recipe["arithmetic-combinator"] then
+  data.raw.recipe["arithmetic-combinator"].ingredients = {
+    {type = "item", name = "iron-gear-wheel", amount = 5},
+    {type = "item", name = "iron-plate", amount = 2},
+    {type = "item", name = "pipe", amount = 2}
+  }
+end
+
+if data.raw.recipe["decider-combinator"] then
+  data.raw.recipe["decider-combinator"].ingredients = {
+    {type = "item", name = "iron-gear-wheel", amount = 5},
+    {type = "item", name = "iron-plate", amount = 2},
+    {type = "item", name = "pipe", amount = 2}
+  }
+end
+
+if data.raw.recipe["selector-combinator"] then
+  data.raw.recipe["selector-combinator"].ingredients = {
+    {type = "item", name = "iron-gear-wheel", amount = 5},
+    {type = "item", name = "iron-plate", amount = 2},
+    {type = "item", name = "pipe", amount = 2}
+  }
+end
+
+-- Update combinator entities and names
 if data.raw["constant-combinator"]["constant-combinator"] then
-  data.raw["constant-combinator"]["constant-combinator"].energy_source = {type = "void"}
-  data.raw["constant-combinator"]["constant-combinator"].energy_usage = "0kW"
+  local entity = data.raw["constant-combinator"]["constant-combinator"]
+  entity.energy_source = {type = "void"}
+  entity.energy_usage = "0kW"
+  entity.localised_name = {"entity-name.constant-signal-generator"}
+
+  if data.raw.item["constant-combinator"] then
+    data.raw.item["constant-combinator"].localised_name = {"item-name.constant-signal-generator"}
+  end
 end
 
 if data.raw["arithmetic-combinator"]["arithmetic-combinator"] then
-  data.raw["arithmetic-combinator"]["arithmetic-combinator"].energy_source = {type = "void"}
-  data.raw["arithmetic-combinator"]["arithmetic-combinator"].energy_usage = "0kW"
+  local entity = data.raw["arithmetic-combinator"]["arithmetic-combinator"]
+  entity.energy_source = {
+    type = "fluid",
+    fluid_box = {
+      production_type = "input-output",
+      pipe_picture = data.raw["assembling-machine"]["assembling-machine-1"].fluid_boxes[1].pipe_picture,
+      pipe_covers = data.raw["assembling-machine"]["assembling-machine-1"].fluid_boxes[1].pipe_covers,
+      volume = 100,
+      pipe_connections = {
+        {flow_direction="input-output", direction = defines.direction.north, position = {0, -1}},
+        {flow_direction="input-output", direction = defines.direction.south, position = {0, 1}}
+      },
+      filter = "steam"
+    },
+    effectivity = 1,
+    burns_fluid = true,
+    scale_fluid_usage = true
+  }
+  entity.energy_usage = "30kW"
+  entity.localised_name = {"entity-name.analytical-engine"}
+
+  if data.raw.item["arithmetic-combinator"] then
+    data.raw.item["arithmetic-combinator"].localised_name = {"item-name.analytical-engine"}
+  end
 end
 
 if data.raw["decider-combinator"]["decider-combinator"] then
-  data.raw["decider-combinator"]["decider-combinator"].energy_source = {type = "void"}
-  data.raw["decider-combinator"]["decider-combinator"].energy_usage = "0kW"
+  local entity = data.raw["decider-combinator"]["decider-combinator"]
+  entity.energy_source = {
+    type = "fluid",
+    fluid_box = {
+      production_type = "input-output",
+      pipe_picture = data.raw["assembling-machine"]["assembling-machine-1"].fluid_boxes[1].pipe_picture,
+      pipe_covers = data.raw["assembling-machine"]["assembling-machine-1"].fluid_boxes[1].pipe_covers,
+      volume = 100,
+      pipe_connections = {
+        {flow_direction="input-output", direction = defines.direction.north, position = {0, -1}},
+        {flow_direction="input-output", direction = defines.direction.south, position = {0, 1}}
+      },
+      filter = "steam"
+    },
+    effectivity = 1,
+    burns_fluid = true,
+    scale_fluid_usage = true
+  }
+  entity.energy_usage = "30kW"
+  entity.localised_name = {"entity-name.decider-engine"}
+
+  if data.raw.item["decider-combinator"] then
+    data.raw.item["decider-combinator"].localised_name = {"item-name.decider-engine"}
+  end
 end
 
 if data.raw["selector-combinator"]["selector-combinator"] then
-  data.raw["selector-combinator"]["selector-combinator"].energy_source = {type = "void"}
-  data.raw["selector-combinator"]["selector-combinator"].energy_usage = "0kW"
+  local entity = data.raw["selector-combinator"]["selector-combinator"]
+  entity.energy_source = {
+    type = "fluid",
+    fluid_box = {
+      production_type = "input-output",
+      pipe_picture = data.raw["assembling-machine"]["assembling-machine-1"].fluid_boxes[1].pipe_picture,
+      pipe_covers = data.raw["assembling-machine"]["assembling-machine-1"].fluid_boxes[1].pipe_covers,
+      volume = 100,
+      pipe_connections = {
+        {flow_direction="input-output", direction = defines.direction.north, position = {0, -1}},
+        {flow_direction="input-output", direction = defines.direction.south, position = {0, 1}}
+      },
+      filter = "steam"
+    },
+    effectivity = 1,
+    burns_fluid = true,
+    scale_fluid_usage = true
+  }
+  entity.energy_usage = "30kW"
+  entity.localised_name = {"entity-name.selector-engine"}
+
+  if data.raw.item["selector-combinator"] then
+    data.raw.item["selector-combinator"].localised_name = {"item-name.selector-engine"}
+  end
 end
 
 -- Add selector combinator to circuit-network technology and remove advanced-combinators
