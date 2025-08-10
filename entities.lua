@@ -7,8 +7,25 @@ conjuration_machine.name = "conjuration-machine"
 conjuration_machine.minable = {mining_time = 0.2, result = "conjuration-machine"}
 conjuration_machine.crafting_categories = {"orbs"} -- ONLY orbs category
 conjuration_machine.crafting_speed = 1
-conjuration_machine.energy_source = {type = "void"} -- No power required
-conjuration_machine.energy_usage = "1W" -- Minimal energy usage
+conjuration_machine.energy_source = {
+  type = "fluid",
+  fluid_box = {
+    production_type = "input-output",
+    volume = 100,
+    pipe_connections = {
+      {flow_direction="input-output", direction = defines.direction.west, position = {-1, 0}},
+      {flow_direction="input-output", direction = defines.direction.east, position = {1, 0}}
+    },
+    pipe_picture = data.raw["assembling-machine"]["assembling-machine-2"] and data.raw["assembling-machine"]["assembling-machine-2"].fluid_boxes and data.raw["assembling-machine"]["assembling-machine-2"].fluid_boxes[1] and data.raw["assembling-machine"]["assembling-machine-2"].fluid_boxes[1].pipe_picture,
+    pipe_covers = data.raw["assembling-machine"]["assembling-machine-2"] and data.raw["assembling-machine"]["assembling-machine-2"].fluid_boxes and data.raw["assembling-machine"]["assembling-machine-2"].fluid_boxes[1] and data.raw["assembling-machine"]["assembling-machine-2"].fluid_boxes[1].pipe_covers,
+    filter = "steam"
+  },
+  effectivity = 1,
+  burns_fluid = true,
+  scale_fluid_usage = true,
+  emissions_per_minute = {pollution = 10}
+}
+conjuration_machine.energy_usage = "200kW"
 conjuration_machine.allowed_effects = {"speed", "productivity", "pollution"} -- Allow speed, productivity, and pollution effects
 conjuration_machine.effect_receiver = {
   base_effect = {},
