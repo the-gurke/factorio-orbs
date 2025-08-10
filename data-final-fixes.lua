@@ -660,10 +660,10 @@ if data.raw.lamp["small-lamp"] then
   data.raw.lamp["small-lamp"].energy_usage = "0kW"
 end
 
--- Update optics technology to use conjuration research packs
-if data.raw.technology["optics"] then
-  data.raw.technology["optics"].prerequisites = {"orbs-technology"}
-  data.raw.technology["optics"].unit = {
+-- Update lamp technology to use conjuration research packs
+if data.raw.technology["lamp"] then
+  data.raw.technology["lamp"].prerequisites = {"orbs-technology"}
+  data.raw.technology["lamp"].unit = {
     count = 5,
     ingredients = {
       {"conjuration-research-pack", 1}

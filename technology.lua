@@ -35,8 +35,11 @@ if data.raw.shortcut["give-copper-wire"] then
   data.raw.shortcut["give-copper-wire"].technology_to_unlock = "metallurgy"
 end
 
--- Modify automation technology to be triggered by steam production
+-- Rename and modify automation technology to steam power
 if data.raw.technology["automation"] then
+  data.raw.technology["automation"].localised_name = {"technology-name.steam-power"}
+  data.raw.technology["automation"].icon = "__base__/graphics/technology/steam-power.png"
+  data.raw.technology["automation"].icon_size = 256
   data.raw.technology["automation"].prerequisites = {"metallurgy"}
   data.raw.technology["automation"].research_trigger = {
     type = "craft-fluid",
@@ -62,7 +65,7 @@ data:extend({
     name = "orbs-technology",
     icon = "__orbs__/graphics/orb-initial-technology.png",
     icon_size = 1024,
-    prerequisites = {"automation"},
+    prerequisites = {"automation-science-pack"},
     unit = {
       count = 10,
       ingredients = {
@@ -531,10 +534,6 @@ data:extend({
       },
       {
         type = "unlock-recipe",
-        recipe = "lab"
-      },
-      {
-        type = "unlock-recipe",
         recipe = "light-armor"
       },
       {
@@ -544,10 +543,6 @@ data:extend({
       {
         type = "unlock-recipe",
         recipe = "pipe-to-ground"
-      },
-      {
-        type = "unlock-recipe",
-        recipe = "boiler"
       }
     },
     research_trigger = {
@@ -738,6 +733,10 @@ data:extend({
       {
         type = "unlock-recipe",
         recipe = "light-coal"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "boiler"
       }
     },
     research_trigger = {
