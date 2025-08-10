@@ -36,7 +36,8 @@ end
 -- Hide unwanted items instead of removing them to avoid reference errors
 local items_to_hide = {
   "small-electric-pole",
-  "biolab"
+  "biolab",
+  "power-switch"
 }
 
 for _, item_name in pairs(items_to_hide) do
