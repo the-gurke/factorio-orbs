@@ -23,7 +23,7 @@ conjuration_machine.energy_source = {
   effectivity = 1,
   burns_fluid = true,
   scale_fluid_usage = true,
-  emissions_per_minute = {pollution = 10}
+  emissions_per_minute = {pollution = 20}
 }
 conjuration_machine.energy_usage = "200kW"
 conjuration_machine.allowed_effects = {"speed", "productivity", "pollution"} -- Allow speed, productivity, and pollution effects
@@ -348,13 +348,130 @@ volatile_explosion.light.color = {r = 1.0, g = 0.2, b = 0.8}
 volatile_explosion.light.intensity = 0.9
 volatile_explosion.light.size = 10
 
+-- Create custom laser beam for defense ward
+local defense_ward_laser = util.table.deepcopy(data.raw["beam"]["laser-beam"])
+defense_ward_laser.name = "defense-ward-laser"
+defense_ward_laser.action = {
+  type = "direct",
+  action_delivery = {
+    type = "instant",
+    target_effects = {
+      {
+        type = "damage",
+        damage = {
+          amount = 300,
+          type = "laser"
+        }
+      },
+      {
+        type = "script",
+        effect_id = "defense-ward-fired"
+      }
+    }
+  }
+}
+
+-- Create defense ward (based on laser turret)
+local defense_ward = util.table.deepcopy(data.raw["electric-turret"]["laser-turret"])
+
+defense_ward.name = "defense-ward"
+defense_ward.minable = {mining_time = 0.2, result = "defense-ward"}
+defense_ward.max_health = 50
+defense_ward.energy_source = {type = "void"}
+defense_ward.energy_usage = "0kW"
+
+-- Set range to 8 and use custom beam
+defense_ward.attack_parameters.range = 8
+defense_ward.attack_parameters.ammo_type.action.action_delivery.beam = "defense-ward-laser"
+defense_ward.collision_box = {{-0.35, -0.35}, {0.35, 0.35}}
+defense_ward.selection_box = {{-0.5, -0.5}, {0.5, 0.5}}
+
+-- Use custom graphics for all animation states
+local defense_ward_animation = {
+  layers = {
+    {
+      filename = "__orbs__/graphics/defense-ward-entity.png",
+      priority = "high",
+      width = 1024,
+      height = 1024,
+      frame_count = 1,
+      line_length = 1,
+      direction_count = 1,
+      scale = 0.05,
+      shift = {0, -0.2}
+    }
+  }
+}
+
+-- Set all required animation states to use the same static image
+defense_ward.folded_animation = defense_ward_animation
+defense_ward.preparing_animation = defense_ward_animation
+defense_ward.prepared_animation = defense_ward_animation
+defense_ward.attacking_animation = defense_ward_animation
+defense_ward.ending_attack_animation = defense_ward_animation
+defense_ward.folding_animation = defense_ward_animation
+
+-- Try to hide all possible base graphics
+defense_ward.base_picture = {
+  layers = {
+    {
+      filename = "__core__/graphics/empty.png",
+      width = 1,
+      height = 1,
+      frame_count = 1,
+      direction_count = 1
+    }
+  }
+}
+
+-- Also try to clear other potential base graphics
+defense_ward.base_picture_secondary_draw_order = nil
+defense_ward.integration_patch = nil
+defense_ward.shadow = nil
+
+
+-- Create defense ward item
+local defense_ward_item = {
+  type = "item",
+  name = "defense-ward",
+  icon = "__orbs__/graphics/defense-ward.png",
+  icon_size = 1024,
+  subgroup = "orbs-machines",
+  order = "i[defense-ward]",
+  place_result = "defense-ward",
+  stack_size = 10
+}
+
+-- Create defense ward recipe
+local defense_ward_recipe = {
+  type = "recipe",
+  name = "defense-ward",
+  category = "crafting",
+  energy_required = 3,
+  icon = "__orbs__/graphics/defense-ward.png",
+  icon_size = 1024,
+  ingredients = {
+    {type = "item", name = "active-magic-shard", amount = 1},
+    {type = "item", name = "wood", amount = 2},
+    {type = "item", name = "copper-cable", amount = 2}
+  },
+  results = {
+    {type = "item", name = "defense-ward", amount = 1}
+  },
+  enabled = false
+}
+
 -- Extend the entities
 data:extend({
   magic_grenade_projectile,
   magic_grenade_explosion,
   magic_explosion,
   volatile_orb_explosion,
-  volatile_explosion
+  volatile_explosion,
+  defense_ward_laser,
+  defense_ward,
+  defense_ward_item,
+  defense_ward_recipe
 })
 
 
@@ -596,7 +713,7 @@ if data.raw["mining-drill"]["electric-mining-drill"] then
     }
   }
   steam_miner.energy_usage = "90kW"
-  
+
   -- Remove module slots but keep allowed effects
   steam_miner.module_slots = 0
   steam_miner.module_specification = nil
@@ -604,10 +721,10 @@ if data.raw["mining-drill"]["electric-mining-drill"] then
 
   -- Remove input_fluid_box (not needed for fuel)
   steam_miner.input_fluid_box = nil
-  
+
   -- Force use of wet mining graphics by setting resource categories that require fluid
   steam_miner.resource_categories = {"basic-solid"}
-  
+
   -- Override graphics_set to always use wet mining graphics
   steam_miner.graphics_set = steam_miner.wet_mining_graphics_set
 

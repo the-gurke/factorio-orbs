@@ -2,6 +2,20 @@
 -- Runtime script that handles events during gameplay
 
 --------------------------------------------------------
+--  Defense Ward Management                           --
+--------------------------------------------------------
+
+-- Handle defense ward script triggers (when they fire)
+script.on_event(defines.events.on_script_trigger_effect, function(event)
+  if event.effect_id == "defense-ward-fired" and event.source_entity then
+    if event.source_entity.valid and event.source_entity.name == "defense-ward" then
+      -- Remove the defense ward immediately after it fires
+      event.source_entity.destroy()
+    end
+  end
+end)
+
+--------------------------------------------------------
 --  Telekinesis                                       --
 --------------------------------------------------------
 

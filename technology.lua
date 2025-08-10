@@ -916,6 +916,27 @@ data:extend({
       }
     },
     order = "o-p-productivity"
+  },
+  {
+    type = "technology",
+    name = "defense-ward",
+    icon = "__orbs__/graphics/defense-ward.png",
+    icon_size = 1024,
+    prerequisites = {"orbs-technology"},
+    unit = {
+      count = 10,
+      ingredients = {
+        {"conjuration-research-pack", 1}
+      },
+      time = 30
+    },
+    effects = {
+      {
+        type = "unlock-recipe",
+        recipe = "defense-ward"
+      }
+    },
+    order = "o-d-defense-ward"
   }
 })
 

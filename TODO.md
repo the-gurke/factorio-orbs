@@ -21,6 +21,8 @@
 * The burner mining drill should show that its mining area is 4x4 with a rectangle while placing, just as the electric miner does
 * The offshore pump "no fuel" icon should be centered
 * Resonance spires don't show their orbs, neither in graphics nor in alt mode
+* The laser turret base is still visible on the defensive wards
+* The defensive wards don't have their own unique sprite yet
 
 # From playtest
 
