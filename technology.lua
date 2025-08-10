@@ -920,26 +920,26 @@ data:extend({
 })
 
 -- Steam-Powered Mining Technology (forked from electric-mining-drill)
-if data.raw.technology["electric-mining-drill"] then
-  local steam_mining_tech = util.table.deepcopy(data.raw.technology["electric-mining-drill"])
-  steam_mining_tech.name = "steam-powered-mining"
-  steam_mining_tech.icon = data.raw.technology["electric-mining-drill"].icon
-  steam_mining_tech.icon_size = data.raw.technology["electric-mining-drill"].icon_size
-  steam_mining_tech.effects = {
-    {
-      type = "unlock-recipe",
-      recipe = "steam-powered-miner"
-    }
-  }
-  steam_mining_tech.prerequisites = {"fluid-handling", "metallurgy"}
-  steam_mining_tech.unit = {
-    count = 50,
-    ingredients = {
-      {"automation-science-pack", 1}
-    },
-    time = 15
-  }
-  steam_mining_tech.order = "c-c-a"
-
-  data:extend({steam_mining_tech})
-end
+--if data.raw.technology["electric-mining-drill"] then
+--  local steam_mining_tech = util.table.deepcopy(data.raw.technology["electric-mining-drill"])
+--  steam_mining_tech.name = "steam-powered-mining"
+--  steam_mining_tech.icon = data.raw.technology["electric-mining-drill"].icon
+--  steam_mining_tech.icon_size = data.raw.technology["electric-mining-drill"].icon_size
+--  steam_mining_tech.effects = {
+--    {
+--      type = "unlock-recipe",
+--      recipe = "steam-powered-miner"
+--    }
+--  }
+--  steam_mining_tech.prerequisites = {"fluid-handling", "metallurgy"}
+--  steam_mining_tech.unit = {
+--    count = 50,
+--    ingredients = {
+--      {"automation-science-pack", 1}
+--    },
+--    time = 15
+--  }
+--  steam_mining_tech.order = "c-c-a"
+--
+--  data:extend({steam_mining_tech})
+--end
