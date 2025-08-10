@@ -21,3 +21,10 @@
 * The burner mining drill should show that its mining area is 4x4 with a rectangle while placing, just as the electric miner does
 * The offshore pump "no fuel" icon should be centered
 * Resonance spires don't show their orbs, neither in graphics nor in alt mode
+
+# From playtest
+
+* only give orbs to one player when the tech is researched
+* burner inserters take more fuel
+* burner inserters leech fuel?
+* make telekensis effects quadratic
