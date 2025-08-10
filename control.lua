@@ -275,7 +275,7 @@ end)
 
 -- Periodic check for rune transformer completion
 -- Check every 0.2*60-1 ticks (just before 0.2 seconds) to catch completed recipes
--- (The Ventus rune crafting recipe completes in 0.2 seconds)
+-- (The Spiritus rune crafting recipe completes in 0.2 seconds)
 script.on_nth_tick(0.2*60-1, function(event)
   -- Check all rune transformers on all surfaces
   for _, surface in pairs(game.surfaces) do

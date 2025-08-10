@@ -905,7 +905,7 @@ table.insert(recipes, {
 
 table.insert(recipes, {
   type = "recipe",
-  name = "conjure-rune-word-ventus",
+  name = "conjure-rune-word-spiritus",
   category = "orbs",
   subgroup = "orbs-runes",
   energy_required = 2,
@@ -916,11 +916,11 @@ table.insert(recipes, {
     {type = "item", name = "element-of-stability", amount = 1}
   },
   results = {
-    {type = "item", name = "rune-word-ventus", amount = 1}
+    {type = "item", name = "rune-word-spiritus", amount = 1}
   },
   enabled = false,
   allow_productivity = true,
-  order = "s[conjure-rune-word-ventus]"
+  order = "s[conjure-rune-word-spiritus]"
 })
 
 -- Rune Research Pack recipe (requires 6 specific runes)
