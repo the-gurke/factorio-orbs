@@ -650,5 +650,31 @@ if data.raw.recipe["offshore-pump"] then
   }
 end
 
+-- Modify lamp recipe and entity
+if data.raw.recipe["small-lamp"] then
+  data.raw.recipe["small-lamp"].ingredients = {
+    {type = "item", name = "copper-cable", amount = 3},
+    {type = "item", name = "iron-plate", amount = 1},
+    {type = "item", name = "magic-orb", amount = 1}
+  }
+end
+
+if data.raw.lamp["small-lamp"] then
+  data.raw.lamp["small-lamp"].energy_source = {type = "void"}
+  data.raw.lamp["small-lamp"].energy_usage = "0kW"
+end
+
+-- Update optics technology to use conjuration research packs
+if data.raw.technology["optics"] then
+  data.raw.technology["optics"].prerequisites = {"orbs-technology"}
+  data.raw.technology["optics"].unit = {
+    count = 5,
+    ingredients = {
+      {"conjuration-research-pack", 1}
+    },
+    time = 30
+  }
+end
+
 -- Finally, as a last step, remove all the content we don't want
 require("removals")
