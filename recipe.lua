@@ -870,10 +870,11 @@ table.insert(recipes, {
   icon_size = 64,
   ingredients = {
     {type = "item", name = "burner-inserter", amount = 1},
-    {type = "item", name = "magic-orb", amount = 1}
+    {type = "item", name = "magic-orb", amount = 2, ignored_by_stats = 1}
   },
   results = {
     {type = "item", name = "magic-inserter", amount = 1},
+    {type = "item", name = "magic-orb", amount = 1, ignored_by_stats = 1}
   },
   enabled = false,
   order = "d[fast-inserter]"
