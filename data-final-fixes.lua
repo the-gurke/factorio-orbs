@@ -188,31 +188,28 @@ if data.raw.technology["logistics-2"] then
   }
 end
 
--- Modify assembling machine 1 to require coal fuel
+-- Modify assembling machine 1 to use steam fuel
 if data.raw["assembling-machine"]["assembling-machine-1"] then
   local assembler_1 = data.raw["assembling-machine"]["assembling-machine-1"]
-  assembler_1.energy_usage = "150kW"
+  assembler_1.energy_usage = "200kW"
   assembler_1.energy_source = {
-    type = "burner",
-    fuel_categories = {"chemical"},
-    effectivity = 1,
-    fuel_inventory_size = 1,
-    light_flicker = {
-      color = {1, 0.5, 0},
-      minimum_intensity = 0.6,
-      maximum_intensity = 0.95
+    type = "fluid",
+    fluid_box = {
+      production_type = "input-output",
+      volume = 100,
+      pipe_connections = {
+        {flow_direction="input-output", direction = defines.direction.west, position = {-1, 0}},
+        {flow_direction="input-output", direction = defines.direction.east, position = {1, 0}}
+      },
+      pipe_picture = data.raw["assembling-machine"]["assembling-machine-2"] and data.raw["assembling-machine"]["assembling-machine-2"].fluid_boxes and data.raw["assembling-machine"]["assembling-machine-2"].fluid_boxes[1] and data.raw["assembling-machine"]["assembling-machine-2"].fluid_boxes[1].pipe_picture,
+      pipe_covers = data.raw["assembling-machine"]["assembling-machine-2"] and data.raw["assembling-machine"]["assembling-machine-2"].fluid_boxes and data.raw["assembling-machine"]["assembling-machine-2"].fluid_boxes[1] and data.raw["assembling-machine"]["assembling-machine-2"].fluid_boxes[1].pipe_covers,
+      filter = "steam"
     },
-    smoke = {
-      {
-        name = "smoke",
-        deviation = {0.1, 0.1},
-        frequency = 5,
-        position = {0.0, -0.8},
-        starting_vertical_speed = 0.08,
-        starting_frame_deviation = 60
-      }
-    }
+    effectivity = 1,
+    burns_fluid = true,
+    scale_fluid_usage = true
   }
+  assembler_1.energy_source.emissions_per_minute = {pollution = 10}
 end
 
 -- Remove fuel values from wood and coal
