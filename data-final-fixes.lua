@@ -285,6 +285,8 @@ if data.raw["inserter"]["long-handed-inserter"] then
   long_inserter.energy_source = {
     type = "burner",
     fuel_categories = {"chemical"},
+    initial_fuel = "glimming-remains",
+    initial_fuel_percent = 0.1,
     effectivity = 0.5,
     fuel_inventory_size = 1
   }
