@@ -411,11 +411,11 @@ data:extend({
   },
   {
     type = "item",
-    name = "rune-word-ventus",
+    name = "rune-word-spiritus",
     icon = "__base__/graphics/icons/signal/signal_S.png",
     icon_size = 64,
     subgroup = "orbs-manifest",
-    order = "r[rune-word-ventus]",
+    order = "r[rune-word-spiritus]",
     stack_size = 1
   },
   {

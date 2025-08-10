@@ -566,7 +566,7 @@ data:extend({
       },
       {
         type = "unlock-recipe",
-        recipe = "conjure-rune-word-ventus"
+        recipe = "conjure-rune-word-spiritus"
       },
       {
         type = "unlock-recipe",

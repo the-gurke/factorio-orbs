@@ -153,7 +153,7 @@ The divination system requires precise timing and coordination - you need to cap
 - Required for advanced belt upgrades
 
 ### Rune System
-- 9 rune words: Ignis, Aqua, Ventus, Terra, Lux, Umbra, Tempus, Vitae, Mortis
+- 9 rune words: Ignis, Aqua, Spiritus, Terra, Lux, Umbra, Tempus, Vitae, Mortis
 - Transformation chains create complex puzzle mechanics
 - Altar crafting requires precise ordering
 
