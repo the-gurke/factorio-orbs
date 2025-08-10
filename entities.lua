@@ -45,8 +45,24 @@ conjuration_machine.module_slots = 3
 if data.raw["lab"]["lab"] then
   local lab = data.raw["lab"]["lab"]
   lab.localised_name = {"entity-name.alchemy-research-laboratory"}
-  lab.energy_source = {type = "void"} -- No power required
-  lab.energy_usage = "1W"
+  lab.energy_source = {
+    type = "fluid",
+    fluid_box = {
+      production_type = "input-output",
+      volume = 100,
+      pipe_connections = {
+        {flow_direction="input-output", direction = defines.direction.west, position = {-1, 0}},
+        {flow_direction="input-output", direction = defines.direction.east, position = {1, 0}}
+      },
+      pipe_picture = data.raw["assembling-machine"]["assembling-machine-2"] and data.raw["assembling-machine"]["assembling-machine-2"].fluid_boxes and data.raw["assembling-machine"]["assembling-machine-2"].fluid_boxes[1] and data.raw["assembling-machine"]["assembling-machine-2"].fluid_boxes[1].pipe_picture,
+      pipe_covers = data.raw["assembling-machine"]["assembling-machine-2"] and data.raw["assembling-machine"]["assembling-machine-2"].fluid_boxes and data.raw["assembling-machine"]["assembling-machine-2"].fluid_boxes[1] and data.raw["assembling-machine"]["assembling-machine-2"].fluid_boxes[1].pipe_covers,
+      filter = "steam"
+    },
+    effectivity = 1,
+    burns_fluid = true,
+    scale_fluid_usage = true
+  }
+  lab.energy_usage = "150kW"
   lab.researching_speed = 1
   lab.inputs = {"automation-science-pack", "conjuration-research-pack", "divination-research-pack", "rune-research-pack"}
   lab.effect_receiver = {
