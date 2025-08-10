@@ -169,7 +169,7 @@ table.insert(recipes, {
   name = "conjuration-research-pack",
   category = "orbs",
   subgroup = "orbs-research",
-  energy_required = 25,
+  energy_required = 4,
   icon = "__orbs__/graphics/conjuration-research-pack.png",
   icon_size = 1024,
   ingredients = {
