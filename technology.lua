@@ -35,6 +35,18 @@ if data.raw.shortcut["give-copper-wire"] then
   data.raw.shortcut["give-copper-wire"].technology_to_unlock = "metallurgy"
 end
 
+-- Modify automation technology to be triggered by steam production
+if data.raw.technology["automation"] then
+  data.raw.technology["automation"].prerequisites = {"metallurgy"}
+  data.raw.technology["automation"].research_trigger = {
+    type = "craft-fluid",
+    fluid = "steam",
+    amount = 1
+  }
+  -- Remove the unit cost since it's now triggered
+  data.raw.technology["automation"].unit = nil
+end
+
 -- Add new technologies
 data:extend({
   {
