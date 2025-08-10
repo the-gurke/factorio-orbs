@@ -458,24 +458,21 @@ end
 if data.raw.recipe["arithmetic-combinator"] then
   data.raw.recipe["arithmetic-combinator"].ingredients = {
     {type = "item", name = "iron-gear-wheel", amount = 5},
-    {type = "item", name = "iron-plate", amount = 2},
-    {type = "item", name = "pipe", amount = 2}
+    {type = "item", name = "iron-plate", amount = 2}
   }
 end
 
 if data.raw.recipe["decider-combinator"] then
   data.raw.recipe["decider-combinator"].ingredients = {
     {type = "item", name = "iron-gear-wheel", amount = 5},
-    {type = "item", name = "iron-plate", amount = 2},
-    {type = "item", name = "pipe", amount = 2}
+    {type = "item", name = "iron-plate", amount = 2}
   }
 end
 
 if data.raw.recipe["selector-combinator"] then
   data.raw.recipe["selector-combinator"].ingredients = {
     {type = "item", name = "iron-gear-wheel", amount = 5},
-    {type = "item", name = "iron-plate", amount = 2},
-    {type = "item", name = "pipe", amount = 2}
+    {type = "item", name = "iron-plate", amount = 2}
   }
 end
 
@@ -673,6 +670,22 @@ if data.raw.technology["optics"] then
       {"conjuration-research-pack", 1}
     },
     time = 30
+  }
+end
+
+-- Modify speaker recipe
+if data.raw.recipe["programmable-speaker"] then
+  data.raw.recipe["programmable-speaker"].ingredients = {
+    {type = "item", name = "iron-stick", amount = 1},
+    {type = "item", name = "iron-gear-wheel", amount = 5},
+    {type = "item", name = "iron-plate", amount = 2}
+  }
+end
+
+-- Modify display panel recipe
+if data.raw.recipe["display-panel"] then
+  data.raw.recipe["display-panel"].ingredients = {
+    {type = "item", name = "copper-plate", amount = 1}
   }
 end
 
