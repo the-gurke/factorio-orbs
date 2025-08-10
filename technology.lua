@@ -28,7 +28,7 @@ data.raw.technology["automation-science-pack"].icon_mipmaps = nil
 data.raw.technology["automation-science-pack"].icons = nil
 
 -- Update automation-science-pack prerequisites
-data.raw.technology["automation-science-pack"].prerequisites = {"metallurgy"}
+data.raw.technology["automation-science-pack"].prerequisites = {"automation"}
 
 -- Remove or update shortcuts that reference deleted technologies
 if data.raw.shortcut["give-copper-wire"] then
@@ -45,6 +45,14 @@ if data.raw.technology["automation"] then
   }
   -- Remove the unit cost since it's now triggered
   data.raw.technology["automation"].unit = nil
+  -- Add lab unlock
+  if not data.raw.technology["automation"].effects then
+    data.raw.technology["automation"].effects = {}
+  end
+  table.insert(data.raw.technology["automation"].effects, {
+    type = "unlock-recipe",
+    recipe = "lab"
+  })
 end
 
 -- Add new technologies
@@ -819,7 +827,8 @@ data:extend({
   }
 })
 
--- Override circuit network technology to make it cheaper
+-- Override circuit network technology and rename to analytical engines
+data.raw["technology"]["circuit-network"].localised_name = {"technology-name.analytical-engines"}
 data.raw["technology"]["circuit-network"].unit = {
   count = 10,
   ingredients = {
@@ -827,7 +836,17 @@ data.raw["technology"]["circuit-network"].unit = {
   },
   time = 30
 }
-data.raw["technology"]["circuit-network"].prerequisites = {"automation"}
+data.raw["technology"]["circuit-network"].prerequisites = {"automation-science-pack"}
+
+-- Remove stick recipe from circuit-network effects if it exists
+if data.raw.technology["circuit-network"].effects then
+  for i = #data.raw.technology["circuit-network"].effects, 1, -1 do
+    local effect = data.raw.technology["circuit-network"].effects[i]
+    if effect.type == "unlock-recipe" and effect.recipe == "stick" then
+      table.remove(data.raw.technology["circuit-network"].effects, i)
+    end
+  end
+end
 
 -- Magic Axe Technology (replaces removed steel-axe)
 data:extend({
