@@ -456,21 +456,21 @@ end
 
 if data.raw.recipe["arithmetic-combinator"] then
   data.raw.recipe["arithmetic-combinator"].ingredients = {
-    {type = "item", name = "iron-gear-wheel", amount = 5},
+    {type = "item", name = "iron-gear-wheel", amount = 10},
     {type = "item", name = "iron-plate", amount = 2}
   }
 end
 
 if data.raw.recipe["decider-combinator"] then
   data.raw.recipe["decider-combinator"].ingredients = {
-    {type = "item", name = "iron-gear-wheel", amount = 5},
+    {type = "item", name = "iron-gear-wheel", amount = 10},
     {type = "item", name = "iron-plate", amount = 2}
   }
 end
 
 if data.raw.recipe["selector-combinator"] then
   data.raw.recipe["selector-combinator"].ingredients = {
-    {type = "item", name = "iron-gear-wheel", amount = 5},
+    {type = "item", name = "iron-gear-wheel", amount = 20},
     {type = "item", name = "iron-plate", amount = 2}
   }
 end
