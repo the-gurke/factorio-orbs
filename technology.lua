@@ -833,6 +833,10 @@ data:extend({
       {
         type = "unlock-recipe",
         recipe = "water-cooler"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "heating-tower"
       }
     },
     order = "z-p[potions]"

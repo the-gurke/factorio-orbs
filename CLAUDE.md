@@ -173,3 +173,14 @@ The divination system requires precise timing and coordination - you need to cap
 - Technologies-related code should be added to `technology.lua`, not `data-final-fixes.lua`.
 - Whenever you introduce new items, entities, technologies, etc., you need to add the corresponding locale strings for their names to `locale/en/strings.cfg`.
 - Don't try to run the lua code.
+
+
+## Where to find Examples and Documentation
+
+If you don't know how some feature works, take a look at the base game files
+here:
+ ~/.local/share/Steam/steamapps/common/Factorio/data
+
+You can find precise API documentation here:
+../mod-api-documentation
+
