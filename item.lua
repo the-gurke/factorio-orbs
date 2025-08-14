@@ -337,11 +337,11 @@ data:extend({
   -- Glimming Remains (low fuel value, lasts 1 hour)
   {
     type = "item",
-    name = "glimming-remains",
-    icon = "__orbs__/graphics/glimming-remains.png",
+    name = "smoldering-remains",
+    icon = "__orbs__/graphics/smoldering-remains.png",
     icon_size = 1024,
     subgroup = "intermediate-product",
-    order = "z[glimming-remains]",
+    order = "z[smoldering-remains]",
     stack_size = 50,
     fuel_category = "chemical",
     fuel_value = "100kJ",
@@ -361,7 +361,7 @@ data:extend({
     fuel_category = "chemical",
     fuel_value = "4MJ",
     spoil_ticks = 2 * 60 * 60,
-    spoil_result = "glimming-remains"
+    spoil_result = "smoldering-remains"
   },
 
   -- Burning Coal (8MJ fuel, decays to glimming remains in 5 min)
@@ -376,7 +376,7 @@ data:extend({
     fuel_category = "chemical",
     fuel_value = "8MJ",
     spoil_ticks = 5 * 60 * 60,
-    spoil_result = "glimming-remains"
+    spoil_result = "smoldering-remains"
   },
 
   -- Stick
