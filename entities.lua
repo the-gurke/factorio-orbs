@@ -144,8 +144,21 @@ distillery.name = "distillery"
 distillery.minable = {mining_time = 0.2, result = "distillery"}
 distillery.crafting_categories = {"distilling"}
 distillery.crafting_speed = 1
-distillery.energy_source = {type = "void"}
-distillery.energy_usage = "1W"
+distillery.energy_source = {
+  type = "heat",
+  max_temperature = 85,
+  default_temperature = 15,
+  specific_heat = "1MJ",
+  max_transfer = "2GW",
+  min_working_temperature = 78,
+  connections = {
+    {position = {0, -1}, direction = defines.direction.north},
+    {position = {1, 0}, direction = defines.direction.east},
+    {position = {0, 1}, direction = defines.direction.south},
+    {position = {-1, 0}, direction = defines.direction.west}
+  }
+}
+distillery.energy_usage = "50kW"
 distillery.icon = "__orbs__/graphics/distillery.png"
 distillery.icon_size = 1024
 
