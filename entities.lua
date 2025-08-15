@@ -162,6 +162,24 @@ distillery.energy_usage = "50kW"
 distillery.icon = "__orbs__/graphics/distillery.png"
 distillery.icon_size = 1024
 
+-- Set custom graphics for the distillery entity
+distillery.graphics_set = {
+  animation = {
+    layers = {
+      {
+        filename = "__orbs__/graphics/distillery.png",
+        priority = "high",
+        width = 1024,
+        height = 1024,
+        frame_count = 1,
+        line_length = 1,
+        scale = 0.1,
+        shift = {0, 0}
+      }
+    }
+  }
+}
+
 -- Create the crusher (based on assembling machine)
 local crusher = util.table.deepcopy(data.raw["assembling-machine"]["assembling-machine-1"])
 
