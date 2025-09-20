@@ -717,6 +717,10 @@ data:extend({
       {
         type = "unlock-recipe",
         recipe = "magic-inserter"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "magic-long-handed-inserter"
       }
     },
     order = "a-h-d"
