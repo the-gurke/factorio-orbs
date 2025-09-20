@@ -100,6 +100,10 @@ data:extend({
       },
       {
         type = "unlock-recipe",
+        recipe = "magic-science-pack"
+      },
+      {
+        type = "unlock-recipe",
         recipe = "craft-conjuration-machine"
       }
     },
