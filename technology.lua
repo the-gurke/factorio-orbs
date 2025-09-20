@@ -612,9 +612,9 @@ for i = 1, 10 do
     icon_size = 1024,
     prerequisites = i == 1 and {"orbs-technology"} or {"telekinesis-" .. (i-1)},
     unit = {
-      count = math.pow(2, i-1), -- 2^(i-1): 1, 2, 4, 8, 16, 32, 64, 128, 256, 512
+      count = i == 1 and 1 or math.pow(2, i-1), -- 1 for telekinesis I, then 2^(i-1): 2, 4, 8, 16, 32, 64, 128, 256, 512
       ingredients = {
-        {"conjuration-research-pack", 1}
+        {i == 1 and "magic-science-pack" or "conjuration-research-pack", 1}
       },
       time = 15
     },
@@ -707,9 +707,9 @@ data:extend({
     icon_size = 256,
     prerequisites = {"orbs-technology"},
     unit = {
-      count = 10,
+      count = 1,
       ingredients = {
-        {"conjuration-research-pack", 1}
+        {"magic-science-pack", 1}
       },
       time = 15
     },
@@ -907,9 +907,9 @@ data:extend({
     icon_size = 256,
     prerequisites = {"orbs-technology"},
     unit = {
-      count = 10,
+      count = 1,
       ingredients = {
-        {"conjuration-research-pack", 1}
+        {"magic-science-pack", 1}
       },
       time = 30
     },
@@ -1005,9 +1005,9 @@ data:extend({
     icon_size = 1024,
     prerequisites = {"orbs-technology"},
     unit = {
-      count = 10,
+      count = 1,
       ingredients = {
-        {"conjuration-research-pack", 1}
+        {"magic-science-pack", 1}
       },
       time = 30
     },

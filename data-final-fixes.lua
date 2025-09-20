@@ -10,8 +10,8 @@ if mods["Nanobots2"] then
     tech.icon = "__orbs__/graphics/summoning-technology.png"
     tech.icon_size = 1024
     tech.prerequisites = {"orbs-technology"}
-    tech.unit.count = 20
-    tech.unit.ingredients = {{"conjuration-research-pack", 1}}
+    tech.unit.count = 1
+    tech.unit.ingredients = {{"magic-science-pack", 1}}
     tech.localised_name = {"technology-name.summon-machines"}
     tech.localised_description = {"technology-description.summon-machines"}
   end
