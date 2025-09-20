@@ -543,6 +543,10 @@ data:extend({
       {
         type = "unlock-recipe",
         recipe = "pipe-to-ground"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "offshore-pump"
       }
     },
     research_trigger = {

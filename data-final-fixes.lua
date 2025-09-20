@@ -372,14 +372,6 @@ if data.raw.technology["fluid-handling"] then
     },
     time = 30
   }
-  -- Add offshore pump to fluid handling technology
-  if not tech.effects then
-    tech.effects = {}
-  end
-  table.insert(tech.effects, {
-    type = "unlock-recipe",
-    recipe = "offshore-pump"
-  })
 end
 
 -- Lock stone furnace recipe initially (unlocked by fire science technology)
