@@ -279,6 +279,9 @@ if data.raw["inserter"]["long-handed-inserter"] then
   if data.raw["inserter"]["fast-inserter"] then
     long_inserter.rotation_speed = data.raw["inserter"]["fast-inserter"].rotation_speed
   end
+  -- Half fuel consumption compared to fast inserter
+  long_inserter.energy_per_movement = "8kW"
+  long_inserter.energy_per_rotation = "8kW"
   long_inserter.energy_source = {
     type = "burner",
     fuel_categories = {"chemical"},
