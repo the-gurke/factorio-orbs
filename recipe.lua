@@ -154,10 +154,11 @@ table.insert(recipes, {
   icon = "__orbs__/graphics/conjuration-orb.png",
   icon_size = 1024,
   ingredients = {
-    {type = "item", name = "magic-orb", amount = 1}
+    {type = "item", name = "magic-orb", amount = 2}
   },
   results = {
-    {type = "item", name = "conjuration-orb", amount = 1}
+    {type = "item", name = "conjuration-orb", amount = 1},
+    {type = "item", name = "magic-orb", amount = 1}
   },
   enabled = false,
   order = "b[transfigure-conjuration-orb]"
