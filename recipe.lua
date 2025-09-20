@@ -902,6 +902,27 @@ table.insert(recipes, {
   order = "d[fast-inserter]"
 })
 
+-- Magic long handed inserter recipe
+table.insert(recipes, {
+  type = "recipe",
+  name = "magic-long-handed-inserter",
+  category = "crafting",
+  subgroup = "inserter",
+  energy_required = 3,
+  icon = "__base__/graphics/icons/long-handed-inserter.png",
+  icon_size = 64,
+  ingredients = {
+    {type = "item", name = "long-handed-inserter", amount = 1},
+    {type = "item", name = "magic-orb", amount = 2, ignored_by_stats = 1}
+  },
+  results = {
+    {type = "item", name = "magic-long-handed-inserter", amount = 1},
+    {type = "item", name = "magic-orb", amount = 1, ignored_by_stats = 1}
+  },
+  enabled = false,
+  order = "e[long-handed-inserter]"
+})
+
 
 -- Rune Word Recipes
 table.insert(recipes, {
