@@ -926,7 +926,7 @@ data:extend({
     name = "cleansing-orb",
     icon = "__orbs__/graphics/cleansing-orb.png",
     icon_size = 1024,
-    prerequisites = {"orbs-technology"},
+    prerequisites = {"divination"},
     unit = {
       count = 20,
       ingredients = {
