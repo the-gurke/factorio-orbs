@@ -454,7 +454,7 @@ volatile_orb_explosion.created_effect = {
       {
         type = "damage",
         damage = {
-          amount = 270,
+          amount = 350,
           type = "explosion"
         }
       },
