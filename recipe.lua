@@ -188,22 +188,22 @@ table.insert(recipes, {
 -- Magic Science Pack
 table.insert(recipes, {
   type = "recipe",
-  name = "magic-science-pack",
+  name = "magic-research-pack",
   category = "orbs",
   subgroup = "orbs-research",
   energy_required = 3,
-  icon = "__orbs__/graphics/magic-science-pack.png",
+  icon = "__orbs__/graphics/magic-research-pack.png",
   icon_size = 1024,
   ingredients = {
     {type = "item", name = "magic-orb", amount = 2}
   },
   results = {
-    {type = "item", name = "magic-science-pack", amount = 1},
+    {type = "item", name = "magic-research-pack", amount = 1},
     {type = "item", name = "magic-orb", amount = 1}
   },
   enabled = false,
   allow_productivity = true,
-  order = "a[magic-science-pack]"
+  order = "a[magic-research-pack]"
 })
 
 -- Transfigure to Haste Orb
