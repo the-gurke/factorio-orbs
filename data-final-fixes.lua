@@ -85,7 +85,7 @@ if mods["Nanobots2"] then
     recipe.localised_description = {"item-description.magic-wand"}
     -- Update recipe to use magical ingredients
     recipe.ingredients = {
-      {type = "item", name = "wood", amount = 1},
+      {type = "item", name = "stick", amount = 1},
       {type = "item", name = "active-magic-shard", amount = 10}
     }
   end
@@ -99,7 +99,6 @@ if mods["Nanobots2"] then
 
   -- Update all ammo items to use spirit theming
   local ammo_items = {
-    ["ammo-nano-termites"] = "tree-conflagration-essence",
     ["ammo-nano-scrappers"] = "summoning-essence",
     ["ammo-nano-constructors"] = "summoning-essence",
     ["ammo-nano-deconstructors"] = "summoning-essence"
@@ -110,19 +109,13 @@ if mods["Nanobots2"] then
       local ammo = data.raw.ammo[old_name]
       ammo.localised_name = {"item-name." .. new_name}
       ammo.localised_description = {"item-description." .. new_name}
-      if old_name == "ammo-nano-termites" then
-        ammo.icon = "__orbs__/graphics/tree-conflagration-essence.png"
-        ammo.icon_size = 1024
-      else
-        ammo.icon = "__orbs__/graphics/summoning-essence.png"
-        ammo.icon_size = 1024
-      end
+      ammo.icon = "__orbs__/graphics/summoning-essence.png"
+      ammo.icon_size = 1024
     end
   end
 
   -- Update ammo recipes to use magical ingredients
   local ammo_recipes = {
-    "ammo-nano-termites",
     "ammo-nano-scrappers",
     "ammo-nano-constructors",
     "ammo-nano-deconstructors"
@@ -136,17 +129,10 @@ if mods["Nanobots2"] then
         {type = "item", name = "iron-stick", amount = 1}
       }
       -- Update the localized names for recipes too
-      if recipe_name == "ammo-nano-termites" then
-        recipe.localised_name = {"item-name.tree-conflagration-essence"}
-        recipe.icon = "__orbs__/graphics/tree-conflagration-essence.png"
-        recipe.icon_size = 1024
-        recipe.localised_description = {"item-description.tree-conflagration-essence"}
-      else
-        recipe.localised_name = {"item-name.summoning-essence"}
-        recipe.icon = "__orbs__/graphics/summoning-essence.png"
-        recipe.icon_size = 1024
-        recipe.localised_description = {"item-description.summoning-essence"}
-      end
+      recipe.localised_name = {"item-name.summoning-essence"}
+      recipe.icon = "__orbs__/graphics/summoning-essence.png"
+      recipe.icon_size = 1024
+      recipe.localised_description = {"item-description.summoning-essence"}
     end
   end
 
@@ -393,7 +379,7 @@ if data.raw.technology["fluid-handling"] then
     },
     time = 30
   }
-  
+
   -- Remove all barreling recipes except water and stability
   if tech.effects then
     for i = #tech.effects, 1, -1 do
@@ -402,8 +388,8 @@ if data.raw.technology["fluid-handling"] then
         local recipe_name = effect.recipe
         -- Keep only water and stability barreling/unbarreling recipes
         if recipe_name and (
-          string.find(recipe_name, "barrel") and 
-          not string.find(recipe_name, "water") and 
+          string.find(recipe_name, "barrel") and
+          not string.find(recipe_name, "water") and
           not string.find(recipe_name, "stability")
         ) then
           table.remove(tech.effects, i)
@@ -718,6 +704,12 @@ if data.raw.recipe["display-panel"] then
     {type = "item", name = "copper-plate", amount = 1}
   }
 end
+
+-- Modify storage tank recipe
+if data.raw.recipe["storage-tank"] then
+  data.raw.recipe["storage-tank"].ingredients = {
+    {type = "item", name = "iron-plate", amount = 50},
+    {type = "item", name = "iron-stick", amount = 10}
 
 -- Override heating tower recipe to use stone bricks, boiler, and heat pipes
 if data.raw.recipe["heating-tower"] then
