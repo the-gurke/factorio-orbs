@@ -204,8 +204,8 @@ data:extend({
     name = "conjuration-machine",
     icon = "__base__/graphics/icons/assembling-machine-2.png",
     icon_size = 64,
-    subgroup = "orbs-machines",
-    order = "a[conjuration-machine]",
+    subgroup = "production-machine",
+    order = "b[assembling-machine-2]",
     place_result = "conjuration-machine",
     stack_size = 20
   },
