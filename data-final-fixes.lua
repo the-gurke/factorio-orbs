@@ -14,6 +14,14 @@ if mods["Nanobots2"] then
     tech.unit.ingredients = {{"magic-research-pack", 1}}
     tech.localised_name = {"technology-name.summon-machines"}
     tech.localised_description = {"technology-description.summon-machines"}
+    -- Add ghost creation effect (entities leave ghosts when destroyed)
+    if not tech.effects then
+      tech.effects = {}
+    end
+    table.insert(tech.effects, {
+      type = "create-ghost-on-entity-death",
+      modifier = true
+    })
   end
 
   -- Override nanobots cliff technology
