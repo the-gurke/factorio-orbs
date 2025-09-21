@@ -836,7 +836,7 @@ local rune_transformer_item = {
 local rune_transformer_recipe = {
   type = "recipe",
   name = "rune-transformer",
-  category = "crafting-with-fluid",
+  category = "orbs",
   energy_required = 5,
   icon = "__base__/graphics/icons/stone-furnace.png",
   icon_size = 64,
@@ -844,7 +844,7 @@ local rune_transformer_recipe = {
     {type = "item", name = "stone-brick", amount = 10},
     {type = "item", name = "iron-plate", amount = 6},
     {type = "item", name = "magic-orb", amount = 1},
-    {type = "fluid", name = "stability", amount = 225}
+    {type = "fluid", name = "stability", amount = 200}
   },
   results = {
     {type = "item", name = "rune-transformer", amount = 1}
