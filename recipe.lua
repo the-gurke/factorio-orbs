@@ -753,10 +753,11 @@ table.insert(recipes, {
     {type = "fluid", name = "water", amount = 1000}
   },
   results = {
-    {type = "item", name = "magic-orb", amount = 1},
+    {type = "item", name = "magic-orb", amount = 1, ignored_by_productivity = 1},
     {type = "fluid", name = "steam", amount = 10000}
   },
   enabled = false,
+  allow_productivity = false,
   order = "k[neutralize-rage-orb]"
 })
 
