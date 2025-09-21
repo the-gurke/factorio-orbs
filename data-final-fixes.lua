@@ -719,5 +719,13 @@ if data.raw.recipe["display-panel"] then
   }
 end
 
+-- Modify storage tank recipe
+if data.raw.recipe["storage-tank"] then
+  data.raw.recipe["storage-tank"].ingredients = {
+    {type = "item", name = "iron-plate", amount = 50},
+    {type = "item", name = "iron-stick", amount = 10}
+  }
+end
+
 -- Finally, as a last step, remove all the content we don't want
 require("removals")
