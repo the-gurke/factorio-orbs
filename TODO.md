@@ -30,3 +30,9 @@
 * burner inserters take more fuel
 * burner inserters leech fuel?
 * make telekensis effects quadratic
+
+# Features
+
+* Hide the research tree from the player
+* Maybe make a science with the divination research pack that lets you look
+  further ahead in the research tree
