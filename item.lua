@@ -476,11 +476,11 @@ data:extend({
   -- Magic Science Pack
   {
     type = "tool",
-    name = "magic-science-pack",
-    icon = "__orbs__/graphics/magic-science-pack.png",
+    name = "magic-research-pack",
+    icon = "__orbs__/graphics/magic-research-pack.png",
     icon_size = 1024,
     subgroup = "orbs-research",
-    order = "d[magic-science-pack]",
+    order = "d[magic-research-pack]",
     stack_size = 200,
     durability = 1,
     durability_description_key = "description.science-pack-remaining-amount-key",
