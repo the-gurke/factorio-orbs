@@ -370,7 +370,7 @@ data:extend({
     name = "magic-grenade",
     icon = "__orbs__/graphics/magic-grenade.png",
     icon_size = 1024,
-    prerequisites = {"orbs-technology"},
+    prerequisites = {"unstable-orb"},
     unit = {
       count = 50,
       ingredients = {
