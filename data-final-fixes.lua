@@ -148,6 +148,7 @@ end
 
 -- Modify red transport belt recipes to require stability
 if data.raw.recipe["fast-transport-belt"] then
+  data.raw.recipe["fast-transport-belt"].category = "orbs"
   data.raw.recipe["fast-transport-belt"].ingredients = {
     {type = "item", name = "transport-belt", amount = 1},
     {type = "fluid", name = "stability", amount = 1}
@@ -155,6 +156,7 @@ if data.raw.recipe["fast-transport-belt"] then
 end
 
 if data.raw.recipe["fast-splitter"] then
+  data.raw.recipe["fast-splitter"].category = "orbs"
   data.raw.recipe["fast-splitter"].ingredients = {
     {type = "item", name = "splitter", amount = 1},
     {type = "fluid", name = "stability", amount = 1}
@@ -162,6 +164,7 @@ if data.raw.recipe["fast-splitter"] then
 end
 
 if data.raw.recipe["fast-underground-belt"] then
+  data.raw.recipe["fast-underground-belt"].category = "orbs"
   data.raw.recipe["fast-underground-belt"].ingredients = {
     {type = "item", name = "underground-belt", amount = 1},
     {type = "fluid", name = "stability", amount = 1}
