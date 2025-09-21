@@ -487,14 +487,14 @@ table.insert(recipes, {
   category = "orbs",
   subgroup = "divination",
   energy_required = 60,
-  icon = "__orbs__/graphics/element-of-stability.png",
+  icon = "__orbs__/graphics/stability-liquid.png",
   icon_size = 1024,
   reset_freshness_on_craft = true,
   ingredients = {
     {type = "item", name = "magic-orb", amount = 1}
   },
   results = {
-    {type = "item", name = "element-of-stability", amount = 1},
+    {type = "fluid", name = "stability", amount = 225},
     {type = "item", name = "volatile-orb-Q", amount = 1, probability = 1/5},
     {type = "item", name = "volatile-orb-R", amount = 1, probability = 1/5},
     {type = "item", name = "volatile-orb-S", amount = 1, probability = 1/5},
@@ -505,25 +505,6 @@ table.insert(recipes, {
   order = "l[extract-stability]"
 })
 
--- Liquify Stability Element
-table.insert(recipes, {
-  type = "recipe",
-  name = "liquify-stability",
-  category = "orbs",
-  subgroup = "divination",
-  energy_required = 3,
-  icon = "__orbs__/graphics/stability-liquid.png",
-  icon_size = 1024,
-  ingredients = {
-    {type = "item", name = "element-of-stability", amount = 1}
-  },
-  results = {
-    {type = "fluid", name = "stability", amount = 225}
-  },
-  enabled = false,
-  allow_productivity = true,
-  order = "m[liquify-stability]"
-})
 
 -- Generate volatile orb manipulation recipes
 -- For each pair of orbs i and j, the result is (i * j) % 7
@@ -956,7 +937,7 @@ table.insert(recipes, {
   icon_size = 64,
   ingredients = {
     {type = "item", name = "active-magic-shard", amount = 1},
-    {type = "item", name = "element-of-stability", amount = 1},
+    {type = "fluid", name = "stability", amount = 50},
     {type = "fluid", name = "water", amount = 100}
   },
   results = {
@@ -977,7 +958,7 @@ table.insert(recipes, {
   icon_size = 64,
   ingredients = {
     {type = "item", name = "active-magic-shard", amount = 1},
-    {type = "item", name = "element-of-stability", amount = 1}
+    {type = "fluid", name = "stability", amount = 50}
   },
   results = {
     {type = "item", name = "rune-word-spiritus", amount = 1}
