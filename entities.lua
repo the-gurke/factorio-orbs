@@ -70,6 +70,8 @@ if data.raw["lab"]["lab"] then
     uses_module_effects = true,
     uses_surface_effects = true
   }
+  -- Allow rotation by setting direction count
+  lab.direction_count = 4
 end
 
 -- Create the soul collector (based on iron chest)
