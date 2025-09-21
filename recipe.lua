@@ -154,10 +154,11 @@ table.insert(recipes, {
   icon = "__orbs__/graphics/conjuration-orb.png",
   icon_size = 1024,
   ingredients = {
-    {type = "item", name = "magic-orb", amount = 1}
+    {type = "item", name = "magic-orb", amount = 2}
   },
   results = {
-    {type = "item", name = "conjuration-orb", amount = 1}
+    {type = "item", name = "conjuration-orb", amount = 1},
+    {type = "item", name = "magic-orb", amount = 1}
   },
   enabled = false,
   order = "b[transfigure-conjuration-orb]"
@@ -182,6 +183,27 @@ table.insert(recipes, {
   enabled = false,
   allow_productivity = true,
   order = "a[conjuration-research-pack]"
+})
+
+-- Magic Science Pack
+table.insert(recipes, {
+  type = "recipe",
+  name = "magic-science-pack",
+  category = "orbs",
+  subgroup = "orbs-research",
+  energy_required = 3,
+  icon = "__orbs__/graphics/magic-science-pack.png",
+  icon_size = 1024,
+  ingredients = {
+    {type = "item", name = "magic-orb", amount = 2}
+  },
+  results = {
+    {type = "item", name = "magic-science-pack", amount = 1},
+    {type = "item", name = "magic-orb", amount = 1}
+  },
+  enabled = false,
+  allow_productivity = true,
+  order = "a[magic-science-pack]"
 })
 
 -- Transfigure to Haste Orb
@@ -899,6 +921,27 @@ table.insert(recipes, {
   },
   enabled = false,
   order = "d[fast-inserter]"
+})
+
+-- Magic long handed inserter recipe
+table.insert(recipes, {
+  type = "recipe",
+  name = "magic-long-handed-inserter",
+  category = "crafting",
+  subgroup = "inserter",
+  energy_required = 3,
+  icon = "__base__/graphics/icons/long-handed-inserter.png",
+  icon_size = 64,
+  ingredients = {
+    {type = "item", name = "long-handed-inserter", amount = 1},
+    {type = "item", name = "magic-orb", amount = 2, ignored_by_stats = 1}
+  },
+  results = {
+    {type = "item", name = "magic-long-handed-inserter", amount = 1},
+    {type = "item", name = "magic-orb", amount = 1, ignored_by_stats = 1}
+  },
+  enabled = false,
+  order = "e[long-handed-inserter]"
 })
 
 

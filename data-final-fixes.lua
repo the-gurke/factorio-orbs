@@ -10,8 +10,8 @@ if mods["Nanobots2"] then
     tech.icon = "__orbs__/graphics/summoning-technology.png"
     tech.icon_size = 1024
     tech.prerequisites = {"orbs-technology"}
-    tech.unit.count = 20
-    tech.unit.ingredients = {{"conjuration-research-pack", 1}}
+    tech.unit.count = 1
+    tech.unit.ingredients = {{"magic-science-pack", 1}}
     tech.localised_name = {"technology-name.summon-machines"}
     tech.localised_description = {"technology-description.summon-machines"}
   end
@@ -279,6 +279,9 @@ if data.raw["inserter"]["long-handed-inserter"] then
   if data.raw["inserter"]["fast-inserter"] then
     long_inserter.rotation_speed = data.raw["inserter"]["fast-inserter"].rotation_speed
   end
+  -- Half fuel consumption compared to fast inserter
+  long_inserter.energy_per_movement = "8kW"
+  long_inserter.energy_per_rotation = "8kW"
   long_inserter.energy_source = {
     type = "burner",
     fuel_categories = {"chemical"},
@@ -347,8 +350,26 @@ magic_inserter_item.localised_name = {"item-name.magic-inserter"}
 magic_inserter_item.place_result = "magic-inserter"
 magic_inserter_item.hidden = nil
 
+-- Create magic long handed inserter from long handed inserter
+local magic_long_inserter = table.deepcopy(data.raw["inserter"]["long-handed-inserter"])
+magic_long_inserter.name = "magic-long-handed-inserter"
+magic_long_inserter.localised_name = {"entity-name.magic-long-handed-inserter"}
+magic_long_inserter.minable.result = "magic-long-handed-inserter"
+magic_long_inserter.energy_source = {
+  type = "void"
+}
+magic_long_inserter.energy_per_movement = "0kW"
+magic_long_inserter.energy_per_rotation = "0kW"
+
+-- Create magic long handed inserter item
+local magic_long_inserter_item = table.deepcopy(data.raw.item["long-handed-inserter"])
+magic_long_inserter_item.name = "magic-long-handed-inserter"
+magic_long_inserter_item.localised_name = {"item-name.magic-long-handed-inserter"}
+magic_long_inserter_item.place_result = "magic-long-handed-inserter"
+magic_long_inserter_item.hidden = nil
+
 -- Add new inserters to data
-data:extend({new_burner_inserter, new_burner_inserter_item, magic_inserter, magic_inserter_item})
+data:extend({new_burner_inserter, new_burner_inserter_item, magic_inserter, magic_inserter_item, magic_long_inserter, magic_long_inserter_item})
 
 -- Update metallurgy to depend on fire-science
 data.raw.technology["metallurgy"].prerequisites = {"fire-science"}
