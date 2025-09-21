@@ -476,6 +476,10 @@ data:extend({
       {
         type = "unlock-recipe",
         recipe = "rage-orb"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "neutralize-rage-orb"
       }
     },
     order = "z-b[rage-orb]"
