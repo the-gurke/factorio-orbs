@@ -576,6 +576,7 @@ end
 
 -- Update bulk inserter recipe
 if data.raw.recipe["bulk-inserter"] then
+  data.raw.recipe["bulk-inserter"].category = "crafting-with-fluid"
   data.raw.recipe["bulk-inserter"].ingredients = {
     {type = "item", name = "magic-inserter", amount = 1},
     {type = "item", name = "iron-gear-wheel", amount = 10},
