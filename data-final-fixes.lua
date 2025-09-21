@@ -393,7 +393,7 @@ if data.raw.technology["fluid-handling"] then
     },
     time = 30
   }
-  
+
   -- Remove all barreling recipes except water and stability
   if tech.effects then
     for i = #tech.effects, 1, -1 do
@@ -402,8 +402,8 @@ if data.raw.technology["fluid-handling"] then
         local recipe_name = effect.recipe
         -- Keep only water and stability barreling/unbarreling recipes
         if recipe_name and (
-          string.find(recipe_name, "barrel") and 
-          not string.find(recipe_name, "water") and 
+          string.find(recipe_name, "barrel") and
+          not string.find(recipe_name, "water") and
           not string.find(recipe_name, "stability")
         ) then
           table.remove(tech.effects, i)
@@ -724,6 +724,21 @@ if data.raw.recipe["storage-tank"] then
   data.raw.recipe["storage-tank"].ingredients = {
     {type = "item", name = "iron-plate", amount = 50},
     {type = "item", name = "iron-stick", amount = 10}
+
+-- Override heating tower recipe to use stone bricks, boiler, and heat pipes
+if data.raw.recipe["heating-tower"] then
+  data.raw.recipe["heating-tower"].ingredients = {
+    {type = "item", name = "stone-brick", amount = 10},
+    {type = "item", name = "boiler", amount = 1},
+    {type = "item", name = "heat-pipe", amount = 5}
+  }
+end
+
+-- Override heat pipes recipe to use pipe and copper
+if data.raw.recipe["heat-pipe"] then
+  data.raw.recipe["heat-pipe"].ingredients = {
+    {type = "item", name = "pipe", amount = 1},
+    {type = "item", name = "copper-plate", amount = 1}
   }
 end
 
