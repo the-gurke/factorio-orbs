@@ -192,16 +192,20 @@ local function init_rune_transformation_state()
       global.rune_transformation_indices[rune_name] = 1 -- Start at first transformation
     end
   end
+  -- Store the transformation chains in global for multiplayer sync
+  if not global.rune_transformation_chains then
+    global.rune_transformation_chains = rune_transformation_chains
+  end
 end
 
 -- Function to enable the current transformation recipe for a rune
 local function enable_current_rune_recipe(rune_name)
-  if not global or not global.rune_transformation_indices then
+  if not global or not global.rune_transformation_indices or not global.rune_transformation_chains then
     init_rune_transformation_state()
   end
 
   local current_index = global.rune_transformation_indices[rune_name]
-  local target_chain = rune_transformation_chains[rune_name]
+  local target_chain = global.rune_transformation_chains[rune_name]
 
   if current_index and target_chain and current_index <= #target_chain then
     local target_rune = target_chain[current_index]
@@ -218,7 +222,11 @@ end
 
 -- Function to disable all transformation recipes for a rune
 local function disable_all_rune_recipes(rune_name)
-  local target_chain = rune_transformation_chains[rune_name]
+  if not global or not global.rune_transformation_chains then
+    return
+  end
+  
+  local target_chain = global.rune_transformation_chains[rune_name]
 
   if target_chain then
     for i, target_rune in ipairs(target_chain) do
@@ -234,12 +242,12 @@ end
 
 -- Function to cycle to the next transformation recipe for a rune
 local function cycle_rune_transformation(rune_name)
-  if not global or not global.rune_transformation_indices then
+  if not global or not global.rune_transformation_indices or not global.rune_transformation_chains then
     init_rune_transformation_state()
   end
 
   local current_index = global.rune_transformation_indices[rune_name]
-  local target_chain = rune_transformation_chains[rune_name]
+  local target_chain = global.rune_transformation_chains[rune_name]
 
   if current_index and target_chain then
     -- Disable current recipe
@@ -263,8 +271,10 @@ script.on_init(function()
   init_rune_transformation_state()
 
   -- Enable initial recipes for all runes
-  for rune_name, _ in pairs(rune_transformation_chains) do
-    enable_current_rune_recipe(rune_name)
+  if global.rune_transformation_chains then
+    for rune_name, _ in pairs(global.rune_transformation_chains) do
+      enable_current_rune_recipe(rune_name)
+    end
   end
 
   -- Apply telekinesis bonuses to all players
@@ -275,9 +285,8 @@ end)
 
 -- Re-establish module references when loading existing save
 script.on_load(function()
-  -- The global table is automatically loaded from save file,
-  -- but we need to re-require the module references
-  rune_transformation_chains = require("rune-chains")
+  -- The global table is automatically loaded from save file
+  -- The rune_transformation_chains are now stored in global, no need to re-require
 end)
 
 -- Handle mod configuration changes (updates, etc.)
@@ -286,8 +295,10 @@ script.on_configuration_changed(function(event)
   init_rune_transformation_state()
 
   -- Re-enable current recipes for all runes
-  for rune_name, _ in pairs(rune_transformation_chains) do
-    enable_current_rune_recipe(rune_name)
+  if global.rune_transformation_chains then
+    for rune_name, _ in pairs(global.rune_transformation_chains) do
+      enable_current_rune_recipe(rune_name)
+    end
   end
 
   -- Apply telekinesis bonuses to all players
@@ -300,6 +311,11 @@ end)
 -- Check every 0.2*60-1 ticks (just before 0.2 seconds) to catch completed recipes
 -- (The Spiritus rune crafting recipe completes in 0.2 seconds)
 script.on_nth_tick(0.2*60-1, function(event)
+  -- Ensure global state is initialized
+  if not global or not global.rune_transformation_chains then
+    init_rune_transformation_state()
+  end
+  
   -- Check all rune transformers on all surfaces
   for _, surface in pairs(game.surfaces) do
     local rune_transformers = surface.find_entities_filtered{name = "rune-transformer"}
@@ -317,7 +333,7 @@ script.on_nth_tick(0.2*60-1, function(event)
             local recipe_name = recipe.name
             local source_rune = recipe_name:match("transform%-(rune%-word%-[^%-]+)%-to")
 
-            if source_rune and rune_transformation_chains[source_rune] then
+            if source_rune and global.rune_transformation_chains and global.rune_transformation_chains[source_rune] then
               -- Cycle to the next transformation for this rune
               cycle_rune_transformation(source_rune)
             end
