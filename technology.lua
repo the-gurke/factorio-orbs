@@ -100,7 +100,7 @@ data:extend({
       },
       {
         type = "unlock-recipe",
-        recipe = "magic-science-pack"
+        recipe = "magic-research-pack"
       },
       {
         type = "unlock-recipe",
@@ -618,7 +618,7 @@ for i = 1, 10 do
     unit = {
       count = i == 1 and 1 or math.pow(2, i-1), -- 1 for telekinesis I, then 2^(i-1): 2, 4, 8, 16, 32, 64, 128, 256, 512
       ingredients = {
-        {i == 1 and "magic-science-pack" or "conjuration-research-pack", 1}
+        {i == 1 and "magic-research-pack" or "conjuration-research-pack", 1}
       },
       time = 15
     },
@@ -713,7 +713,7 @@ data:extend({
     unit = {
       count = 1,
       ingredients = {
-        {"magic-science-pack", 1}
+        {"magic-research-pack", 1}
       },
       time = 15
     },
@@ -917,7 +917,7 @@ data:extend({
     unit = {
       count = 1,
       ingredients = {
-        {"magic-science-pack", 1}
+        {"magic-research-pack", 1}
       },
       time = 30
     },
@@ -1015,7 +1015,7 @@ data:extend({
     unit = {
       count = 1,
       ingredients = {
-        {"magic-science-pack", 1}
+        {"magic-research-pack", 1}
       },
       time = 30
     },

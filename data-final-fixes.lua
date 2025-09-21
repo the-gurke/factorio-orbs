@@ -11,7 +11,7 @@ if mods["Nanobots2"] then
     tech.icon_size = 1024
     tech.prerequisites = {"orbs-technology"}
     tech.unit.count = 1
-    tech.unit.ingredients = {{"magic-science-pack", 1}}
+    tech.unit.ingredients = {{"magic-research-pack", 1}}
     tech.localised_name = {"technology-name.summon-machines"}
     tech.localised_description = {"technology-description.summon-machines"}
   end
