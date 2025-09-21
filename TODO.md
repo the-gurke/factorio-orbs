@@ -9,6 +9,7 @@
 
 * Magic orbs take 10 active magic shards to craft, but flux orbs take 50/10/0.05 = 100 active magic shards to craft
 * change the gun to some kind of magic wand
+* Some buildings still accept vanilla modules
 
 # Balancing Notes
 
