@@ -85,7 +85,7 @@ if mods["Nanobots2"] then
     recipe.localised_description = {"item-description.magic-wand"}
     -- Update recipe to use magical ingredients
     recipe.ingredients = {
-      {type = "item", name = "wood", amount = 1},
+      {type = "item", name = "stick", amount = 1},
       {type = "item", name = "active-magic-shard", amount = 10}
     }
   end
