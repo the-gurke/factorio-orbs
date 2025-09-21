@@ -664,7 +664,7 @@ if data.raw["offshore-pump"]["offshore-pump"] then
       }
     }
   }
-  data.raw["offshore-pump"]["offshore-pump"].energy_usage = "30kW"
+  data.raw["offshore-pump"]["offshore-pump"].energy_usage = "300kW"
 end
 
 -- Update offshore pump recipe
