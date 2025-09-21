@@ -17,7 +17,7 @@ For humans: The following contains a lot of spoilers! You might not want to read
 - **Conjuration Orb**: Special orb for crafting conjuration machines
 - **Haste Orb**: Speed module that only works in conjuration machines (+20% speed)
 
-**Unstable Orbs:**
+**Flux Orbs:**
 - **Alpha State**: Spoils to Beta in 30 seconds
 - **Beta State**: Spoils to Gamma in 1 second  
 - **Gamma State**: Spoils to Alpha in 1 second
@@ -129,13 +129,13 @@ Note: this mod uses "research" instead of "science" since we don't do science.
 
 ### Spoilage System
 - Active shards spoil to inactive in 30 seconds
-- Unstable orbs cycle through three states
+- Flux orbs cycle through three states
 - Volatile orbs explode after 40 seconds
 - Proper timing essential for magical processes
 
 ### Divination System
 **Divination Essence:**
-- **Creation**: Combine one Unstable Orb [Beta State] + one Unstable Orb [Gamma State] → 2 Unstable Orb [Alpha State] + 1 Divination Essence (resets freshness on craft)
+- **Creation**: Combine one Flux Orb [Beta State] + one Flux Orb [Gamma State] → 2 Flux Orb [Alpha State] + 1 Divination Essence (resets freshness on craft)
 - **Spoilage**: Spoils in 10 seconds to nothing - extremely volatile!
 - **Stabilization**: Can be stabilized using coal - consumes 1 coal with 50% chance to return it, resets spoilage timer
 - **Usage**: Primary ingredient for Divination Research Pack and Soul Collector crafting
@@ -183,4 +183,3 @@ here:
 
 You can find precise API documentation here:
 ../mod-api-documentation
-

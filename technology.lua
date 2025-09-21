@@ -304,8 +304,8 @@ data:extend({
   },
   {
     type = "technology",
-    name = "unstable-orb",
-    icon = "__orbs__/graphics/unstable-orb-alpha.png",
+    name = "flux-orb",
+    icon = "__orbs__/graphics/flux-orb-alpha.png",
     icon_size = 1024,
     prerequisites = {"orbs-technology"},
     unit = {
@@ -318,11 +318,11 @@ data:extend({
     effects = {
       {
         type = "unlock-recipe",
-        recipe = "conjure-unstable-orb"
+        recipe = "conjure-flux-orb"
       },
       {
         type = "unlock-recipe",
-        recipe = "align-unstable-orb"
+        recipe = "align-flux-orb"
       }
     },
     order = "a-h-k"
@@ -332,7 +332,7 @@ data:extend({
     name = "divination-essence",
     icon = "__orbs__/graphics/divination-essence.png",
     icon_size = 1024,
-    prerequisites = {"unstable-orb"},
+    prerequisites = {"flux-orb"},
     unit = {
       count = 100,
       ingredients = {
@@ -374,7 +374,7 @@ data:extend({
     name = "magic-grenade",
     icon = "__orbs__/graphics/magic-grenade.png",
     icon_size = 1024,
-    prerequisites = {"unstable-orb"},
+    prerequisites = {"flux-orb"},
     unit = {
       count = 50,
       ingredients = {
