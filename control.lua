@@ -258,34 +258,11 @@ local function cycle_rune_transformation(rune_name)
   end
 end
 
--- Initialize rune transformation state on game start (new game)
+-- Initialize rune transformation state on game start
 script.on_init(function()
   init_rune_transformation_state()
 
   -- Enable initial recipes for all runes
-  for rune_name, _ in pairs(rune_transformation_chains) do
-    enable_current_rune_recipe(rune_name)
-  end
-
-  -- Apply telekinesis bonuses to all players
-  for _, force in pairs(game.forces) do
-    apply_telekinesis_bonuses_to_force(force)
-  end
-end)
-
--- Re-establish module references when loading existing save
-script.on_load(function()
-  -- The global table is automatically loaded from save file,
-  -- but we need to re-require the module references
-  rune_transformation_chains = require("rune-chains")
-end)
-
--- Handle mod configuration changes (updates, etc.)
-script.on_configuration_changed(function(event)
-  -- Ensure global state is properly initialized after mod changes
-  init_rune_transformation_state()
-
-  -- Re-enable current recipes for all runes
   for rune_name, _ in pairs(rune_transformation_chains) do
     enable_current_rune_recipe(rune_name)
   end
