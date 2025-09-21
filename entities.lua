@@ -844,7 +844,7 @@ local rune_transformer_recipe = {
     {type = "item", name = "stone-brick", amount = 10},
     {type = "item", name = "iron-plate", amount = 6},
     {type = "item", name = "magic-orb", amount = 1},
-    {type = "item", name = "element-of-stability", amount = 1}
+    {type = "fluid", name = "stability", amount = 225}
   },
   results = {
     {type = "item", name = "rune-transformer", amount = 1}

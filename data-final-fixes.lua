@@ -586,7 +586,7 @@ if data.raw.recipe["bulk-inserter"] then
     {type = "item", name = "magic-inserter", amount = 1},
     {type = "item", name = "iron-gear-wheel", amount = 10},
     {type = "item", name = "rune-word-terra", amount = 1},
-    {type = "item", name = "element-of-stability", amount = 1}
+    {type = "fluid", name = "stability", amount = 25}
   }
 end
 
