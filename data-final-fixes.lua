@@ -718,6 +718,8 @@ if data.raw.recipe["storage-tank"] then
   data.raw.recipe["storage-tank"].ingredients = {
     {type = "item", name = "iron-plate", amount = 50},
     {type = "item", name = "iron-stick", amount = 10}
+  }
+end
 
 -- Override heating tower recipe to use stone bricks, boiler, and heat pipes
 if data.raw.recipe["heating-tower"] then
