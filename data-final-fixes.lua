@@ -393,6 +393,24 @@ if data.raw.technology["fluid-handling"] then
     },
     time = 30
   }
+  
+  -- Remove all barreling recipes except water and stability
+  if tech.effects then
+    for i = #tech.effects, 1, -1 do
+      local effect = tech.effects[i]
+      if effect.type == "unlock-recipe" then
+        local recipe_name = effect.recipe
+        -- Keep only water and stability barreling/unbarreling recipes
+        if recipe_name and (
+          string.find(recipe_name, "barrel") and 
+          not string.find(recipe_name, "water") and 
+          not string.find(recipe_name, "stability")
+        ) then
+          table.remove(tech.effects, i)
+        end
+      end
+    end
+  end
 end
 
 -- Lock stone furnace recipe initially (unlocked by fire science technology)
