@@ -181,28 +181,51 @@ end)
 -- Rune transformation system
 local rune_transformation_chains = require("rune-chains")
 
--- Initialize global rune transformation state
+-- Initialize global rune transformation state (only for new games)
 local function init_rune_transformation_state()
   if not global then
     global = {}
   end
+  
+  -- Only initialize if we don't have the data at all (new game)
+  if not global.rune_transformation_chains then
+    global.rune_transformation_chains = rune_transformation_chains
+  end
+  
   if not global.rune_transformation_indices then
     global.rune_transformation_indices = {}
-    for rune_name, _ in pairs(rune_transformation_chains) do
+    for rune_name, _ in pairs(global.rune_transformation_chains) do
       global.rune_transformation_indices[rune_name] = 1 -- Start at first transformation
     end
   end
-  -- Store the transformation chains in global for multiplayer sync
+end
+
+-- Initialize missing global state without overwriting existing data
+local function ensure_rune_transformation_state()
+  if not global then
+    global = {}
+  end
+  
+  -- If we have no transformation chains at all, something is wrong - reinitialize
   if not global.rune_transformation_chains then
     global.rune_transformation_chains = rune_transformation_chains
+  end
+  
+  -- Ensure indices exist for all chains
+  if not global.rune_transformation_indices then
+    global.rune_transformation_indices = {}
+  end
+  
+  for rune_name, _ in pairs(global.rune_transformation_chains) do
+    if not global.rune_transformation_indices[rune_name] then
+      global.rune_transformation_indices[rune_name] = 1
+    end
   end
 end
 
 -- Function to enable the current transformation recipe for a rune
 local function enable_current_rune_recipe(rune_name)
-  if not global or not global.rune_transformation_indices or not global.rune_transformation_chains then
-    init_rune_transformation_state()
-  end
+  ensure_rune_transformation_state()
 
   local current_index = global.rune_transformation_indices[rune_name]
   local target_chain = global.rune_transformation_chains[rune_name]
@@ -222,9 +245,7 @@ end
 
 -- Function to disable all transformation recipes for a rune
 local function disable_all_rune_recipes(rune_name)
-  if not global or not global.rune_transformation_chains then
-    return
-  end
+  ensure_rune_transformation_state()
   
   local target_chain = global.rune_transformation_chains[rune_name]
 
@@ -242,9 +263,7 @@ end
 
 -- Function to cycle to the next transformation recipe for a rune
 local function cycle_rune_transformation(rune_name)
-  if not global or not global.rune_transformation_indices or not global.rune_transformation_chains then
-    init_rune_transformation_state()
-  end
+  ensure_rune_transformation_state()
 
   local current_index = global.rune_transformation_indices[rune_name]
   local target_chain = global.rune_transformation_chains[rune_name]
@@ -292,7 +311,8 @@ end)
 -- Handle mod configuration changes (updates, etc.)
 script.on_configuration_changed(function(event)
   -- Ensure global state is properly initialized after mod changes
-  init_rune_transformation_state()
+  -- Use ensure instead of init to preserve existing data
+  ensure_rune_transformation_state()
 
   -- Re-enable current recipes for all runes
   if global.rune_transformation_chains then
@@ -312,9 +332,7 @@ end)
 -- (The Spiritus rune crafting recipe completes in 0.2 seconds)
 script.on_nth_tick(0.2*60-1, function(event)
   -- Ensure global state is initialized
-  if not global or not global.rune_transformation_chains then
-    init_rune_transformation_state()
-  end
+  ensure_rune_transformation_state()
   
   -- Check all rune transformers on all surfaces
   for _, surface in pairs(game.surfaces) do
