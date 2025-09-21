@@ -99,7 +99,6 @@ if mods["Nanobots2"] then
 
   -- Update all ammo items to use spirit theming
   local ammo_items = {
-    ["ammo-nano-termites"] = "tree-conflagration-essence",
     ["ammo-nano-scrappers"] = "summoning-essence",
     ["ammo-nano-constructors"] = "summoning-essence",
     ["ammo-nano-deconstructors"] = "summoning-essence"
@@ -110,19 +109,13 @@ if mods["Nanobots2"] then
       local ammo = data.raw.ammo[old_name]
       ammo.localised_name = {"item-name." .. new_name}
       ammo.localised_description = {"item-description." .. new_name}
-      if old_name == "ammo-nano-termites" then
-        ammo.icon = "__orbs__/graphics/tree-conflagration-essence.png"
-        ammo.icon_size = 1024
-      else
-        ammo.icon = "__orbs__/graphics/summoning-essence.png"
-        ammo.icon_size = 1024
-      end
+      ammo.icon = "__orbs__/graphics/summoning-essence.png"
+      ammo.icon_size = 1024
     end
   end
 
   -- Update ammo recipes to use magical ingredients
   local ammo_recipes = {
-    "ammo-nano-termites",
     "ammo-nano-scrappers",
     "ammo-nano-constructors",
     "ammo-nano-deconstructors"
@@ -136,17 +129,10 @@ if mods["Nanobots2"] then
         {type = "item", name = "iron-stick", amount = 1}
       }
       -- Update the localized names for recipes too
-      if recipe_name == "ammo-nano-termites" then
-        recipe.localised_name = {"item-name.tree-conflagration-essence"}
-        recipe.icon = "__orbs__/graphics/tree-conflagration-essence.png"
-        recipe.icon_size = 1024
-        recipe.localised_description = {"item-description.tree-conflagration-essence"}
-      else
-        recipe.localised_name = {"item-name.summoning-essence"}
-        recipe.icon = "__orbs__/graphics/summoning-essence.png"
-        recipe.icon_size = 1024
-        recipe.localised_description = {"item-description.summoning-essence"}
-      end
+      recipe.localised_name = {"item-name.summoning-essence"}
+      recipe.icon = "__orbs__/graphics/summoning-essence.png"
+      recipe.icon_size = 1024
+      recipe.localised_description = {"item-description.summoning-essence"}
     end
   end
 
