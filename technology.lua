@@ -463,7 +463,7 @@ data:extend({
     name = "rage-orb",
     icon = "__orbs__/graphics/rage-orb.png",
     icon_size = 1024,
-    prerequisites = {"divination"},
+    prerequisites = {"soul-collection"},
     unit = {
       count = 100,
       ingredients = {
