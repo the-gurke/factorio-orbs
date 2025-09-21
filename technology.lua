@@ -445,7 +445,7 @@ data:extend({
     type = "technology",
     name = "stability-extraction",
     icon_size = 1024,
-    icon = "__orbs__/graphics/element-of-stability.png",
+    icon = "__orbs__/graphics/stability-liquid.png",
     effects = {},
     prerequisites = {"divination"},
     unit = {

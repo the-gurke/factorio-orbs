@@ -262,15 +262,6 @@ data:extend({
   },
 
   -- Element of Stability (does not decay)
-  {
-    type = "item",
-    name = "element-of-stability",
-    icon = "__orbs__/graphics/element-of-stability.png",
-    icon_size = 1024,
-    subgroup = "divination",
-    order = "k[element-of-stability]",
-    stack_size = 100
-  },
 
   -- Stability (liquid)
   {
