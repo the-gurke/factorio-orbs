@@ -819,8 +819,8 @@ data:extend({
     unit = {
       count = 60,
       ingredients = {
-        {"divination-research-pack", 20},
-        {"conjuration-research-pack", 40}
+        {"divination-research-pack", 1},
+        {"conjuration-research-pack", 1}
       },
       time = 30
     },
