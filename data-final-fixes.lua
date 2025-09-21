@@ -719,5 +719,22 @@ if data.raw.recipe["display-panel"] then
   }
 end
 
+-- Override heating tower recipe to use stone bricks, boiler, and heat pipes
+if data.raw.recipe["heating-tower"] then
+  data.raw.recipe["heating-tower"].ingredients = {
+    {type = "item", name = "stone-brick", amount = 10},
+    {type = "item", name = "boiler", amount = 1},
+    {type = "item", name = "heat-pipe", amount = 5}
+  }
+end
+
+-- Override heat pipes recipe to use pipe and copper
+if data.raw.recipe["heat-pipe"] then
+  data.raw.recipe["heat-pipe"].ingredients = {
+    {type = "item", name = "pipe", amount = 1},
+    {type = "item", name = "copper-plate", amount = 1}
+  }
+end
+
 -- Finally, as a last step, remove all the content we don't want
 require("removals")
