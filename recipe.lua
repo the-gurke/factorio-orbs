@@ -306,14 +306,14 @@ table.insert(recipes, {
   order = "g[conjure-cleansing-orb]"
 })
 
--- Conjure Unstable Orb
+-- Conjure Flux Orb
 table.insert(recipes, {
   type = "recipe",
-  name = "conjure-unstable-orb",
+  name = "conjure-flux-orb",
   category = "orbs",
   subgroup = "orbs-manifest",
   energy_required = 10,
-  icon = "__orbs__/graphics/unstable-orb-alpha.png",
+  icon = "__orbs__/graphics/flux-orb-alpha.png",
   icon_size = 1024,
   ingredients = {
     {type = "item", name = "magic-orb", amount = 1, ignored_by_stats = 1},
@@ -321,31 +321,31 @@ table.insert(recipes, {
   },
   results = {
     {type = "item", name = "magic-orb", amount = 1, ignored_by_stats = 1, ignored_by_productivity = 1},
-    {type = "item", name = "unstable-orb-alpha", amount = 10, probability = 0.05}
+    {type = "item", name = "flux-orb-alpha", amount = 10, probability = 0.05}
   },
   enabled = false,
   allow_productivity = true,
-  order = "f[conjure-unstable-orb]"
+  order = "f[conjure-flux-orb]"
 })
 
--- Align Unstable Orb
+-- Align Flux Orb
 table.insert(recipes, {
   type = "recipe",
-  name = "align-unstable-orb",
+  name = "align-flux-orb",
   category = "orbs",
   subgroup = "orbs-manifest",
   energy_required = 0.8,
-  icon = "__orbs__/graphics/unstable-orb-alpha.png",
+  icon = "__orbs__/graphics/flux-orb-alpha.png",
   icon_size = 1024,
   ingredients = {
-    {type = "item", name = "unstable-orb-alpha", amount = 1}
+    {type = "item", name = "flux-orb-alpha", amount = 1}
   },
   results = {
-    {type = "item", name = "unstable-orb-alpha", amount = 1}
+    {type = "item", name = "flux-orb-alpha", amount = 1}
   },
   reset_freshness_on_craft = true,
   enabled = false,
-  order = "g[align-unstable-orb]"
+  order = "g[align-flux-orb]"
 })
 
 
@@ -360,11 +360,11 @@ table.insert(recipes, {
   icon = "__orbs__/graphics/divination-essence.png",
   icon_size = 1024,
   ingredients = {
-    {type = "item", name = "unstable-orb-beta", amount = 1},
-    {type = "item", name = "unstable-orb-gamma", amount = 1}
+    {type = "item", name = "flux-orb-beta", amount = 1},
+    {type = "item", name = "flux-orb-gamma", amount = 1}
   },
   results = {
-    {type = "item", name = "unstable-orb-alpha", amount = 2, ignored_by_productivity = 2},
+    {type = "item", name = "flux-orb-alpha", amount = 2, ignored_by_productivity = 2},
     {type = "item", name = "divination-essence", amount = 1}
   },
   reset_freshness_on_craft = true,
@@ -469,7 +469,7 @@ table.insert(recipes, {
   icon = "__orbs__/graphics/magic-grenade.png",
   icon_size = 1024,
   ingredients = {
-    {type = "item", name = "unstable-orb-alpha", amount = 1},
+    {type = "item", name = "flux-orb-alpha", amount = 1},
     {type = "item", name = "iron-plate", amount = 5},
     {type = "item", name = "active-magic-shard", amount = 5}
   },

@@ -134,43 +134,43 @@ data:extend({
     limitation_message_key = "cleansing-orb-usable-only-on-resonance-spires-and-conjuration-machines"
   },
 
-  -- Unstable Orb [Alpha State] (spoils in 30s to beta)
+  -- Flux Orb [Alpha State] (spoils in 30s to beta)
   {
     type = "item",
-    name = "unstable-orb-alpha",
-    icon = "__orbs__/graphics/unstable-orb-alpha.png",
+    name = "flux-orb-alpha",
+    icon = "__orbs__/graphics/flux-orb-alpha.png",
     icon_size = 1024,
     subgroup = "orbs-manifest",
-    order = "g[unstable-orb-alpha]",
+    order = "g[flux-orb-alpha]",
     stack_size = 5,
     spoil_ticks = 30 * 60, -- 30 seconds * 60 ticks per second
-    spoil_result = "unstable-orb-beta"
+    spoil_result = "flux-orb-beta"
   },
 
-  -- Unstable Orb [Beta State] (spoils in 1s to gamma)
+  -- Flux Orb [Beta State] (spoils in 1s to gamma)
   {
     type = "item",
-    name = "unstable-orb-beta",
-    icon = "__orbs__/graphics/unstable-orb-beta.png",
+    name = "flux-orb-beta",
+    icon = "__orbs__/graphics/flux-orb-beta.png",
     icon_size = 1024,
     subgroup = "orbs-manifest",
-    order = "h[unstable-orb-beta]",
+    order = "h[flux-orb-beta]",
     stack_size = 5,
     spoil_ticks = 1 * 60, -- 1 second * 60 ticks per second
-    spoil_result = "unstable-orb-gamma"
+    spoil_result = "flux-orb-gamma"
   },
 
-  -- Unstable Orb [Gamma State] (spoils in 1s to alpha)
+  -- Flux Orb [Gamma State] (spoils in 1s to alpha)
   {
     type = "item",
-    name = "unstable-orb-gamma",
-    icon = "__orbs__/graphics/unstable-orb-gamma.png",
+    name = "flux-orb-gamma",
+    icon = "__orbs__/graphics/flux-orb-gamma.png",
     icon_size = 1024,
     subgroup = "orbs-manifest",
-    order = "i[unstable-orb-gamma]",
+    order = "i[flux-orb-gamma]",
     stack_size = 5,
     spoil_ticks = 1 * 60, -- 1 second * 60 ticks per second
-    spoil_result = "unstable-orb-alpha"
+    spoil_result = "flux-orb-alpha"
   },
 
   -- Divination Essence (spoils in 10s to nothing)
