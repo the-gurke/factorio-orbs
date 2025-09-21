@@ -1093,8 +1093,8 @@ data:extend({
     name = "sentry-ward",
     icon = "__orbs__/graphics/sentry-ward.png",
     icon_size = 1024,
-    subgroup = "orbs-machines",
-    order = "g[sentry-ward]",
+    subgroup = "defensive-structure",
+    order = "d[radar]-b[sentry-ward]",
     place_result = "sentry-ward",
     stack_size = 50
   }
