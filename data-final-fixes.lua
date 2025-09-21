@@ -14,10 +14,30 @@ if mods["Nanobots2"] then
     tech.unit.ingredients = {{"magic-research-pack", 1}}
     tech.localised_name = {"technology-name.summon-machines"}
     tech.localised_description = {"technology-description.summon-machines"}
-    -- Add ghost creation effect (entities leave ghosts when destroyed)
-    if not tech.effects then
-      tech.effects = {}
+    
+    -- Remove unwanted effects and keep only the magic wand and summoning essence recipes
+    local filtered_effects = {}
+    if tech.effects then
+      for _, effect in pairs(tech.effects) do
+        if effect.type == "unlock-recipe" then
+          local recipe_name = effect.recipe
+          -- Keep only the gun-nano-emitter (magic wand) and summoning essence recipes
+          if recipe_name == "gun-nano-emitter" or 
+             recipe_name == "ammo-nano-scrappers" or 
+             recipe_name == "ammo-nano-constructors" or 
+             recipe_name == "ammo-nano-deconstructors" then
+            table.insert(filtered_effects, effect)
+          end
+          -- Remove iron-stick and termite bots recipes
+        else
+          -- Keep non-recipe effects
+          table.insert(filtered_effects, effect)
+        end
+      end
     end
+    tech.effects = filtered_effects
+    
+    -- Add ghost creation effect (entities leave ghosts when destroyed)
     table.insert(tech.effects, {
       type = "create-ghost-on-entity-death",
       modifier = true
