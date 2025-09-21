@@ -736,6 +736,27 @@ table.insert(recipes, {
   order = "k[rage-orb]"
 })
 
+-- Neutralize Rage Orb recipe
+table.insert(recipes, {
+  type = "recipe",
+  name = "neutralize-rage-orb",
+  category = "orbs",
+  subgroup = "orbs-manifest",
+  energy_required = 1,
+  icon = "__orbs__/graphics/magic-orb.png",
+  icon_size = 1024,
+  ingredients = {
+    {type = "item", name = "rage-orb", amount = 1},
+    {type = "fluid", name = "water", amount = 1000}
+  },
+  results = {
+    {type = "item", name = "magic-orb", amount = 1},
+    {type = "fluid", name = "steam", amount = 10000}
+  },
+  enabled = false,
+  order = "k[neutralize-rage-orb]"
+})
+
 
 -- Light Wood on Fire in Furnace (1 second)
 table.insert(recipes, {
