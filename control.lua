@@ -66,7 +66,6 @@ script.on_event({
   end
 end)
 
--- Apply telekinesis bonuses to all players on configuration change
 script.on_configuration_changed(function()
   for _, force in pairs(game.forces) do
     apply_telekinesis_bonuses_to_force(force)
@@ -181,26 +180,23 @@ end)
 -- Rune transformation system
 local rune_transformation_chains = require("rune-chains")
 
--- Initialize global rune transformation state
+-- Initialize rune transformation state
 local function init_rune_transformation_state()
-  if not global then
-    global = {}
-  end
-  if not global.rune_transformation_indices then
-    global.rune_transformation_indices = {}
+  if not storage.rune_transformation_indices then
+    storage.rune_transformation_indices = {}
     for rune_name, _ in pairs(rune_transformation_chains) do
-      global.rune_transformation_indices[rune_name] = 1 -- Start at first transformation
+      storage.rune_transformation_indices[rune_name] = 1
     end
   end
 end
 
 -- Function to enable the current transformation recipe for a rune
 local function enable_current_rune_recipe(rune_name)
-  if not global or not global.rune_transformation_indices then
+  if not storage.rune_transformation_indices then
     init_rune_transformation_state()
   end
 
-  local current_index = global.rune_transformation_indices[rune_name]
+  local current_index = storage.rune_transformation_indices[rune_name]
   local target_chain = rune_transformation_chains[rune_name]
 
   if current_index and target_chain and current_index <= #target_chain then
@@ -234,11 +230,11 @@ end
 
 -- Function to cycle to the next transformation recipe for a rune
 local function cycle_rune_transformation(rune_name)
-  if not global or not global.rune_transformation_indices then
+  if not storage.rune_transformation_indices then
     init_rune_transformation_state()
   end
 
-  local current_index = global.rune_transformation_indices[rune_name]
+  local current_index = storage.rune_transformation_indices[rune_name]
   local target_chain = rune_transformation_chains[rune_name]
 
   if current_index and target_chain then
@@ -251,7 +247,7 @@ local function cycle_rune_transformation(rune_name)
       current_index = 1 -- Loop back to first
     end
 
-    global.rune_transformation_indices[rune_name] = current_index
+    storage.rune_transformation_indices[rune_name] = current_index
 
     -- Enable new recipe
     enable_current_rune_recipe(rune_name)
