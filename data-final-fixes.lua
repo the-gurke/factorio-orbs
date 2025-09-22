@@ -762,5 +762,83 @@ if data.raw.recipe["heat-pipe"] then
   }
 end
 
+-- Override pistol to become starter wand
+if data.raw.gun["pistol"] then
+  local pistol = data.raw.gun["pistol"]
+  pistol.icon = "__orbs__/graphics/starter-wand.png"
+  pistol.icon_size = 1024
+  pistol.localised_name = {"item-name.starter-wand"}
+  pistol.localised_description = {"item-description.starter-wand"}
+  -- Update ammo category to only accept channeled-mana
+  pistol.attack_parameters.ammo_categories = {"channeled-mana"}
+end
+
+-- Override pistol recipe to use wooden stick and 10s craft time
+if data.raw.recipe["pistol"] then
+  local recipe = data.raw.recipe["pistol"]
+  recipe.energy_required = 10
+  recipe.ingredients = {
+    {type = "item", name = "stick", amount = 1}
+  }
+  recipe.enabled = true
+  recipe.hidden = false
+end
+
+-- Replace firearm magazine with channeled-mana
+if data.raw.ammo["firearm-magazine"] then
+  local firearm_mag = data.raw.ammo["firearm-magazine"]
+  firearm_mag.icon = "__orbs__/graphics/channeled-mana.png"
+  firearm_mag.icon_size = 1024
+  firearm_mag.localised_name = {"item-name.channeled-mana"}
+  firearm_mag.localised_description = {"item-description.channeled-mana"}
+  firearm_mag.ammo_category = "channeled-mana"
+  firearm_mag.spoil_ticks = 30 * 60 * 60 -- 30 minutes
+  firearm_mag.spoil_result = nil
+  firearm_mag.ammo_type = {
+    category = "channeled-mana",
+    action = {
+      {
+        type = "direct",
+        action_delivery = {
+          {
+            type = "instant",
+            source_effects = {
+              {
+                type = "create-explosion",
+                entity_name = "explosion-gunshot",
+                only_when_visible = true
+              }
+            },
+            target_effects = {
+              {
+                type = "create-entity",
+                entity_name = "explosion-hit",
+                offsets = {{0, 1}},
+                offset_deviation = {{-0.5, -0.5}, {0.5, 0.5}},
+                only_when_visible = true
+              },
+              {
+                type = "damage",
+                damage = {amount = 5, type = "physical"}
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+end
+
+-- Override freeplay starting items to remove pistol and ammo
+if data.raw.scenario and data.raw.scenario["freeplay"] then
+  -- Override the starting items for freeplay scenario
+  data.raw.scenario["freeplay"].starting_items = {
+    ["iron-plate"] = 8,
+    ["wood"] = 1,
+    ["burner-mining-drill"] = 1,
+    ["stone-furnace"] = 1
+  }
+end
+
 -- Finally, as a last step, remove all the content we don't want
 require("removals")
