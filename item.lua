@@ -528,6 +528,54 @@ data:extend({
     subgroup = "intermediate-product",
     order = "c[glass]",
     stack_size = 100
+  },
+
+  -- Channeled Mana (spoils in 30 minutes, player crafted only)
+  {
+    type = "ammo",
+    name = "channeled-mana",
+    icon = "__orbs__/graphics/channeled-mana.png",
+    icon_size = 1024,
+    ammo_category = "channeled-mana",
+    subgroup = "ammo",
+    order = "a[basic-clips]-b[channeled-mana]",
+    stack_size = 100,
+    spoil_ticks = 30 * 60 * 60, -- 30 minutes * 60 seconds * 60 ticks per second
+    spoil_result = nil, -- Spoils into nothing
+    magazine_size = 10,
+    ammo_type = {
+      category = "channeled-mana",
+      action = {
+        {
+          type = "direct",
+          action_delivery = {
+            {
+              type = "instant",
+              source_effects = {
+                {
+                  type = "create-explosion",
+                  entity_name = "explosion-gunshot",
+                  only_when_visible = true
+                }
+              },
+              target_effects = {
+                {
+                  type = "create-entity",
+                  entity_name = "explosion-hit",
+                  offsets = {{0, 1}},
+                  offset_deviation = {{-0.5, -0.5}, {0.5, 0.5}},
+                  only_when_visible = true
+                },
+                {
+                  type = "damage",
+                  damage = {amount = 5, type = "physical"}
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   }
 })
 
