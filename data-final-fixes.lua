@@ -98,19 +98,19 @@ if mods["Nanobots2"] then
   -- Override nano gun item
   if data.raw.gun["gun-nano-emitter"] then
     local gun = data.raw.gun["gun-nano-emitter"]
-    gun.icon = "__orbs__/graphics/magic-wand.png"
+    gun.icon = "__orbs__/graphics/summoning-wand.png"
     gun.icon_size = 1024
-    gun.localised_name = {"item-name.magic-wand"}
-    gun.localised_description = {"item-description.magic-wand"}
+    gun.localised_name = {"item-name.summoning-wand"}
+    gun.localised_description = {"item-description.summoning-wand"}
   end
 
   -- Override nano gun recipe
   if data.raw.recipe["gun-nano-emitter"] then
     local recipe = data.raw.recipe["gun-nano-emitter"]
-    recipe.icon = "__orbs__/graphics/magic-wand.png"
+    recipe.icon = "__orbs__/graphics/summoning-wand.png"
     recipe.icon_size = 1024
-    recipe.localised_name = {"item-name.magic-wand"}
-    recipe.localised_description = {"item-description.magic-wand"}
+    recipe.localised_name = {"item-name.summoning-wand"}
+    recipe.localised_description = {"item-description.summoning-wand"}
     -- Update recipe to use magical ingredients
     recipe.ingredients = {
       {type = "item", name = "stick", amount = 1},
