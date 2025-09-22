@@ -1212,3 +1212,44 @@ data:extend({
     enabled = false
   }
 })
+
+-- Custom purple magical splash effect for channeled-mana
+data:extend({
+  {
+    type = "explosion",
+    name = "purple-magical-splash",
+    localised_name = {"entity-name.purple-magical-splash"},
+    flags = {"not-on-map"},
+    subgroup = "explosions",
+    order = "b-b-b",
+    height = 0,
+    animations = util.empty_sprite(),
+    created_effect = {
+      type = "direct",
+      action_delivery = {
+        type = "instant",
+        target_effects = {
+          type = "create-particle",
+          repeat_count = 15, -- More particles for bigger effect
+          repeat_count_deviation = 8,
+          particle_name = "tintable-water-particle",
+          tint = {r = 0.7, g = 0.4, b = 1.0, a = 0.8}, -- Purple tint
+          initial_height = 0.2,
+          initial_height_deviation = 0.1,
+          initial_vertical_speed = 0.08,
+          initial_vertical_speed_deviation = 0.05,
+          speed_from_center = 0.04, -- Increased speed outward
+          speed_from_center_deviation = 0.02, -- More variation in outward speed
+          offset_deviation = {{-0.5, -0.5}, {0.5, 0.5}}, -- Random starting positions
+          offsets = {{0, 0}} -- Center point
+        }
+      }
+    },
+    sound = {
+      {
+        filename = "__base__/sound/world/water/waterlap-5.ogg",
+        volume = 0.4
+      }
+    }
+  }
+})
