@@ -805,16 +805,16 @@ if data.raw.ammo["firearm-magazine"] then
             source_effects = {
               {
                 type = "create-explosion",
-                entity_name = "explosion-gunshot",
+                entity_name = "laser-bubble",
                 only_when_visible = true
               }
             },
             target_effects = {
               {
                 type = "create-entity",
-                entity_name = "explosion-hit",
-                offsets = {{0, 1}},
-                offset_deviation = {{-0.5, -0.5}, {0.5, 0.5}},
+                entity_name = "purple-magical-splash",
+                offsets = {{0, 0}},
+                offset_deviation = {{-0.3, -0.3}, {0.3, 0.3}},
                 only_when_visible = true
               },
               {
@@ -827,6 +827,12 @@ if data.raw.ammo["firearm-magazine"] then
       }
     }
   }
+end
+
+-- Hide base game firearm magazine recipe (the one that takes iron plates)
+if data.raw.recipe["firearm-magazine"] then
+  data.raw.recipe["firearm-magazine"].enabled = false
+  data.raw.recipe["firearm-magazine"].hidden = true
 end
 
 -- Override freeplay starting items to remove pistol and ammo
