@@ -49,7 +49,7 @@ if mods["Nanobots2"] then
     local tech = data.raw.technology["nanobots-cliff"]
     tech.icon = "__orbs__/graphics/cliff-explosion.png"
     tech.icon_size = 1024
-    tech.prerequisites = {"nanobots"}
+    tech.prerequisites = {"conjuration-research", "nanobots"}
     tech.unit.count = 50
     tech.unit.ingredients = {{"conjuration-research-pack", 1}}
     tech.localised_name = {"technology-name.mystic-explosives"}
@@ -62,7 +62,7 @@ if mods["Nanobots2"] then
       local tech = data.raw.technology["nano-range-" .. i]
       -- Update prerequisites
       if i == 1 then
-        tech.prerequisites = {"nanobots"}
+        tech.prerequisites = {"conjuration-research", "nanobots"}
       else
         tech.prerequisites = {"nano-range-" .. (i-1)}
       end
@@ -79,7 +79,7 @@ if mods["Nanobots2"] then
       local tech = data.raw.technology["nano-speed-" .. i]
       -- Update prerequisites
       if i == 1 then
-        tech.prerequisites = {"nanobots"}
+        tech.prerequisites = {"conjuration-research", "nanobots"}
       else
         tech.prerequisites = {"nano-speed-" .. (i-1)}
       end
@@ -711,7 +711,7 @@ end
 
 -- Update lamp technology to use conjuration research packs
 if data.raw.technology["lamp"] then
-  data.raw.technology["lamp"].prerequisites = {"orbs-technology"}
+  data.raw.technology["lamp"].prerequisites = {"conjuration-research"}
   data.raw.technology["lamp"].unit = {
     count = 5,
     ingredients = {
