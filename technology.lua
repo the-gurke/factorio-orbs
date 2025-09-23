@@ -584,8 +584,8 @@ data:extend({
   {
     type = "technology",
     name = "rune-words",
-    icon = "__base__/graphics/icons/signal/signal_R.png",
-    icon_size = 64,
+    icon = "__orbs__/graphics/rune-words-technology.png",
+    icon_size = 1024,
     prerequisites = {"stability-extraction"},
     unit = {
       count = 100,
