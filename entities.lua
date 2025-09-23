@@ -306,7 +306,7 @@ data:extend({
     icon_size = 64,
     ingredients = {
       {type = "item", name = "iron-plate", amount = 4},
-      {type = "item", name = "iron-gear-wheel", amount = 2}
+      {type = "item", name = "iron-gear-wheel", amount = 10}
     },
     results = {
       {type = "item", name = "crusher", amount = 1}
