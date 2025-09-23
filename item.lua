@@ -385,8 +385,8 @@ data:extend({
   {
     type = "item",
     name = "rune-word-ignis",
-    icon = "__base__/graphics/icons/signal/signal_I.png",
-    icon_size = 64,
+    icon = "__orbs__/graphics/rune-word-ignis.png",
+    icon_size = 1024,
     subgroup = "orbs-manifest",
     order = "r[rune-word-ignis]",
     stack_size = 1
@@ -394,8 +394,8 @@ data:extend({
   {
     type = "item",
     name = "rune-word-aqua",
-    icon = "__base__/graphics/icons/signal/signal_A.png",
-    icon_size = 64,
+    icon = "__orbs__/graphics/rune-word-aqua.png",
+    icon_size = 1024,
     subgroup = "orbs-manifest",
     order = "r[rune-word-aqua]",
     stack_size = 1
@@ -403,8 +403,8 @@ data:extend({
   {
     type = "item",
     name = "rune-word-spiritus",
-    icon = "__base__/graphics/icons/signal/signal_S.png",
-    icon_size = 64,
+    icon = "__orbs__/graphics/rune-word-spiritus.png",
+    icon_size = 1024,
     subgroup = "orbs-manifest",
     order = "r[rune-word-spiritus]",
     stack_size = 1
@@ -412,8 +412,8 @@ data:extend({
   {
     type = "item",
     name = "rune-word-terra",
-    icon = "__base__/graphics/icons/signal/signal_R.png",
-    icon_size = 64,
+    icon = "__orbs__/graphics/rune-word-terra.png",
+    icon_size = 1024,
     subgroup = "orbs-manifest",
     order = "r[rune-word-terra]",
     stack_size = 1
@@ -421,8 +421,8 @@ data:extend({
   {
     type = "item",
     name = "rune-word-umbra",
-    icon = "__base__/graphics/icons/signal/signal_U.png",
-    icon_size = 64,
+    icon = "__orbs__/graphics/rune-word-umbra.png",
+    icon_size = 1024,
     subgroup = "orbs-manifest",
     order = "r[rune-word-umbra]",
     stack_size = 1
@@ -430,8 +430,8 @@ data:extend({
   {
     type = "item",
     name = "rune-word-lux",
-    icon = "__base__/graphics/icons/signal/signal_L.png",
-    icon_size = 64,
+    icon = "__orbs__/graphics/rune-word-lux.png",
+    icon_size = 1024,
     subgroup = "orbs-manifest",
     order = "r[rune-word-lux]",
     stack_size = 1
@@ -439,8 +439,8 @@ data:extend({
   {
     type = "item",
     name = "rune-word-tempus",
-    icon = "__base__/graphics/icons/signal/signal_T.png",
-    icon_size = 64,
+    icon = "__orbs__/graphics/rune-word-tempus.png",
+    icon_size = 1024,
     subgroup = "orbs-manifest",
     order = "r[rune-word-tempus]",
     stack_size = 1
@@ -448,8 +448,8 @@ data:extend({
   {
     type = "item",
     name = "rune-word-vitae",
-    icon = "__base__/graphics/icons/signal/signal_V.png",
-    icon_size = 64,
+    icon = "__orbs__/graphics/rune-word-vitae.png",
+    icon_size = 1024,
     subgroup = "orbs-manifest",
     order = "r[rune-word-vitae]",
     stack_size = 1
@@ -457,8 +457,8 @@ data:extend({
   {
     type = "item",
     name = "rune-word-mortis",
-    icon = "__base__/graphics/icons/signal/signal_M.png",
-    icon_size = 64,
+    icon = "__orbs__/graphics/rune-word-mortis.png",
+    icon_size = 1024,
     subgroup = "orbs-manifest",
     order = "r[rune-word-mortis]",
     stack_size = 1
