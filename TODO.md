@@ -1,7 +1,7 @@
 # Known bugs
 
 * There is no win condition in the game
-* Labs cannot be rotated (fixed commited but not confirmed)
+* Labs cannot be rotated
 * magic wand throws error messages when trying to insert orbs into machines
 * destroyed entities don't leave ghosts. Need to increase ghost timeout
 
@@ -19,7 +19,6 @@
 * defense wards should do 50 damage
 * should have a magical way to generate steam
 * make the magic orb -> active magic shards recipes handcraftable
-
 
 # Art
 
