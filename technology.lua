@@ -107,7 +107,7 @@ data:extend({
     name = "conjuration-research",
     icon = "__orbs__/graphics/conjuration-research-pack.png",
     icon_size = 1024,
-    prerequisites = {"orbs-technology"},
+    prerequisites = {"orbs-technology", "automation-science-pack"},
     unit = {
       count = 1,
       ingredients = {
@@ -718,7 +718,7 @@ data:extend({
     localised_description = {"technology-description.magic-inserters"},
     icon = "__base__/graphics/technology/inserter-capacity.png",
     icon_size = 256,
-    prerequisites = {"orbs-technology"},
+    prerequisites = {"orbs-technology", "metallurgy"},
     unit = {
       count = 1,
       ingredients = {
@@ -776,7 +776,7 @@ data:extend({
     name = "transmutation",
     icon = "__orbs__/graphics/transmutation-research.png",
     icon_size = 1024,
-    prerequisites = {"conjuration-research"},
+    prerequisites = {"conjuration-research", "metallurgy"},
     unit = {
       count = 20,
       ingredients = {
@@ -944,7 +944,7 @@ data:extend({
     name = "magic-axe",
     icon = "__base__/graphics/technology/steel-axe.png",
     icon_size = 256,
-    prerequisites = {"orbs-technology"},
+    prerequisites = {"orbs-technology", "metallurgy"},
     unit = {
       count = 1,
       ingredients = {

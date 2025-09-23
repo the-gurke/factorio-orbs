@@ -711,7 +711,7 @@ end
 
 -- Update lamp technology to use conjuration research packs
 if data.raw.technology["lamp"] then
-  data.raw.technology["lamp"].prerequisites = {"conjuration-research"}
+  data.raw.technology["lamp"].prerequisites = {"conjuration-research", "metallurgy"}
   data.raw.technology["lamp"].unit = {
     count = 5,
     ingredients = {
