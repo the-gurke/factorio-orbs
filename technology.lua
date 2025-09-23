@@ -409,7 +409,7 @@ data:extend({
     name = "divination",
     icon = "__orbs__/graphics/divination-research-pack.png",
     icon_size = 1024,
-    prerequisites = {"divination-essence"},
+    prerequisites = {"divination-essence", "crushing"},
     unit = {
       count = 200,
       ingredients = {

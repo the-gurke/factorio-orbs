@@ -426,7 +426,7 @@ table.insert(recipes, {
   icon = "__orbs__/graphics/dust-of-serendipity.png",
   icon_size = 1024,
   ingredients = {
-    {type = "item", name = "stone", amount = 1},
+    {type = "item", name = "sand", amount = 1},
     {type = "item", name = "magic-orb", amount = 1, ignored_by_stats = 1}
   },
   results = {
