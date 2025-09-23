@@ -268,9 +268,10 @@ script.on_init(function()
     apply_telekinesis_bonuses_to_force(force)
   end
 
-  -- Remove crash site using freeplay remote interface
+  -- Remove crash site and customize intro using freeplay remote interface
   if remote.interfaces["freeplay"] then
     remote.call("freeplay", "set_disable_crashsite", true)
+    remote.call("freeplay", "set_custom_intro_message", "How did I end up here? I don't remember... I need to get back... Maybe there is some way to open a portal?")
   end
 end)
 
