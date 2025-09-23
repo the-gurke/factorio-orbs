@@ -798,6 +798,7 @@ table.insert(recipes, {
   name = "fire-through-friction",
   icon = "__orbs__/graphics/burning-wood.png",
   icon_size = 1024,
+  subgroup = "intermediate-product",
   ingredients = {
     {type = "item", name = "stick", amount = 1},
     {type = "item", name = "wood", amount = 1}
