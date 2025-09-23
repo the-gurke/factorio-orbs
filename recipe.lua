@@ -1145,5 +1145,29 @@ table.insert(recipes, {
   enabled = false
 })
 
+-- Channeled Mana recipe (player crafted only, 5 seconds)
+table.insert(recipes, {
+  type = "recipe",
+  name = "channeled-mana",
+  category = "crafting",
+  subgroup = "ammo",
+  energy_required = 5,
+  ingredients = {
+    -- No ingredients - conjured from nothing
+  },
+  results = {
+    {type = "item", name = "channeled-mana", amount = 1}
+  },
+  enabled = true,
+  allow_as_intermediate = false,
+  always_show_made_in = true,
+  show_amount_in_title = false,
+  always_show_products = true,
+  allow_decomposition = false,
+  allow_intermediates = false,
+  allow_productivity = false,
+  order = "a[basic-clips]-b[channeled-mana]"
+})
+
 -- Extend all recipes
 data:extend(recipes)
