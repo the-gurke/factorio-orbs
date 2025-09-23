@@ -109,3 +109,11 @@ data:extend({
     name = "orb-pollution"
   }
 })
+
+-- Ammo categories
+data:extend({
+  {
+    type = "ammo-category",
+    name = "channeled-mana"
+  }
+})

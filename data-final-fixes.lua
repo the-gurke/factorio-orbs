@@ -98,19 +98,19 @@ if mods["Nanobots2"] then
   -- Override nano gun item
   if data.raw.gun["gun-nano-emitter"] then
     local gun = data.raw.gun["gun-nano-emitter"]
-    gun.icon = "__orbs__/graphics/magic-wand.png"
+    gun.icon = "__orbs__/graphics/summoning-wand.png"
     gun.icon_size = 1024
-    gun.localised_name = {"item-name.magic-wand"}
-    gun.localised_description = {"item-description.magic-wand"}
+    gun.localised_name = {"item-name.summoning-wand"}
+    gun.localised_description = {"item-description.summoning-wand"}
   end
 
   -- Override nano gun recipe
   if data.raw.recipe["gun-nano-emitter"] then
     local recipe = data.raw.recipe["gun-nano-emitter"]
-    recipe.icon = "__orbs__/graphics/magic-wand.png"
+    recipe.icon = "__orbs__/graphics/summoning-wand.png"
     recipe.icon_size = 1024
-    recipe.localised_name = {"item-name.magic-wand"}
-    recipe.localised_description = {"item-description.magic-wand"}
+    recipe.localised_name = {"item-name.summoning-wand"}
+    recipe.localised_description = {"item-description.summoning-wand"}
     -- Update recipe to use magical ingredients
     recipe.ingredients = {
       {type = "item", name = "stick", amount = 1},
@@ -759,6 +759,90 @@ if data.raw.recipe["heat-pipe"] then
   data.raw.recipe["heat-pipe"].ingredients = {
     {type = "item", name = "pipe", amount = 1},
     {type = "item", name = "copper-plate", amount = 1}
+  }
+end
+
+-- Override pistol to become starter wand
+if data.raw.gun["pistol"] then
+  local pistol = data.raw.gun["pistol"]
+  pistol.icon = "__orbs__/graphics/starter-wand.png"
+  pistol.icon_size = 1024
+  pistol.localised_name = {"item-name.starter-wand"}
+  pistol.localised_description = {"item-description.starter-wand"}
+  -- Update ammo category to only accept channeled-mana
+  pistol.attack_parameters.ammo_categories = {"channeled-mana"}
+end
+
+-- Override pistol recipe to use wooden stick and 10s craft time
+if data.raw.recipe["pistol"] then
+  local recipe = data.raw.recipe["pistol"]
+  recipe.energy_required = 10
+  recipe.ingredients = {
+    {type = "item", name = "stick", amount = 1}
+  }
+  recipe.enabled = true
+  recipe.hidden = false
+end
+
+-- Replace firearm magazine with channeled-mana
+if data.raw.ammo["firearm-magazine"] then
+  local firearm_mag = data.raw.ammo["firearm-magazine"]
+  firearm_mag.icon = "__orbs__/graphics/channeled-mana.png"
+  firearm_mag.icon_size = 1024
+  firearm_mag.localised_name = {"item-name.channeled-mana"}
+  firearm_mag.localised_description = {"item-description.channeled-mana"}
+  firearm_mag.ammo_category = "channeled-mana"
+  firearm_mag.spoil_ticks = 30 * 60 * 60 -- 30 minutes
+  firearm_mag.spoil_result = nil
+  firearm_mag.ammo_type = {
+    category = "channeled-mana",
+    action = {
+      {
+        type = "direct",
+        action_delivery = {
+          {
+            type = "instant",
+            source_effects = {
+              {
+                type = "create-explosion",
+                entity_name = "laser-bubble",
+                only_when_visible = true
+              }
+            },
+            target_effects = {
+              {
+                type = "create-entity",
+                entity_name = "purple-magical-splash",
+                offsets = {{0, 0}},
+                offset_deviation = {{-0.3, -0.3}, {0.3, 0.3}},
+                only_when_visible = true
+              },
+              {
+                type = "damage",
+                damage = {amount = 5, type = "physical"}
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+end
+
+-- Hide base game firearm magazine recipe (the one that takes iron plates)
+if data.raw.recipe["firearm-magazine"] then
+  data.raw.recipe["firearm-magazine"].enabled = false
+  data.raw.recipe["firearm-magazine"].hidden = true
+end
+
+-- Override freeplay starting items to remove pistol and ammo
+if data.raw.scenario and data.raw.scenario["freeplay"] then
+  -- Override the starting items for freeplay scenario
+  data.raw.scenario["freeplay"].starting_items = {
+    ["iron-plate"] = 8,
+    ["wood"] = 1,
+    ["burner-mining-drill"] = 1,
+    ["stone-furnace"] = 1
   }
 end
 
