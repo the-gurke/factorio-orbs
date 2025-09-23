@@ -96,10 +96,6 @@ data:extend({
       },
       {
         type = "unlock-recipe",
-        recipe = "conjuration-research-pack"
-      },
-      {
-        type = "unlock-recipe",
         recipe = "magic-research-pack"
       },
       {
@@ -111,10 +107,31 @@ data:extend({
   },
   {
     type = "technology",
+    name = "conjuration-research",
+    icon = "__orbs__/graphics/conjuration-research-pack.png",
+    icon_size = 1024,
+    prerequisites = {"orbs-technology"},
+    unit = {
+      count = 1,
+      ingredients = {
+        {"magic-research-pack", 1}
+      },
+      time = 30
+    },
+    effects = {
+      {
+        type = "unlock-recipe",
+        recipe = "conjuration-research-pack"
+      }
+    },
+    order = "a-h-a1"
+  },
+  {
+    type = "technology",
     name = "haste-orb",
     icon = "__orbs__/graphics/haste-orb.png",
     icon_size = 1024,
-    prerequisites = {"orbs-technology"},
+    prerequisites = {"conjuration-research"},
     unit = {
       count = 100,
       ingredients = {
@@ -139,7 +156,7 @@ data:extend({
     name = "conjure-shards-i",
     icon = "__orbs__/graphics/conjure-shards.png",
     icon_size = 1024,
-    prerequisites = {"orbs-technology"},
+    prerequisites = {"conjuration-research"},
     unit = {
       count = 10,
       ingredients = {
@@ -286,7 +303,7 @@ data:extend({
     name = "banish-shards",
     icon = "__orbs__/graphics/inactive-magic-shard.png",
     icon_size = 1024,
-    prerequisites = {"orbs-technology"},
+    prerequisites = {"conjuration-research"},
     unit = {
       count = 20,
       ingredients = {
@@ -307,7 +324,7 @@ data:extend({
     name = "flux-orb",
     icon = "__orbs__/graphics/flux-orb-alpha.png",
     icon_size = 1024,
-    prerequisites = {"orbs-technology"},
+    prerequisites = {"conjuration-research"},
     unit = {
       count = 100,
       ingredients = {
@@ -614,7 +631,7 @@ for i = 1, 10 do
     localised_description = {"technology-description.telekinesis-" .. i},
     icon = "__orbs__/graphics/telekinesis-technology.png",
     icon_size = 1024,
-    prerequisites = i == 1 and {"orbs-technology"} or {"telekinesis-" .. (i-1)},
+    prerequisites = i == 1 and {"conjuration-research"} or {"telekinesis-" .. (i-1)},
     unit = {
       count = i == 1 and 1 or math.pow(2, i-1), -- 1 for telekinesis I, then 2^(i-1): 2, 4, 8, 16, 32, 64, 128, 256, 512
       ingredients = {
@@ -762,7 +779,7 @@ data:extend({
     name = "transmutation",
     icon = "__orbs__/graphics/transmutation-research.png",
     icon_size = 1024,
-    prerequisites = {"orbs-technology"},
+    prerequisites = {"conjuration-research"},
     unit = {
       count = 20,
       ingredients = {
