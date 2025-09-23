@@ -177,6 +177,41 @@ end)
 --  Runes                                             --
 --------------------------------------------------------
 
+-- Function to grow trees around a position
+local function grow_trees_around_position(surface, center_position, tree_count, radius)
+  local trees_planted = 0
+  local max_attempts = tree_count * 5 -- Prevent infinite loop
+  local attempts = 0
+  
+  while trees_planted < tree_count and attempts < max_attempts do
+    attempts = attempts + 1
+    
+    -- Generate random position within radius
+    local angle = math.random() * 2 * math.pi
+    local distance = math.random() * radius
+    local x = center_position.x + math.cos(angle) * distance
+    local y = center_position.y + math.sin(angle) * distance
+    local position = {x = x, y = y}
+    
+    -- Check if position is valid for tree placement
+    if surface.can_place_entity{name = "tree-01", position = position} then
+      -- Choose a random tree type
+      local tree_types = {"tree-01", "tree-02", "tree-03", "tree-04", "tree-05", "tree-06", "tree-07", "tree-08", "tree-09"}
+      local tree_type = tree_types[math.random(#tree_types)]
+      
+      -- Create the tree
+      surface.create_entity{
+        name = tree_type,
+        position = position,
+        force = "neutral"
+      }
+      trees_planted = trees_planted + 1
+    end
+  end
+  
+  return trees_planted
+end
+
 -- Rune transformation system
 local rune_transformation_chains = require("rune-chains")
 
@@ -375,6 +410,65 @@ script.on_nth_tick(120, function(event)
 
               -- Add rune research pack
               inventory.insert({name = "rune-research-pack", count = 1})
+            end
+          end
+
+          -- Check SILVA sequence: Spiritus, Ignis, Lux, Vitae, Aqua (5 items)
+          if total_items == 5 then
+            local expected_runes_silva = {
+              "rune-word-spiritus",
+              "rune-word-ignis", 
+              "rune-word-lux",
+              "rune-word-vitae",
+              "rune-word-aqua"
+            }
+
+            local match = true
+
+            -- Check each slot for the correct rune
+            for i = 1, 5 do
+              if i <= #inventory then
+                local stack = inventory[i]
+                if not stack or not stack.valid_for_read or
+                   stack.name ~= expected_runes_silva[i] or stack.count ~= 1 then
+                  match = false
+                  break
+                end
+              else
+                match = false
+                break
+              end
+            end
+
+            -- Check that remaining slots are empty
+            for i = 6, math.min(10, #inventory) do
+              local stack = inventory[i]
+              if stack and stack.valid_for_read then
+                match = false
+                break
+              end
+            end
+
+            if match then
+              -- Remove all runes
+              for i = 1, 5 do
+                if i <= #inventory then
+                  inventory[i].clear()
+                end
+              end
+
+              -- Grow 30 trees randomly within 15 tiles of the altar
+              local trees_planted = grow_trees_around_position(surface, altar.position, 30, 15)
+              
+              -- Notify players nearby
+              for _, player in pairs(game.connected_players) do
+                if player.surface == surface then
+                  local distance_to_altar = math.sqrt((player.position.x - altar.position.x)^2 + (player.position.y - altar.position.y)^2)
+                  if distance_to_altar <= 50 then -- Notify players within 50 tiles
+                    player.print("The SILVA ritual has been completed! " .. trees_planted .. " trees have grown from the magical energy.")
+                  end
+                end
+              end
             end
           end
         end
