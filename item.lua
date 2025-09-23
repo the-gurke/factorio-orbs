@@ -209,7 +209,7 @@ data:extend({
     order = "c[dust-of-serendipity]",
     stack_size = 50,
     spoil_ticks = 5 * 60, -- 5 seconds * 60 ticks per second
-    spoil_result = "stone"
+    spoil_result = "sand"
   },
 
   -- Magic Grenade / Glitter bomb (capsule item)

@@ -33,6 +33,7 @@
 * The defensive wards don't have their own unique sprite yet
 * change the color of the magic long-handed inserter
 * spoil result of the volatile orb should have an explosion icon
+* the crusher uses the assembly machine entity graphics
 
 # From playtests
 
