@@ -8,12 +8,10 @@
 # Inconsistencies
 
 * Magic orbs take 10 active magic shards to craft, but flux orbs take 50/10/0.05 = 100 active magic shards to craft
-* change the gun to some kind of magic wand
 * Some buildings still accept vanilla modules
 
 # Balancing Notes
 
-* There aren't any early game military options
 * change defense wards so they don't attack nests
 * add 10s setup timer for defense wards
 * defense wards should do 50 damage
