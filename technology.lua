@@ -809,13 +809,39 @@ data:extend({
     },
     order = "a-h-u"
   },
+  -- Crushing Technology
+  {
+    type = "technology",
+    name = "crushing",
+    icon = "__space-age__/graphics/icons/crusher.png",
+    icon_size = 64,
+    prerequisites = {"automation-science-pack"},
+    unit = {
+      count = 25,
+      ingredients = {
+        {"automation-science-pack", 1}
+      },
+      time = 30
+    },
+    effects = {
+      {
+        type = "unlock-recipe",
+        recipe = "crusher"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "stone-to-sand"
+      }
+    },
+    order = "z-c[crushing]"
+  },
   -- Potions Technology
   {
     type = "technology",
     name = "potions",
     icon = "__orbs__/graphics/distillery.png",
     icon_size = 1024,
-    prerequisites = {"divination"},
+    prerequisites = {"divination", "crushing"},
     unit = {
       count = 60,
       ingredients = {
@@ -827,15 +853,7 @@ data:extend({
     effects = {
       {
         type = "unlock-recipe",
-        recipe = "crusher"
-      },
-      {
-        type = "unlock-recipe",
         recipe = "distillery"
-      },
-      {
-        type = "unlock-recipe",
-        recipe = "stone-to-sand"
       },
       {
         type = "unlock-recipe",
