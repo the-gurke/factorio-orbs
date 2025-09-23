@@ -935,8 +935,8 @@ table.insert(recipes, {
   category = "orbs",
   subgroup = "orbs-runes",
   energy_required = 2,
-  icon = "__base__/graphics/icons/signal/signal_A.png",
-  icon_size = 64,
+  icon = "__orbs__/graphics/rune-word-aqua.png",
+  icon_size = 1024,
   ingredients = {
     {type = "item", name = "active-magic-shard", amount = 1},
     {type = "fluid", name = "stability", amount = 50},
@@ -956,8 +956,8 @@ table.insert(recipes, {
   category = "orbs",
   subgroup = "orbs-runes",
   energy_required = 2,
-  icon = "__base__/graphics/icons/signal/signal_S.png",
-  icon_size = 64,
+  icon = "__orbs__/graphics/rune-word-spiritus.png",
+  icon_size = 1024,
   ingredients = {
     {type = "item", name = "active-magic-shard", amount = 1},
     {type = "fluid", name = "stability", amount = 50}
