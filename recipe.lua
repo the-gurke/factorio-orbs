@@ -939,6 +939,7 @@ table.insert(recipes, {
   icon_size = 1024,
   ingredients = {
     {type = "item", name = "active-magic-shard", amount = 1},
+    {type = "item", name = "stone-brick", amount = 1},
     {type = "fluid", name = "stability", amount = 50},
     {type = "fluid", name = "water", amount = 100}
   },
@@ -960,6 +961,7 @@ table.insert(recipes, {
   icon_size = 1024,
   ingredients = {
     {type = "item", name = "active-magic-shard", amount = 1},
+    {type = "item", name = "stone-brick", amount = 1},
     {type = "fluid", name = "stability", amount = 50}
   },
   results = {
