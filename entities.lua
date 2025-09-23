@@ -683,8 +683,8 @@ end
 
 data:extend({rage_fire_stream})
 
--- Create the rune transformer (based on stone furnace)
-local rune_transformer = util.table.deepcopy(data.raw["furnace"]["stone-furnace"])
+-- Create the rune transformer (based on steel furnace)
+local rune_transformer = util.table.deepcopy(data.raw["furnace"]["steel-furnace"])
 
 -- Create water-cooler heat exchanger
 local water_cooler = util.table.deepcopy(data.raw["boiler"]["heat-exchanger"])
