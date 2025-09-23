@@ -120,45 +120,11 @@ end)
 --  Orbs research                                     --
 --------------------------------------------------------
 
--- Give orbs to players when they research orbs technology
+-- Handle research completion events  
 script.on_event(defines.events.on_research_finished, function(event)
   local research = event.research
 
-  if research.name == "orbs-technology" then
-    -- Give orbs to all players in the force that researched the technology
-    for _, player in pairs(research.force.players) do
-      if player.valid then
-        -- Try to insert orbs into player inventory
-        local magic_orb_inserted = player.insert({name = "magic-orb", count = 1})
-        local conjuration_orb_inserted = player.insert({name = "conjuration-orb", count = 2})
-
-        -- Calculate how many orbs couldn't be inserted
-        local magic_orb_dropped = 1 - magic_orb_inserted
-        local conjuration_orb_dropped = 2 - conjuration_orb_inserted
-
-        -- Drop any orbs that couldn't be inserted to the ground
-        if magic_orb_dropped > 0 then
-          player.surface.spill_item_stack(player.position, {name = "magic-orb", count = magic_orb_dropped}, true, player.force, false)
-        end
-
-        if conjuration_orb_dropped > 0 then
-          player.surface.spill_item_stack(player.position, {name = "conjuration-orb", count = conjuration_orb_dropped}, true, player.force, false)
-        end
-
-        -- Give appropriate message based on what happened
-        if magic_orb_inserted > 0 or conjuration_orb_inserted > 0 then
-          local message = "You have unlocked orbs technology! You've been given " .. magic_orb_inserted .. " Magic Orb and " .. conjuration_orb_inserted .. " Conjuration Orbs"
-          if magic_orb_dropped > 0 or conjuration_orb_dropped > 0 then
-            message = message .. " (some items dropped on the ground due to full inventory)"
-          end
-          message = message .. " to begin your magical journey!"
-          player.print(message)
-        else
-          player.print("Orbs technology unlocked! Your inventory is full - starting orbs have been dropped on the ground near you.")
-        end
-      end
-    end
-  elseif research.name:match("^telekinesis%-") then
+  if research.name:match("^telekinesis%-") then
     -- Apply telekinesis bonuses when any telekinesis technology is researched
     apply_telekinesis_bonuses_to_force(research.force)
 
@@ -182,23 +148,23 @@ local function grow_trees_around_position(surface, center_position, tree_count, 
   local trees_planted = 0
   local max_attempts = tree_count * 5 -- Prevent infinite loop
   local attempts = 0
-  
+
   while trees_planted < tree_count and attempts < max_attempts do
     attempts = attempts + 1
-    
+
     -- Generate random position within radius
     local angle = math.random() * 2 * math.pi
     local distance = math.random() * radius
     local x = center_position.x + math.cos(angle) * distance
     local y = center_position.y + math.sin(angle) * distance
     local position = {x = x, y = y}
-    
+
     -- Check if position is valid for tree placement
     if surface.can_place_entity{name = "tree-01", position = position} then
       -- Choose a random tree type
       local tree_types = {"tree-01", "tree-02", "tree-03", "tree-04", "tree-05", "tree-06", "tree-07", "tree-08", "tree-09"}
       local tree_type = tree_types[math.random(#tree_types)]
-      
+
       -- Create the tree
       surface.create_entity{
         name = tree_type,
@@ -208,7 +174,7 @@ local function grow_trees_around_position(surface, center_position, tree_count, 
       trees_planted = trees_planted + 1
     end
   end
-  
+
   return trees_planted
 end
 
@@ -306,7 +272,32 @@ script.on_init(function()
   -- Remove crash site and customize intro using freeplay remote interface
   if remote.interfaces["freeplay"] then
     remote.call("freeplay", "set_disable_crashsite", true)
-    remote.call("freeplay", "set_custom_intro_message", "How did I end up here? I don't remember... I need to get back... Maybe there is some way to open a portal?")
+    remote.call("freeplay", "set_custom_intro_message", "How did I end up here? I don't remember... I need to get back... Where is my satchel with the orbs? Maybe there is some way to open a portal back?")
+  end
+
+  -- Spawn magic satchel randomly in -20,-20 to 20,20 range after crash site removal
+  local surface = game.surfaces["nauvis"]
+  if surface then
+    local max_attempts = 100
+    local attempts = 0
+    local satchel_placed = false
+
+    while not satchel_placed and attempts < max_attempts do
+      attempts = attempts + 1
+      local x = math.random(-20, 20)
+      local y = math.random(-20, 20)
+      local position = {x = x, y = y}
+
+      -- Check if position is valid for placement
+      if surface.can_place_entity{name = "magic-satchel", position = position} then
+        surface.create_entity{
+          name = "magic-satchel",
+          position = position,
+          force = "neutral"
+        }
+        satchel_placed = true
+      end
+    end
   end
 end)
 
@@ -417,7 +408,7 @@ script.on_nth_tick(120, function(event)
           if total_items == 5 then
             local expected_runes_silva = {
               "rune-word-spiritus",
-              "rune-word-ignis", 
+              "rune-word-ignis",
               "rune-word-lux",
               "rune-word-vitae",
               "rune-word-aqua"
@@ -459,7 +450,7 @@ script.on_nth_tick(120, function(event)
 
               -- Grow 30 trees randomly within 15 tiles of the altar
               local trees_planted = grow_trees_around_position(surface, altar.position, 30, 15)
-              
+
               -- Notify players nearby
               for _, player in pairs(game.connected_players) do
                 if player.surface == surface then
@@ -476,5 +467,3 @@ script.on_nth_tick(120, function(event)
     end
   end
 end)
-
-

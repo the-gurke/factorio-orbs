@@ -65,13 +65,10 @@ data:extend({
     name = "orbs-technology",
     icon = "__orbs__/graphics/orb-initial-technology.png",
     icon_size = 1024,
-    prerequisites = {"automation-science-pack"},
-    unit = {
-      count = 10,
-      ingredients = {
-        {"automation-science-pack", 1}
-      },
-      time = 30
+    research_trigger = {
+      type = "mine-entity",
+      entity = "magic-satchel",
+      count = 1
     },
     effects = {
       {

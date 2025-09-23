@@ -852,10 +852,39 @@ local rune_transformer_recipe = {
   enabled = false
 }
 
+-- Create magic satchel entity (like a rock that can be mined)
+local magic_satchel = {
+  type = "simple-entity",
+  name = "magic-satchel",
+  icon = "__orbs__/graphics/magic-satchel.png",
+  icon_size = 1024,
+  flags = {"placeable-neutral", "placeable-off-grid"},
+  minable = {
+    mining_time = 2,
+    results = {
+      {type = "item", name = "magic-orb", amount = 1},
+      {type = "item", name = "conjuration-orb", amount = 2}
+    }
+  },
+  max_health = 50,
+  collision_box = {{-0.4, -0.4}, {0.4, 0.4}},
+  selection_box = {{-0.5, -0.5}, {0.5, 0.5}},
+  pictures = {
+    {
+      filename = "__orbs__/graphics/magic-satchel.png",
+      priority = "extra-high",
+      width = 1024,
+      height = 1024,
+      scale = 0.03125 -- 32/1024 to make it 32x32 pixels
+    }
+  }
+}
+
 data:extend({
   rune_transformer,
   rune_transformer_item,
-  rune_transformer_recipe
+  rune_transformer_recipe,
+  magic_satchel
 })
 
 -- Create the rune altar (based on iron chest)
