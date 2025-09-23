@@ -267,6 +267,11 @@ script.on_init(function()
   for _, force in pairs(game.forces) do
     apply_telekinesis_bonuses_to_force(force)
   end
+
+  -- Remove crash site using freeplay remote interface
+  if remote.interfaces["freeplay"] then
+    remote.call("freeplay", "set_disable_crashsite", true)
+  end
 end)
 
 -- Periodic check for rune transformer completion
