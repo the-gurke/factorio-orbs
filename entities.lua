@@ -824,7 +824,7 @@ rune_transformer.source_inventory_size = 1
 local rune_transformer_item = {
   type = "item",
   name = "rune-transformer",
-  icon = "__base__/graphics/icons/stone-furnace.png",
+  icon = "__base__/graphics/icons/steel-furnace.png",
   icon_size = 64,
   subgroup = "orbs-runes",
   order = "e[rune-transformer]",
@@ -838,7 +838,7 @@ local rune_transformer_recipe = {
   name = "rune-transformer",
   category = "orbs",
   energy_required = 5,
-  icon = "__base__/graphics/icons/stone-furnace.png",
+  icon = "__base__/graphics/icons/steel-furnace.png",
   icon_size = 64,
   ingredients = {
     {type = "item", name = "stone-brick", amount = 10},
