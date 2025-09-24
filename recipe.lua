@@ -1263,7 +1263,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "summon-fire",
-  category = "orbs",
+  category = {"orbs", "crafting"},
   subgroup = "orbs-manifest",
   energy_required = 5,
   icon = "__orbs__/graphics/magical-fire.png",
