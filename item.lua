@@ -87,7 +87,7 @@ data:extend({
     order = "f[haste-orb]",
     stack_size = 5,
     effect = {
-      speed = 0.2
+      speed = 0.2,
       pollution = 0.5
     },
     limitation = {"conjuration-machine"}, -- Only works in conjuration machines
