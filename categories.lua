@@ -82,6 +82,10 @@ data:extend({
   },
   {
     type = "recipe-category",
+    name = "hand-crafting-and-orbs"
+  },
+  {
+    type = "recipe-category",
     name = "runes"
   },
   {

@@ -8,7 +8,7 @@ local recipes = {}
 table.insert(recipes, {
   type = "recipe",
   name = "conjure-shards-0",
-  category = "orbs",
+  category = "hand-crafting-and-orbs",
   subgroup = "orbs-shards",
   energy_required = 1,
   hide_from_signal_gui = false,
@@ -33,7 +33,7 @@ for i, n in ipairs(conjure_inputs) do
   table.insert(recipes, {
     type = "recipe",
     name = "conjure-shards-" .. n,
-    category = "orbs",
+    category = "hand-crafting-and-orbs",
     subgroup = "orbs-shards",
     energy_required = n,
     icon = "__orbs__/graphics/conjure-shards.png",
@@ -57,7 +57,7 @@ end
 table.insert(recipes, {
   type = "recipe",
   name = "replicate-shards",
-  category = "orbs",
+  category = "hand-crafting-and-orbs",
   subgroup = "orbs-shards",
   energy_required = 1,
   hide_from_signal_gui = false,
@@ -82,7 +82,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "replicate-shards-2",
-  category = "orbs",
+  category = "hand-crafting-and-orbs",
   subgroup = "orbs-shards",
   energy_required = 3,
   hide_from_signal_gui = false,
@@ -107,7 +107,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "banish-shards",
-  category = "orbs",
+  category = "hand-crafting-and-orbs",
   subgroup = "orbs-shards",
   energy_required = 2,
   icon = "__orbs__/graphics/inactive-magic-shard.png",
@@ -127,7 +127,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "manifest-orb",
-  category = "orbs",
+  category = "hand-crafting-and-orbs",
   subgroup = "orbs-manifest",
   energy_required = 5,
   hide_from_signal_gui = false,
@@ -148,7 +148,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "transfigure-conjuration-orb",
-  category = "orbs",
+  category = "hand-crafting-and-orbs",
   subgroup = "orbs-manifest",
   energy_required = 3,
   icon = "__orbs__/graphics/conjuration-orb.png",
@@ -168,7 +168,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "conjuration-research-pack",
-  category = "orbs",
+  category = "hand-crafting-and-orbs",
   subgroup = "intermediate-product",
   energy_required = 4,
   icon = "__orbs__/graphics/conjuration-research-pack.png",
@@ -189,7 +189,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "magic-research-pack",
-  category = "orbs",
+  category = "hand-crafting-and-orbs",
   subgroup = "intermediate-product",
   energy_required = 3,
   icon = "__orbs__/graphics/magic-research-pack.png",
@@ -210,7 +210,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "transfigure-haste-orb",
-  category = "orbs",
+  category = "hand-crafting-and-orbs",
   subgroup = "orbs-manifest",
   energy_required = 3,
   icon = "__orbs__/graphics/haste-orb.png",
@@ -229,7 +229,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "neutralize-haste-orb",
-  category = "orbs",
+  category = "hand-crafting-and-orbs",
   subgroup = "orbs-manifest",
   energy_required = 1,
   icon = "__orbs__/graphics/magic-orb.png",
@@ -248,7 +248,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "neutralize-conjuration-orb",
-  category = "orbs",
+  category = "hand-crafting-and-orbs",
   subgroup = "orbs-manifest",
   energy_required = 1,
   icon = "__orbs__/graphics/magic-orb.png",
@@ -310,7 +310,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "conjure-flux-orb",
-  category = "orbs",
+  category = "hand-crafting-and-orbs",
   subgroup = "orbs-manifest",
   energy_required = 10,
   icon = "__orbs__/graphics/flux-orb-alpha.png",
@@ -332,7 +332,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "align-flux-orb",
-  category = "orbs",
+  category = "hand-crafting-and-orbs",
   subgroup = "orbs-manifest",
   energy_required = 0.8,
   icon = "__orbs__/graphics/flux-orb-alpha.png",
@@ -354,7 +354,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "conjure-divination-essence",
-  category = "orbs",
+  category = "hand-crafting-and-orbs",
   subgroup = "divination",
   energy_required = 1,
   icon = "__orbs__/graphics/divination-essence.png",
@@ -377,7 +377,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "stabilize-divination-essence",
-  category = "orbs",
+  category = "hand-crafting-and-orbs",
   subgroup = "divination",
   energy_required = 0.5,
   icon = "__orbs__/graphics/divination-essence.png",
@@ -399,7 +399,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "conjure-luck",
-  category = "orbs",
+  category = "hand-crafting-and-orbs",
   subgroup = "divination",
   energy_required = 0.25,
   icon = "__orbs__/graphics/spark-of-luck.png",
@@ -420,7 +420,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "conjure-serendipity",
-  category = "orbs",
+  category = "hand-crafting-and-orbs",
   subgroup = "divination",
   energy_required = 3,
   icon = "__orbs__/graphics/dust-of-serendipity.png",
@@ -441,7 +441,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "divination-research-pack",
-  category = "orbs",
+  category = "hand-crafting-and-orbs",
   subgroup = "intermediate-product",
   energy_required = 5,
   icon = "__orbs__/graphics/divination-research-pack.png",
@@ -463,7 +463,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "magic-grenade",
-  category = "crafting",
+  category = "hand-crafting-and-orbs",
   subgroup = "capsule",
   energy_required = 3,
   icon = "__orbs__/graphics/magic-grenade.png",
@@ -796,7 +796,7 @@ table.insert(recipes, {
   category = "smelting"
 })
 
--- Fire through Friction (assembler 1 only)
+-- Fire through Friction (hand-crafting only)
 table.insert(recipes, {
   type = "recipe",
   name = "fire-through-friction",
@@ -814,7 +814,7 @@ table.insert(recipes, {
   },
   energy_required = 5,
   enabled = true,
-  category = "crafting"
+  category = "hand-crafting-only"
 })
 
 -- Stick Recipe
@@ -1159,7 +1159,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "channeled-mana",
-  category = "crafting",
+  category = "hand-crafting-and-orbs",
   subgroup = "ammo",
   energy_required = 5,
   ingredients = {
@@ -1224,7 +1224,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "craft-portal",
-  category = "crafting",
+  category = "hand-crafting-and-orbs",
   subgroup = "orbs-machines",
   energy_required = 20,
   icon = "__orbs__/graphics/portal.png",
@@ -1246,7 +1246,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "summon-water",
-  category = "crafting-with-fluid",
+  category = "orbs",
   subgroup = "orbs-manifest",
   energy_required = 5,
   icon = "__base__/graphics/icons/fluid/water.png",
@@ -1270,7 +1270,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "summon-fire",
-  category = "crafting",
+  category = "hand-crafting-and-orbs",
   subgroup = "orbs-manifest",
   energy_required = 5,
   icon = "__orbs__/graphics/magical-fire.png",
