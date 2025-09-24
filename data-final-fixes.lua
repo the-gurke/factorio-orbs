@@ -846,5 +846,49 @@ if data.raw.scenario and data.raw.scenario["freeplay"] then
   }
 end
 
+-- Reorder intermediate product recipes for better crafting menu organization
+-- Row 1: stick, fire through friction, light wood, light coal
+-- Row 2: iron plate, copper plate, sand  
+-- Row 3: iron gear wheel, iron stick, copper cable
+-- Row 4: contraption research, magic research, conjuration research, divination research, rune research
+
+-- Base game intermediate products
+if data.raw.recipe["iron-plate"] then
+  data.raw.recipe["iron-plate"].subgroup = "intermediate-product"
+  data.raw.recipe["iron-plate"].order = "b[plates]-a[iron-plate]"
+end
+
+if data.raw.recipe["copper-plate"] then
+  data.raw.recipe["copper-plate"].subgroup = "intermediate-product"
+  data.raw.recipe["copper-plate"].order = "b[plates]-b[copper-plate]"
+end
+
+if data.raw.recipe["iron-gear-wheel"] then
+  data.raw.recipe["iron-gear-wheel"].subgroup = "intermediate-product"
+  data.raw.recipe["iron-gear-wheel"].order = "c[components]-a[iron-gear-wheel]"
+end
+
+if data.raw.recipe["iron-stick"] then
+  data.raw.recipe["iron-stick"].subgroup = "intermediate-product"
+  data.raw.recipe["iron-stick"].order = "c[components]-b[iron-stick]"
+end
+
+if data.raw.recipe["copper-cable"] then
+  data.raw.recipe["copper-cable"].subgroup = "intermediate-product"
+  data.raw.recipe["copper-cable"].order = "c[components]-c[copper-cable]"
+end
+
+-- Sand recipe (if it exists)
+if data.raw.recipe["stone-to-sand"] then
+  data.raw.recipe["stone-to-sand"].subgroup = "intermediate-product"  
+  data.raw.recipe["stone-to-sand"].order = "b[plates]-c[sand]"
+end
+
+-- Automation science pack (contraption research pack)
+if data.raw.recipe["automation-science-pack"] then
+  data.raw.recipe["automation-science-pack"].subgroup = "intermediate-product"
+  data.raw.recipe["automation-science-pack"].order = "d[research]-a[contraption-research-pack]"
+end
+
 -- Finally, as a last step, remove all the content we don't want
 require("removals")
