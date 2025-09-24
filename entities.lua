@@ -875,7 +875,7 @@ local magic_satchel = {
       priority = "extra-high",
       width = 1024,
       height = 1024,
-      scale = 0.03125 -- 32/1024 to make it 32x32 pixels
+      scale = 0.04375 -- 0.03125 * 1.4 to make it 40% bigger (44.8x44.8 pixels)
     }
   }
 }
