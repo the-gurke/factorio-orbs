@@ -183,7 +183,9 @@ data:extend({
     order = "a[divination-essence]",
     stack_size = 50,
     spoil_ticks = 10 * 60, -- 10 seconds * 60 ticks per second
-    spoil_result = nil -- Spoils into nothing
+    spoil_result = nil, -- Spoils into nothing
+    fuel_value = "1MJ",
+    fuel_category = "divination-energy"
   },
 
   -- Spark of Luck (spoils in 1s to nothing)
@@ -576,6 +578,18 @@ data:extend({
         }
       }
     }
+  },
+
+  -- Inactive Portal (placeable item)
+  {
+    type = "item",
+    name = "inactive-portal",
+    icon = "__orbs__/graphics/portal.png",
+    icon_size = 1024,
+    subgroup = "orbs-machines",
+    order = "z[inactive-portal]",
+    place_result = "inactive-portal",
+    stack_size = 1
   }
 })
 

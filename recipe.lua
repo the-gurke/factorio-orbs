@@ -1172,5 +1172,68 @@ table.insert(recipes, {
   order = "a[basic-clips]-b[channeled-mana]"
 })
 
+-- Portal Home recipe (for inactive portal)
+table.insert(recipes, {
+  type = "recipe",
+  name = "portal-home",
+  category = "inactive-portal",
+  subgroup = "orbs-machines",
+  energy_required = 120,
+  icon = "__space-age__/graphics/icons/gleba.png",
+  icon_size = 64,
+  ingredients = {
+    {type = "item", name = "divination-essence", amount = 50}
+  },
+  results = {
+    -- No results - this consumes the ingredients
+  },
+  enabled = false,
+  allow_productivity = false,
+  order = "z[portal-home]"
+})
+
+-- Sustain Portal Home recipe (for active portal)
+table.insert(recipes, {
+  type = "recipe",
+  name = "sustain-portal-home",
+  category = "active-portal",
+  subgroup = "orbs-machines",
+  energy_required = 5,
+  icon = "__space-age__/graphics/icons/gleba.png",
+  icon_size = 64,
+  ingredients = {
+    -- No ingredients needed
+  },
+  results = {
+    -- No results - triggers win condition
+  },
+  enabled = true,
+  hidden = true,
+  allow_productivity = false,
+  order = "z[sustain-portal-home]"
+})
+
+-- Portal crafting recipe
+table.insert(recipes, {
+  type = "recipe",
+  name = "craft-portal",
+  category = "crafting",
+  subgroup = "orbs-machines",
+  energy_required = 20,
+  icon = "__orbs__/graphics/portal.png",
+  icon_size = 1024,
+  ingredients = {
+    {type = "item", name = "iron-gear-wheel", amount = 10},
+    {type = "item", name = "iron-stick", amount = 5},
+    {type = "item", name = "magic-orb", amount = 1},
+    {type = "item", name = "gold-plate", amount = 20}
+  },
+  results = {
+    {type = "item", name = "inactive-portal", amount = 1}
+  },
+  enabled = false,
+  order = "z[craft-portal]"
+})
+
 -- Extend all recipes
 data:extend(recipes)

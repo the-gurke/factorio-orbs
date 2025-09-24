@@ -880,11 +880,87 @@ local magic_satchel = {
   }
 }
 
+-- Create inactive portal entity (based on assembling machine)
+local inactive_portal = util.table.deepcopy(data.raw["assembling-machine"]["assembling-machine-1"])
+
+inactive_portal.name = "inactive-portal"
+inactive_portal.minable = {mining_time = 2, result = "inactive-portal"}
+inactive_portal.crafting_categories = {"inactive-portal"}
+inactive_portal.crafting_speed = 1
+inactive_portal.energy_source = {
+  type = "burner",
+  fuel_categories = {"divination-energy"},
+  effectivity = 1,
+  fuel_inventory_size = 10,
+  emissions_per_minute = {pollution = 500}
+}
+inactive_portal.energy_usage = "1MW"
+inactive_portal.module_specification = {
+  module_slots = 2,
+  module_info_icon_shift = {0, 0.5},
+  module_info_multi_row_initial_height_modifier = -0.3
+}
+inactive_portal.module_slots = 2  -- Ensure module slots are set
+inactive_portal.allowed_effects = {"speed", "pollution"}
+inactive_portal.collision_box = {{-0.1, -0.1}, {2.9, 2.9}} -- 3x3 collision box containing [0,0]
+inactive_portal.selection_box = {{-3.5, -3.5}, {3.5, 3.5}} -- 7x7 selection box
+inactive_portal.icon = "__orbs__/graphics/portal.png"
+inactive_portal.icon_size = 1024
+
+-- Portal graphics
+inactive_portal.graphics_set = {
+  animation = {
+    layers = {
+      {
+        filename = "__orbs__/graphics/portal-inactive-entity.png",
+        priority = "high",
+        width = 1024,
+        height = 1024,
+        scale = 0.25, -- Scale to fit 7x7 tiles better
+        frame_count = 1
+      }
+    }
+  }
+}
+
+-- Remove next_upgrade to avoid bounding box conflicts
+inactive_portal.next_upgrade = nil
+
+-- Create active portal entity (identical to inactive but different sprite and recipe category)
+local active_portal = util.table.deepcopy(inactive_portal)
+
+active_portal.name = "active-portal"
+active_portal.minable = {mining_time = 2, result = "inactive-portal"} -- Always drops inactive portal
+active_portal.crafting_categories = {"active-portal"}
+active_portal.icon = "__orbs__/graphics/portal.png"
+-- Module slots are inherited from inactive_portal via deepcopy
+
+-- Active portal graphics
+active_portal.graphics_set = {
+  animation = {
+    layers = {
+      {
+        filename = "__orbs__/graphics/portal-active-entity.png",
+        priority = "high",
+        width = 1024,
+        height = 1024,
+        scale = 0.25, -- Scale to fit 7x7 tiles better
+        frame_count = 1
+      }
+    }
+  }
+}
+
+-- Remove next_upgrade to avoid bounding box conflicts
+active_portal.next_upgrade = nil
+
 data:extend({
   rune_transformer,
   rune_transformer_item,
   rune_transformer_recipe,
-  magic_satchel
+  magic_satchel,
+  inactive_portal,
+  active_portal
 })
 
 -- Create the rune altar (based on iron chest)

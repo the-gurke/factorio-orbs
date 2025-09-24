@@ -91,6 +91,22 @@ data:extend({
   {
     type = "recipe-category",
     name = "distilling"
+  },
+  {
+    type = "recipe-category",
+    name = "inactive-portal"
+  },
+  {
+    type = "recipe-category",
+    name = "active-portal"
+  }
+})
+
+-- Fuel categories
+data:extend({
+  {
+    type = "fuel-category",
+    name = "divination-energy"
   }
 })
 
