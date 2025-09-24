@@ -1235,5 +1235,29 @@ table.insert(recipes, {
   order = "z[craft-portal]"
 })
 
+-- Summon Water recipe
+table.insert(recipes, {
+  type = "recipe",
+  name = "summon-water",
+  category = "orbs",
+  subgroup = "orbs-manifest",
+  energy_required = 5,
+  icon = "__base__/graphics/icons/fluid/water.png",
+  icon_size = 64,
+  ingredients = {
+    {type = "item", name = "magic-orb", amount = 1, ignored_by_stats = 1},
+    {type = "item", name = "rune-word-aqua", amount = 1, ignored_by_stats = 1}
+  },
+  results = {
+    {type = "item", name = "magic-orb", amount = 1, probability = 1.0, ignored_by_productivity = 1, ignored_by_stats = 1},
+    {type = "item", name = "rune-word-aqua", amount = 1, probability = 0.999, ignored_by_productivity = 1, ignored_by_stats = 1},
+    {type = "fluid", name = "water", amount = 1000}
+  },
+  enabled = false,
+  allow_productivity = true,
+  main_product = "water",
+  order = "w[summon-water]"
+})
+
 -- Extend all recipes
 data:extend(recipes)
