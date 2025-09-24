@@ -1085,6 +1085,29 @@ data:extend({
 --  data:extend({steam_mining_tech})
 --end
 
+-- SILVA Ritual Technology
+data:extend({
+  {
+    type = "technology",
+    name = "silva-ritual",
+    icon = "__base__/graphics/icons/tree-01.png",
+    icon_size = 64,
+    prerequisites = {"rune-words"},
+    effects = {
+      -- This technology enables the SILVA ritual functionality
+    },
+    unit = {
+      count = 10,
+      ingredients = {
+        {"conjuration-research-pack", 5},
+        {"rune-research-pack", 1}
+      },
+      time = 30
+    },
+    order = "z-s"
+  }
+})
+
 -- Portal Technology
 data:extend({
   {
@@ -1099,7 +1122,7 @@ data:extend({
         recipe = "craft-portal"
       },
       {
-        type = "unlock-recipe", 
+        type = "unlock-recipe",
         recipe = "portal-home"
       }
     },
