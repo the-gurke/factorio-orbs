@@ -74,6 +74,10 @@ data:extend({
 data:extend({
   {
     type = "recipe-category",
+    name = "hand-crafting-only"
+  },
+  {
+    type = "recipe-category",
     name = "orbs"
   },
   {

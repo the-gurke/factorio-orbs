@@ -1180,5 +1180,27 @@ data:extend({
       }
     },
     order = "z-f[summon-fire]"
+  },
+  -- Summon Death Technology
+  {
+    type = "technology",
+    name = "summon-death",
+    icon = "__orbs__/graphics/rune-word-mortis.png",
+    icon_size = 1024,
+    prerequisites = {"rune-words"},
+    unit = {
+      count = 10,
+      ingredients = {
+        {"rune-research-pack", 1}
+      },
+      time = 30
+    },
+    effects = {
+      {
+        type = "unlock-recipe",
+        recipe = "summon-death"
+      }
+    },
+    order = "z-d[summon-death]"
   }
 })

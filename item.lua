@@ -596,6 +596,17 @@ data:extend({
     fuel_value = "10MJ"
   },
 
+  -- Death Item (causes instant death when crafted)
+  {
+    type = "item",
+    name = "death",
+    icon = "__orbs__/graphics/death.png",
+    icon_size = 1024,
+    subgroup = "orbs-manifest",
+    order = "d[death]",
+    stack_size = 1
+  },
+
   -- Inactive Portal (placeable item)
   {
     type = "item",
