@@ -1246,7 +1246,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "summon-water",
-  category = "orbs",
+  category = "crafting-with-fluid",
   subgroup = "orbs-manifest",
   energy_required = 5,
   icon = "__base__/graphics/icons/fluid/water.png",
@@ -1270,7 +1270,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "summon-fire",
-  category = {"orbs", "crafting"},
+  category = "crafting",
   subgroup = "orbs-manifest",
   energy_required = 5,
   icon = "__orbs__/graphics/magical-fire.png",
