@@ -1084,3 +1084,34 @@ data:extend({
 --
 --  data:extend({steam_mining_tech})
 --end
+
+-- Portal Technology
+data:extend({
+  {
+    type = "technology",
+    name = "portal",
+    icon = "__orbs__/graphics/portal.png",
+    icon_size = 1024,
+    prerequisites = {"transmutation-ii", "rune-words"},
+    effects = {
+      {
+        type = "unlock-recipe",
+        recipe = "craft-portal"
+      },
+      {
+        type = "unlock-recipe", 
+        recipe = "portal-home"
+      }
+    },
+    unit = {
+      count = 100,
+      ingredients = {
+        {"conjuration-research-pack", 1},
+        {"divination-research-pack", 1},
+        {"rune-research-pack", 1}
+      },
+      time = 60
+    },
+    order = "z-a"
+  }
+})
