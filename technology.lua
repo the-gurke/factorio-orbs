@@ -994,7 +994,7 @@ data:extend({
     name = "resonance-spire",
     icon = "__orbs__/graphics/resonance-spire.png",
     icon_size = 1024,
-    prerequisites = {"rune-words"},
+    prerequisites = {"rune-words", "transmutation-ii"},
     unit = {
       count = 10,
       ingredients = {
