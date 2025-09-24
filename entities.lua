@@ -182,17 +182,46 @@ distillery.graphics_set = {
   }
 }
 
--- Create the crusher (based on assembling machine)
-local crusher = util.table.deepcopy(data.raw["assembling-machine"]["assembling-machine-1"])
+-- Create the crusher (based on Space Age crusher)
+local crusher = util.table.deepcopy(data.raw["assembling-machine"]["crusher"])
 
 crusher.name = "crusher"
 crusher.minable = {mining_time = 0.2, result = "crusher"}
 crusher.crafting_categories = {"crushing"}
 crusher.crafting_speed = 1
-crusher.energy_source = {type = "void"}
-crusher.energy_usage = "1W"
-crusher.icon = "__space-age__/graphics/icons/crusher.png"
-crusher.icon_size = 64
+crusher.energy_source = {
+  type = "burner",
+  fuel_categories = {"chemical"},
+  effectivity = 1,
+  fuel_inventory_size = 1,
+  light_flicker = {
+    color = {1, 0.5, 0},
+    minimum_intensity = 0.6,
+    maximum_intensity = 0.95
+  },
+  smoke = {
+    {
+      name = "smoke",
+      deviation = {0.1, 0.1},
+      frequency = 5
+    }
+  }
+}
+crusher.energy_usage = "300kW"
+crusher.surface_conditions = {}
+crusher.module_specification = {
+  module_slots = 0,
+  module_info_icon_shift = {0, 0},
+  module_info_multi_row_initial_height_modifier = 0
+}
+crusher.module_slots = 0
+crusher.allowed_effects = {"speed", "consumption", "pollution", "productivity"}
+crusher.effect_receiver = {
+  base_effect = {},
+  uses_module_effects = false,
+  uses_beacon_effects = true,
+  uses_surface_effects = true
+}
 
 data:extend({
   conjuration_machine,
@@ -234,7 +263,7 @@ data:extend({
     name = "crusher",
     icon = "__space-age__/graphics/icons/crusher.png",
     icon_size = 64,
-    subgroup = "orbs-machines",
+    subgroup = "production-machine",
     order = "d[crusher]",
     place_result = "crusher",
     stack_size = 20
@@ -301,6 +330,7 @@ data:extend({
     type = "recipe",
     name = "crusher",
     category = "crafting",
+    subgroup = "production-machine",
     energy_required = 5,
     icon = "__space-age__/graphics/icons/crusher.png",
     icon_size = 64,
