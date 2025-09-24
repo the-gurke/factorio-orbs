@@ -5,7 +5,7 @@ local conjuration_machine = util.table.deepcopy(data.raw["assembling-machine"]["
 
 conjuration_machine.name = "conjuration-machine"
 conjuration_machine.minable = {mining_time = 0.2, result = "conjuration-machine"}
-conjuration_machine.crafting_categories = {"orbs"} -- ONLY orbs category
+conjuration_machine.crafting_categories = {"orbs", "hand-crafting-and-orbs"} -- Orbs and hand-crafting-and-orbs categories
 conjuration_machine.crafting_speed = 1
 conjuration_machine.energy_source = {
   type = "fluid",
@@ -265,7 +265,7 @@ data:extend({
   {
     type = "recipe",
     name = "craft-soul-collector",
-    category = "crafting",
+    category = "hand-crafting-and-orbs",
     energy_required = 5,
     icon = "__orbs__/graphics/soul-collector.png",
     icon_size = 1024,
@@ -575,7 +575,7 @@ local defense_ward_item = {
 local defense_ward_recipe = {
   type = "recipe",
   name = "defense-ward",
-  category = "crafting",
+  category = "hand-crafting-and-orbs",
   energy_required = 3,
   icon = "__orbs__/graphics/defense-ward.png",
   icon_size = 1024,
@@ -643,7 +643,7 @@ if data.raw["fluid-turret"]["flamethrower-turret"] then
     {
       type = "recipe",
       name = "ragethrower-turret",
-      category = "crafting",
+      category = "hand-crafting-and-orbs",
       subgroup = "orbs-machines",
       energy_required = 10,
       icon = "__base__/graphics/icons/flamethrower-turret.png",
@@ -1021,7 +1021,7 @@ local rune_altar_item = {
 local rune_altar_recipe = {
   type = "recipe",
   name = "rune-altar",
-  category = "crafting",
+  category = "hand-crafting-and-orbs",
   energy_required = 3,
   icon = "__orbs__/graphics/rune-altar.png",
   icon_size = 1024,
@@ -1210,7 +1210,7 @@ data:extend({
   {
     type = "recipe",
     name = "craft-sentry-ward",
-    category = "crafting",
+    category = "hand-crafting-and-orbs",
     energy_required = 2,
     icon = "__orbs__/graphics/sentry-ward.png",
     icon_size = 1024,

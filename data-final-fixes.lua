@@ -111,6 +111,8 @@ if mods["Nanobots2"] then
     recipe.icon_size = 1024
     recipe.localised_name = {"item-name.summoning-wand"}
     recipe.localised_description = {"item-description.summoning-wand"}
+    recipe.category = "hand-crafting-and-orbs"
+    recipe.subgroup = "gun"
     -- Update recipe to use magical ingredients
     recipe.ingredients = {
       {type = "item", name = "stick", amount = 1},
@@ -161,6 +163,8 @@ if mods["Nanobots2"] then
       recipe.icon = "__orbs__/graphics/summoning-essence.png"
       recipe.icon_size = 1024
       recipe.localised_description = {"item-description.summoning-essence"}
+      recipe.category = "hand-crafting-and-orbs"
+      recipe.subgroup = "ammo"
     end
   end
 
@@ -168,7 +172,7 @@ end
 
 -- Modify red transport belt recipes to require stability
 if data.raw.recipe["fast-transport-belt"] then
-  data.raw.recipe["fast-transport-belt"].category = "orbs"
+  data.raw.recipe["fast-transport-belt"].category = "crafting-with-fluid"
   data.raw.recipe["fast-transport-belt"].ingredients = {
     {type = "item", name = "transport-belt", amount = 1},
     {type = "fluid", name = "stability", amount = 5}
@@ -176,7 +180,7 @@ if data.raw.recipe["fast-transport-belt"] then
 end
 
 if data.raw.recipe["fast-splitter"] then
-  data.raw.recipe["fast-splitter"].category = "orbs"
+  data.raw.recipe["fast-splitter"].category = "crafting-with-fluid"
   data.raw.recipe["fast-splitter"].ingredients = {
     {type = "item", name = "splitter", amount = 1},
     {type = "fluid", name = "stability", amount = 20}
@@ -184,7 +188,7 @@ if data.raw.recipe["fast-splitter"] then
 end
 
 if data.raw.recipe["fast-underground-belt"] then
-  data.raw.recipe["fast-underground-belt"].category = "orbs"
+  data.raw.recipe["fast-underground-belt"].category = "crafting-with-fluid"
   data.raw.recipe["fast-underground-belt"].ingredients = {
     {type = "item", name = "underground-belt", amount = 1},
     {type = "fluid", name = "stability", amount = 20}
@@ -205,7 +209,7 @@ if data.raw.technology["logistics-2"] then
   }
 end
 
--- Modify assembling machine 1 to use steam fuel
+-- Modify assembling machine 1 to use steam fuel and accept fluids in recipes
 if data.raw["assembling-machine"]["assembling-machine-1"] then
   local assembler_1 = data.raw["assembling-machine"]["assembling-machine-1"]
   assembler_1.energy_usage = "200kW"
@@ -227,6 +231,14 @@ if data.raw["assembling-machine"]["assembling-machine-1"] then
     scale_fluid_usage = true
   }
   assembler_1.energy_source.emissions_per_minute = {pollution = 10}
+
+  -- Add fluid boxes for recipe ingredients (copy from assembling-machine-2)
+  if data.raw["assembling-machine"]["assembling-machine-2"] and data.raw["assembling-machine"]["assembling-machine-2"].fluid_boxes then
+    assembler_1.fluid_boxes = table.deepcopy(data.raw["assembling-machine"]["assembling-machine-2"].fluid_boxes)
+    -- Update crafting categories to include crafting-with-fluid
+    assembler_1.crafting_categories = assembler_1.crafting_categories or {"basic-crafting"}
+    table.insert(assembler_1.crafting_categories, "crafting-with-fluid")
+  end
 end
 
 -- Remove fuel values from wood and coal
@@ -782,6 +794,7 @@ if data.raw.recipe["pistol"] then
   }
   recipe.enabled = true
   recipe.hidden = false
+  recipe.category = "hand-crafting-and-orbs"
 end
 
 -- Replace firearm magazine with channeled-mana
@@ -846,11 +859,13 @@ if data.raw.scenario and data.raw.scenario["freeplay"] then
   }
 end
 
--- Add hand-crafting-only as a crafting category to players
-data.raw["character"]["character"].crafting_categories = {
-  "crafting",
-  "hand-crafting-only"
-}
+-- Add hand-crafting-only and hand-crafting-and-orbs as a crafting category to players
+if data.raw["character"]["character"].crafting_categories then
+  table.insert(data.raw["character"]["character"].crafting_categories, "hand-crafting-only")
+  table.insert(data.raw["character"]["character"].crafting_categories, "hand-crafting-and-orbs")
+else
+  data.raw["character"]["character"].crafting_categories = {"crafting", "hand-crafting-only", "hand-crafting-and-orbs"}
+end
 
 -- Reorder intermediate product recipes for better crafting menu organization
 -- Row 1: stick, fire through friction, light wood, light coal
