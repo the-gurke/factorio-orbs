@@ -169,7 +169,7 @@ table.insert(recipes, {
   type = "recipe",
   name = "conjuration-research-pack",
   category = "orbs",
-  subgroup = "orbs-research",
+  subgroup = "intermediate-product",
   energy_required = 4,
   icon = "__orbs__/graphics/conjuration-research-pack.png",
   icon_size = 1024,
@@ -182,7 +182,7 @@ table.insert(recipes, {
   },
   enabled = false,
   allow_productivity = true,
-  order = "a[conjuration-research-pack]"
+  order = "d[research]-c[conjuration-research-pack]"
 })
 
 -- Magic Science Pack
@@ -190,7 +190,7 @@ table.insert(recipes, {
   type = "recipe",
   name = "magic-research-pack",
   category = "orbs",
-  subgroup = "orbs-research",
+  subgroup = "intermediate-product",
   energy_required = 3,
   icon = "__orbs__/graphics/magic-research-pack.png",
   icon_size = 1024,
@@ -203,7 +203,7 @@ table.insert(recipes, {
   },
   enabled = false,
   allow_productivity = true,
-  order = "a[magic-research-pack]"
+  order = "d[research]-b[magic-research-pack]"
 })
 
 -- Transfigure to Haste Orb
@@ -442,7 +442,7 @@ table.insert(recipes, {
   type = "recipe",
   name = "divination-research-pack",
   category = "orbs",
-  subgroup = "orbs-research",
+  subgroup = "intermediate-product",
   energy_required = 5,
   icon = "__orbs__/graphics/divination-research-pack.png",
   icon_size = 1024,
@@ -456,7 +456,7 @@ table.insert(recipes, {
   },
   enabled = false,
   allow_productivity = true,
-  order = "b[divination-research-pack]"
+  order = "d[research]-d[divination-research-pack]"
 })
 
 -- Magic Grenade Recipe
@@ -766,6 +766,8 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "light-wood",
+  subgroup = "intermediate-product",
+  order = "a[fire]-c[light-wood]",
   ingredients = {
     {type = "item", name = "wood", amount = 1}
   },
@@ -781,6 +783,8 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "light-coal",
+  subgroup = "intermediate-product",
+  order = "a[fire]-d[light-coal]",
   ingredients = {
     {type = "item", name = "coal", amount = 1}
   },
@@ -799,6 +803,7 @@ table.insert(recipes, {
   icon = "__orbs__/graphics/burning-wood.png",
   icon_size = 1024,
   subgroup = "intermediate-product",
+  order = "a[fire]-b[fire-through-friction]",
   ingredients = {
     {type = "item", name = "stick", amount = 1},
     {type = "item", name = "wood", amount = 1}
@@ -816,6 +821,8 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "stick",
+  subgroup = "intermediate-product",
+  order = "a[fire]-a[stick]",
   ingredients = {
     {
       type = "item",
@@ -977,7 +984,7 @@ table.insert(recipes, {
   type = "recipe",
   name = "rune-research-pack",
   category = "runes",
-  subgroup = "orbs-research",
+  subgroup = "intermediate-product",
   energy_required = 20,
   icon = "__base__/graphics/icons/utility-science-pack.png",
   icon_size = 64,
@@ -995,7 +1002,7 @@ table.insert(recipes, {
   enabled = false,
   allow_productivity = true,
   hidden = false,
-  order = "d[rune-research-pack]"
+  order = "d[research]-e[rune-research-pack]"
 })
 
 -- Load the rune transformation chains
