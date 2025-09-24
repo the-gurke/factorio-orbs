@@ -1136,5 +1136,27 @@ data:extend({
       time = 60
     },
     order = "z-a"
+  },
+  -- Summon Water Technology
+  {
+    type = "technology",
+    name = "summon-water",
+    icon = "__orbs__/graphics/rune-word-aqua.png",
+    icon_size = 1024,
+    prerequisites = {"rune-words"},
+    unit = {
+      count = 10,
+      ingredients = {
+        {"rune-research-pack", 1}
+      },
+      time = 30
+    },
+    effects = {
+      {
+        type = "unlock-recipe",
+        recipe = "summon-water"
+      }
+    },
+    order = "z-w[summon-water]"
   }
 })
