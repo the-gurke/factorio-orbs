@@ -88,6 +88,7 @@ data:extend({
     stack_size = 5,
     effect = {
       speed = 0.2
+      pollution = 0.5
     },
     limitation = {"conjuration-machine"}, -- Only works in conjuration machines
     limitation_message_key = "haste-orb-usable-only-on-conjuration-machines"
