@@ -911,5 +911,11 @@ if data.raw.recipe["automation-science-pack"] then
   data.raw.recipe["automation-science-pack"].order = "d[research]-a[contraption-research-pack]"
 end
 
+-- Override combat item group icon
+if data.raw["item-group"]["combat"] then
+  data.raw["item-group"]["combat"].icon = "__orbs__/graphics/defense-ward.png"
+  data.raw["item-group"]["combat"].icon_size = 1024
+end
+
 -- Finally, as a last step, remove all the content we don't want
 require("removals")
