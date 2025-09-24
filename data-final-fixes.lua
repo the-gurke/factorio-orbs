@@ -14,7 +14,7 @@ if mods["Nanobots2"] then
     tech.unit.ingredients = {{"magic-research-pack", 1}}
     tech.localised_name = {"technology-name.summon-machines"}
     tech.localised_description = {"technology-description.summon-machines"}
-    
+
     -- Remove unwanted effects and keep only the magic wand and summoning essence recipes
     local filtered_effects = {}
     if tech.effects then
@@ -22,9 +22,9 @@ if mods["Nanobots2"] then
         if effect.type == "unlock-recipe" then
           local recipe_name = effect.recipe
           -- Keep only the gun-nano-emitter (magic wand) and summoning essence recipes
-          if recipe_name == "gun-nano-emitter" or 
-             recipe_name == "ammo-nano-scrappers" or 
-             recipe_name == "ammo-nano-constructors" or 
+          if recipe_name == "gun-nano-emitter" or
+             recipe_name == "ammo-nano-scrappers" or
+             recipe_name == "ammo-nano-constructors" or
              recipe_name == "ammo-nano-deconstructors" then
             table.insert(filtered_effects, effect)
           end
@@ -36,7 +36,7 @@ if mods["Nanobots2"] then
       end
     end
     tech.effects = filtered_effects
-    
+
     -- Add ghost creation effect (entities leave ghosts when destroyed)
     table.insert(tech.effects, {
       type = "create-ghost-on-entity-death",
@@ -846,9 +846,15 @@ if data.raw.scenario and data.raw.scenario["freeplay"] then
   }
 end
 
+-- Add hand-crafting-only as a crafting category to players
+data.raw["character"]["character"].crafting_categories = {
+  "crafting",
+  "hand-crafting-only"
+}
+
 -- Reorder intermediate product recipes for better crafting menu organization
 -- Row 1: stick, fire through friction, light wood, light coal
--- Row 2: iron plate, copper plate, sand  
+-- Row 2: iron plate, copper plate, sand
 -- Row 3: iron gear wheel, iron stick, copper cable
 -- Row 4: contraption research, magic research, conjuration research, divination research, rune research
 
@@ -880,7 +886,7 @@ end
 
 -- Sand recipe (if it exists)
 if data.raw.recipe["stone-to-sand"] then
-  data.raw.recipe["stone-to-sand"].subgroup = "intermediate-product"  
+  data.raw.recipe["stone-to-sand"].subgroup = "intermediate-product"
   data.raw.recipe["stone-to-sand"].order = "b[plates]-c[sand]"
 end
 

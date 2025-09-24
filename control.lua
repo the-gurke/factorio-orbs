@@ -474,6 +474,28 @@ script.on_nth_tick(120, function(event)
 end)
 
 --------------------------------------------------------
+--  Death Magic System                               --
+--------------------------------------------------------
+
+-- Handle death magic when summon-death recipe is completed
+script.on_event(defines.events.on_player_crafted_item, function(event)
+  local player = game.get_player(event.player_index)
+  if not player or not player.valid then return end
+
+  local crafted_item = event.item_stack
+  if crafted_item and crafted_item.valid_for_read and crafted_item.name == "death" then
+    -- Remove all death items from player's inventory
+    local removed = player.remove_item({name = "death", count = crafted_item.count})
+    if removed > 0 then
+      -- Kill the player instantly
+      if player.character then
+        player.character.die()
+      end
+    end
+  end
+end)
+
+--------------------------------------------------------
 --  Portal System                                    --
 --------------------------------------------------------
 
