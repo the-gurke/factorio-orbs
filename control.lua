@@ -472,47 +472,58 @@ end)
 --  Portal System                                    --
 --------------------------------------------------------
 
--- Check portal fuel every 60 ticks and reduce progress if not fueled
+-- Combined portal management every 60 ticks (fuel checking and power management)
 script.on_nth_tick(60, function(event)
-  -- Basic test to see if script is running
-  game.print("DEBUG: Portal fuel check script running...")
-  local total_portals = 0
-  local crafting_portals = 0
-
   for _, surface in pairs(game.surfaces) do
+    -- Process inactive portals (fuel checking)
     local inactive_portals = surface.find_entities_filtered{name = "inactive-portal"}
-    total_portals = total_portals + #inactive_portals
 
     for _, portal in pairs(inactive_portals) do
       if portal.valid then
-        -- Debug: Log all portals found
-        local recipe = portal.get_recipe()
-        local recipe_name = recipe and recipe.name or "no recipe"
-        game.print("DEBUG: Found portal at " .. portal.position.x .. "," .. portal.position.y .. " crafting: " .. recipe_name)
-
         -- Check if portal is crafting "portal-home"
+        local recipe = portal.get_recipe()
         if recipe and recipe.name == "portal-home" then
-          crafting_portals = crafting_portals + 1
           -- Check if portal has fuel (divination essence)
           local fuel_inventory = portal.get_fuel_inventory()
           if fuel_inventory and fuel_inventory.is_empty() then
-            -- Debug: Log when portal has no fuel
-            game.print("DEBUG: Portal at " .. portal.position.x .. "," .. portal.position.y .. " has no fuel!")
             -- No fuel - reduce crafting progress significantly
-            -- local current_progress = portal.crafting_progress
-            -- portal.crafting_progress = math.max(0, current_progress - 0.02) -- Lose 2% progress per second
-          else
-            -- Debug: Log when portal has fuel
-            game.print("DEBUG: Portal at " .. portal.position.x .. "," .. portal.position.y .. " has fuel!")
+            local current_progress = portal.crafting_progress
+            portal.crafting_progress = math.max(0, current_progress - 0.02) -- Lose 2% progress per second
           end
         end
       end
     end
-  end
 
-  -- Summary debug info
-  if total_portals > 0 then
-    game.print("DEBUG SUMMARY: Found " .. total_portals .. " total portals, " .. crafting_portals .. " crafting portal-home")
+    -- Process active portals (power checking and conversion back to inactive)
+    local active_portals = surface.find_entities_filtered{name = "active-portal"}
+
+    for _, portal in pairs(active_portals) do
+      if portal.valid then
+        -- Check if portal has fuel (divination essence)
+        local fuel_inventory = portal.get_fuel_inventory()
+        if fuel_inventory and fuel_inventory.is_empty() then
+          -- No fuel - convert back to inactive portal
+          local position = portal.position
+          local force = portal.force
+          local surface_ref = portal.surface
+
+          -- Remove active portal
+          portal.destroy()
+
+          -- Create inactive portal
+          local new_inactive_portal = surface_ref.create_entity{
+            name = "inactive-portal",
+            position = position,
+            force = force
+          }
+
+          -- Set the recipe to portal-home
+          if new_inactive_portal then
+            new_inactive_portal.set_recipe("portal-home")
+          end
+        end
+      end
+    end
   end
 end)
 
@@ -596,40 +607,6 @@ script.on_nth_tick(10, function(event) -- Check every 10 ticks for responsivenes
   end
 end)
 
--- Check active portal power every 1 second and switch back to inactive if unpowered
-script.on_nth_tick(60, function(event)
-  for _, surface in pairs(game.surfaces) do
-    local active_portals = surface.find_entities_filtered{name = "active-portal"}
-
-    for _, portal in pairs(active_portals) do
-      if portal.valid then
-        -- Check if portal has fuel (divination essence)
-        local fuel_inventory = portal.get_fuel_inventory()
-        if fuel_inventory and fuel_inventory.is_empty() then
-          -- No fuel - convert back to inactive portal
-          local position = portal.position
-          local force = portal.force
-          local surface_ref = portal.surface
-
-          -- Remove active portal
-          portal.destroy()
-
-          -- Create inactive portal
-          local new_inactive_portal = surface_ref.create_entity{
-            name = "inactive-portal",
-            position = position,
-            force = force
-          }
-
-          -- Set the recipe to portal-home
-          if new_inactive_portal then
-            new_inactive_portal.set_recipe("portal-home")
-          end
-        end
-      end
-    end
-  end
-end)
 
 -- Win condition check - every tick for immediate response
 script.on_event(defines.events.on_tick, function(event)
@@ -653,7 +630,7 @@ script.on_event(defines.events.on_tick, function(event)
                   player_won = true,
                   can_continue = true,
                   victorious_force = player.force
-                }                
+                }
                 return -- Exit early since game is won
               end
             end
