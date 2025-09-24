@@ -1135,7 +1135,8 @@ table.insert(recipes, {
   results = {
     {type = "item", name = "sand", amount = 2}
   },
-  enabled = false
+  enabled = false,
+  allow_productivity = true
 })
 
 -- Sand to Glass recipe (for furnace)
