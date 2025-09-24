@@ -483,15 +483,23 @@ script.on_event(defines.events.on_player_crafted_item, function(event)
   if not player or not player.valid then return end
 
   local crafted_item = event.item_stack
+
   if crafted_item and crafted_item.valid_for_read and crafted_item.name == "death" then
-    -- Remove all death items from player's inventory
-    local removed = player.remove_item({name = "death", count = crafted_item.count})
-    if removed > 0 then
-      -- Kill the player instantly
-      if player.character then
+    game.print("Death has been summoned! The magic consumes you...")
+
+    -- Schedule death for next tick to allow item to be transferred to inventory
+    local death_count = crafted_item.count
+
+    script.on_nth_tick(game.tick + 1, function()
+      if player and player.valid and player.character then
+        -- Remove death items from inventory
+        local removed = player.remove_item({name = "death", count = death_count})
+        -- Kill the player
         player.character.die()
       end
-    end
+      -- Unregister this one-time callback
+      script.on_nth_tick(game.tick, nil)
+    end)
   end
 end)
 
