@@ -1158,5 +1158,27 @@ data:extend({
       }
     },
     order = "z-w[summon-water]"
+  },
+  -- Summon Fire Technology
+  {
+    type = "technology",
+    name = "summon-fire",
+    icon = "__orbs__/graphics/rune-word-ignis.png",
+    icon_size = 1024,
+    prerequisites = {"rune-words"},
+    unit = {
+      count = 10,
+      ingredients = {
+        {"rune-research-pack", 1}
+      },
+      time = 30
+    },
+    effects = {
+      {
+        type = "unlock-recipe",
+        recipe = "summon-fire"
+      }
+    },
+    order = "z-f[summon-fire]"
   }
 })

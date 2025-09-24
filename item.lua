@@ -581,6 +581,21 @@ data:extend({
     }
   },
 
+  -- Magical Fire (spoils in 3s to nothing, high fuel value)
+  {
+    type = "item",
+    name = "magical-fire",
+    icon = "__orbs__/graphics/magical-fire.png",
+    icon_size = 1024,
+    subgroup = "orbs-manifest",
+    order = "m[magical-fire]",
+    stack_size = 50,
+    spoil_ticks = 3 * 60, -- 3 seconds * 60 ticks per second
+    spoil_result = nil, -- Spoils into nothing
+    fuel_category = "chemical",
+    fuel_value = "10MJ"
+  },
+
   -- Inactive Portal (placeable item)
   {
     type = "item",
