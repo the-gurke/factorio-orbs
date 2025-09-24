@@ -33,7 +33,7 @@
 * The defensive wards don't have their own unique sprite yet
 * change the color of the magic long-handed inserter
 * spoil result of the volatile orb should have an explosion icon
-* the crusher uses the assembly machine entity graphics
+* the pipe connections for the conjuration machine are blue, should be gold/pink
 
 # From playtests
 

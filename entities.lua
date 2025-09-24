@@ -40,6 +40,26 @@ conjuration_machine.module_specification = {
 }
 conjuration_machine.allowed_module_categories = {"orb-speed", "orb-pollution", "orb-productivity"} -- Allow haste orbs and cleansing orbs
 conjuration_machine.module_slots = 3
+conjuration_machine.icon = "__orbs__/graphics/conjuration-machine.png"
+conjuration_machine.icon_size = 64
+
+-- Set custom graphics for the conjuration machine entity
+conjuration_machine.graphics_set = {
+  animation = {
+    layers = {
+      {
+        filename = "__orbs__/graphics/conjuration-machine-entity.png",
+        priority = "high",
+        width = 1024,
+        height = 1024,
+        frame_count = 1,
+        line_length = 1,
+        scale = 0.12,
+        shift = {0, 0}
+      }
+    }
+  }
+}
 
 -- Override the existing lab to be alchemy research laboratory
 if data.raw["lab"]["lab"] then
@@ -231,7 +251,7 @@ data:extend({
   {
     type = "item",
     name = "conjuration-machine",
-    icon = "__base__/graphics/icons/assembling-machine-2.png",
+    icon = "__orbs__/graphics/conjuration-machine.png",
     icon_size = 64,
     subgroup = "production-machine",
     order = "b[assembling-machine-2]",
@@ -277,7 +297,7 @@ data:extend({
     name = "craft-conjuration-machine",
     category = "crafting",
     energy_required = 5,
-    icon = "__base__/graphics/icons/assembling-machine-2.png",
+    icon = "__orbs__/graphics/conjuration-machine.png",
     icon_size = 64,
     ingredients = {
       {type = "item", name = "assembling-machine-1", amount = 1},
