@@ -441,25 +441,30 @@ script.on_nth_tick(120, function(event)
             end
 
             if match then
-              -- Remove all runes
-              for i = 1, 5 do
-                if i <= #inventory then
-                  inventory[i].clear()
+              -- Check if SILVA ritual technology is researched
+              local force = altar.force
+              if force.technologies["silva-ritual"] and force.technologies["silva-ritual"].researched then
+                -- Remove all runes
+                for i = 1, 5 do
+                  if i <= #inventory then
+                    inventory[i].clear()
+                  end
                 end
-              end
 
-              -- Grow 30 trees randomly within 15 tiles of the altar
-              local trees_planted = grow_trees_around_position(surface, altar.position, 30, 15)
+                -- Grow 30 trees randomly within 15 tiles of the altar
+                local trees_planted = grow_trees_around_position(surface, altar.position, 30, 15)
 
-              -- Notify players nearby
-              for _, player in pairs(game.connected_players) do
-                if player.surface == surface then
-                  local distance_to_altar = math.sqrt((player.position.x - altar.position.x)^2 + (player.position.y - altar.position.y)^2)
-                  if distance_to_altar <= 50 then -- Notify players within 50 tiles
-                    player.print("The SILVA ritual has been completed! " .. trees_planted .. " trees have grown from the magical energy.")
+                -- Notify players nearby
+                for _, player in pairs(game.connected_players) do
+                  if player.surface == surface then
+                    local distance_to_altar = math.sqrt((player.position.x - altar.position.x)^2 + (player.position.y - altar.position.y)^2)
+                    if distance_to_altar <= 50 then -- Notify players within 50 tiles
+                      player.print("The SILVA ritual has been completed! " .. trees_planted .. " trees have grown from the magical energy.")
+                    end
                   end
                 end
               end
+              -- If technology not researched, nothing happens (no notification)
             end
           end
         end
