@@ -33,7 +33,7 @@ for i, n in ipairs(conjure_inputs) do
   table.insert(recipes, {
     type = "recipe",
     name = "conjure-shards-" .. n,
-    category = "hand-crafting-and-orbs",
+    category = "orbs",
     subgroup = "orbs-shards",
     energy_required = n,
     icon = "__orbs__/graphics/conjure-shards.png",
