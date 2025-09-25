@@ -890,6 +890,14 @@ if data.raw.recipe["long-handed-inserter"] then
     {type = "item", name = "burner-inserter", amount = 1},
     {type = "item", name = "iron-stick", amount = 1}
   }
+  -- Update recipe icon to use stack inserter with black tint
+  data.raw.recipe["long-handed-inserter"].icons = {
+    {
+      icon = "__space-age__/graphics/icons/stack-inserter.png",
+      icon_size = 64,
+      tint = {r = 0.2, g = 0.2, b = 0.2, a = 0.8}
+    }
+  }
 end
 
 -- Magic inserter recipes
@@ -899,8 +907,13 @@ table.insert(recipes, {
   category = "crafting",
   subgroup = "inserter",
   energy_required = 3,
-  icon = "__base__/graphics/icons/fast-inserter.png",
-  icon_size = 64,
+  icons = {
+    {
+      icon = "__space-age__/graphics/icons/stack-inserter.png",
+      icon_size = 64,
+      tint = {r = 1.0, g = 0.3, b = 1.0, a = 0.8}
+    }
+  },
   ingredients = {
     {type = "item", name = "burner-inserter", amount = 1},
     {type = "item", name = "magic-orb", amount = 2, ignored_by_stats = 1}
@@ -920,8 +933,13 @@ table.insert(recipes, {
   category = "crafting",
   subgroup = "inserter",
   energy_required = 3,
-  icon = "__base__/graphics/icons/long-handed-inserter.png",
-  icon_size = 64,
+  icons = {
+    {
+      icon = "__space-age__/graphics/icons/stack-inserter.png",
+      icon_size = 64,
+      tint = {r = 0.5, g = 0.3, b = 1.0, a = 0.8},
+    }
+  },
   ingredients = {
     {type = "item", name = "long-handed-inserter", amount = 1},
     {type = "item", name = "magic-orb", amount = 2, ignored_by_stats = 1}
