@@ -1315,5 +1315,26 @@ table.insert(recipes, {
   order = "d[summon-death]"
 })
 
+-- Mana Orb recipe
+table.insert(recipes, {
+  type = "recipe",
+  name = "mana-orb",
+  category = "hand-crafting-and-orbs",
+  subgroup = "orbs-manifest",
+  energy_required = 3,
+  icon = "__orbs__/graphics/mana-orb.png",
+  icon_size = 1024,
+  ingredients = {
+    {type = "item", name = "magic-orb", amount = 1},
+    {type = "item", name = "channeled-mana", amount = 50}
+  },
+  results = {
+    {type = "item", name = "mana-orb", amount = 1}
+  },
+  enabled = false,
+  allow_productivity = false,
+  order = "m[mana-orb]"
+})
+
 -- Extend all recipes
 data:extend(recipes)
