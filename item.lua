@@ -581,6 +581,55 @@ data:extend({
     }
   },
 
+  -- Mana Orb (spoils in 2h to magic orb, rifle ammunition with 200 shots)
+  {
+    type = "ammo",
+    name = "mana-orb",
+    icon = "__orbs__/graphics/mana-orb.png",
+    icon_size = 1024,
+    ammo_category = "channeled-mana",
+    subgroup = "orbs-manifest",
+    order = "k[mana-orb]",
+    stack_size = 5,
+    spoil_ticks = 2 * 60 * 60 * 60, -- 2 hours * 60 minutes * 60 seconds * 60 ticks per second
+    spoil_result = "magic-orb",
+    magazine_size = 200,
+    ammo_type = {
+      category = "channeled-mana",
+      action = {
+        {
+          type = "direct",
+          action_delivery = {
+            {
+              type = "instant",
+              source_effects = {
+                {
+                  type = "create-explosion",
+                  entity_name = "laser-bubble",
+                  only_when_visible = true
+                }
+              },
+              target_effects = {
+                {
+                  type = "create-entity",
+                  entity_name = "purple-magical-splash",
+                  offsets = {{0, 0}},
+                  offset_deviation = {{-0.3, -0.3}, {0.3, 0.3}},
+                  only_when_visible = true
+                },
+                {
+                  type = "damage",
+                  damage = {amount = 7, type = "laser"}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    spent_ammo = "magic-orb"
+  },
+
   -- Magical Fire (spoils in 3s to nothing, high fuel value)
   {
     type = "item",
