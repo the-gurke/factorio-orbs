@@ -639,6 +639,33 @@ data:extend({
   }
 })
 
+-- Combat Wand Damage (infinite research)
+data:extend({
+  {
+    type = "technology",
+    name = "combat-wand-damage",
+    icon = "__orbs__/graphics/starter-wand.png",
+    icon_size = 1024,
+    effects = {
+      {
+        type = "ammo-damage",
+        ammo_category = "channeled-mana",
+        modifier = 0.4
+      }
+    },
+    prerequisites = {"conjuration-research"},
+    unit = {
+      count_formula = "10*2^L",
+      ingredients = {
+        {"conjuration-research-pack", 1}
+      },
+      time = 30
+    },
+    max_level = "infinite",
+    order = "e-a-d"
+  }
+})
+
 -- Telekinesis technologies (10 tiers)
 local telekinesis_technologies = {}
 for i = 1, 10 do
