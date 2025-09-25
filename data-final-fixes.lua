@@ -319,6 +319,35 @@ if data.raw["inserter"]["long-handed-inserter"] then
     effectivity = 0.5,
     fuel_inventory_size = 1
   }
+  -- Add gray tint to the entity
+  local gray_tint = {r = 0.2, g = 0.2, b = 0.2}
+  long_inserter.platform_picture.sheet.tint = gray_tint
+  if long_inserter.platform_picture.sheet.hr_version then
+    long_inserter.platform_picture.sheet.hr_version.tint = gray_tint
+  end
+  long_inserter.hand_base_picture.tint = gray_tint
+  if long_inserter.hand_base_picture.hr_version then
+    long_inserter.hand_base_picture.hr_version.tint = gray_tint
+  end
+  long_inserter.hand_open_picture.tint = gray_tint
+  if long_inserter.hand_open_picture.hr_version then
+    long_inserter.hand_open_picture.hr_version.tint = gray_tint
+  end
+  long_inserter.hand_closed_picture.tint = gray_tint
+  if long_inserter.hand_closed_picture.hr_version then
+    long_inserter.hand_closed_picture.hr_version.tint = gray_tint
+  end
+end
+
+-- Update long-handed inserter item icon to use stack inserter with gray tint
+if data.raw.item["long-handed-inserter"] then
+  data.raw.item["long-handed-inserter"].icons = {
+    {
+      icon = "__space-age__/graphics/icons/stack-inserter.png",
+      icon_size = 64,
+      tint = {r = 0.2, g = 0.2, b = 0.2, a = 0.8}
+    }
+  }
 end
 
 -- Clear all next_upgrade references that point to inserter before hiding it
@@ -371,6 +400,24 @@ magic_inserter.energy_source = {
 }
 magic_inserter.energy_per_movement = "0kW"
 magic_inserter.energy_per_rotation = "0kW"
+-- Add pink tint to make it distinct
+local pink_tint = {r = 1.0, g = 0.1, b = 0.3}
+magic_inserter.platform_picture.sheet.tint = pink_tint
+if magic_inserter.platform_picture.sheet.hr_version then
+  magic_inserter.platform_picture.sheet.hr_version.tint = pink_tint
+end
+magic_inserter.hand_base_picture.tint = pink_tint
+if magic_inserter.hand_base_picture.hr_version then
+  magic_inserter.hand_base_picture.hr_version.tint = pink_tint
+end
+magic_inserter.hand_open_picture.tint = pink_tint
+if magic_inserter.hand_open_picture.hr_version then
+  magic_inserter.hand_open_picture.hr_version.tint = pink_tint
+end
+magic_inserter.hand_closed_picture.tint = pink_tint
+if magic_inserter.hand_closed_picture.hr_version then
+  magic_inserter.hand_closed_picture.hr_version.tint = pink_tint
+end
 
 -- Create magic inserter item
 local magic_inserter_item = table.deepcopy(data.raw.item["fast-inserter"])
@@ -378,6 +425,14 @@ magic_inserter_item.name = "magic-inserter"
 magic_inserter_item.localised_name = {"item-name.magic-inserter"}
 magic_inserter_item.place_result = "magic-inserter"
 magic_inserter_item.hidden = nil
+-- Use stack inserter icon from Space Age with pink tint
+magic_inserter_item.icons = {
+  {
+    icon = "__space-age__/graphics/icons/stack-inserter.png",
+    icon_size = 64,
+    tint = {r = 1.0, g = 0.3, b = 1.0, a = 0.8}
+  }
+}
 
 -- Create magic long handed inserter from long handed inserter
 local magic_long_inserter = table.deepcopy(data.raw["inserter"]["long-handed-inserter"])
@@ -389,6 +444,23 @@ magic_long_inserter.energy_source = {
 }
 magic_long_inserter.energy_per_movement = "0kW"
 magic_long_inserter.energy_per_rotation = "0kW"
+local purple_tint = {r = 0.4, g = 0.3, b = 0.9}
+magic_long_inserter.platform_picture.sheet.tint = purple_tint
+if magic_long_inserter.platform_picture.sheet.hr_version then
+  magic_long_inserter.platform_picture.sheet.hr_version.tint = purple_tint
+end
+magic_long_inserter.hand_base_picture.tint = purple_tint
+if magic_long_inserter.hand_base_picture.hr_version then
+  magic_long_inserter.hand_base_picture.hr_version.tint = purple_tint
+end
+magic_long_inserter.hand_open_picture.tint = purple_tint
+if magic_long_inserter.hand_open_picture.hr_version then
+  magic_long_inserter.hand_open_picture.hr_version.tint = purple_tint
+end
+magic_long_inserter.hand_closed_picture.tint = purple_tint
+if magic_long_inserter.hand_closed_picture.hr_version then
+  magic_long_inserter.hand_closed_picture.hr_version.tint = purple_tint
+end
 
 -- Create magic long handed inserter item
 local magic_long_inserter_item = table.deepcopy(data.raw.item["long-handed-inserter"])
@@ -396,6 +468,14 @@ magic_long_inserter_item.name = "magic-long-handed-inserter"
 magic_long_inserter_item.localised_name = {"item-name.magic-long-handed-inserter"}
 magic_long_inserter_item.place_result = "magic-long-handed-inserter"
 magic_long_inserter_item.hidden = nil
+-- Use stack inserter icon from Space Age (white) with blue tint
+magic_long_inserter_item.icons = {
+  {
+    icon = "__space-age__/graphics/icons/stack-inserter.png",
+    icon_size = 64,
+    tint = {r = 0.5, g = 0.3, b = 1.0, a = 0.8}
+  }
+}
 
 -- Add new inserters to data
 data:extend({new_burner_inserter, new_burner_inserter_item, magic_inserter, magic_inserter_item, magic_long_inserter, magic_long_inserter_item})
