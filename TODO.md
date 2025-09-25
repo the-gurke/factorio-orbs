@@ -31,8 +31,6 @@
 
 # From playtests
 
-* burner inserters take more fuel
-* burner inserters leech fuel?
 * make telekensis effects quadratic
 
 # Features
