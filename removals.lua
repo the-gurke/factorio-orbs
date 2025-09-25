@@ -37,7 +37,8 @@ end
 local items_to_hide = {
   "small-electric-pole",
   "biolab",
-  "power-switch"
+  "power-switch",
+  "piercing-rounds-magazine"
 }
 
 for _, item_name in pairs(items_to_hide) do
