@@ -1288,6 +1288,7 @@ table.insert(recipes, {
   enabled = false,
   allow_productivity = true,
   main_product = "magical-fire",
+  reset_freshness_on_craft = true,
   order = "f[summon-fire]"
 })
 
