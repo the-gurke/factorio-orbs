@@ -1355,5 +1355,25 @@ table.insert(recipes, {
   order = "m[mana-orb]"
 })
 
+-- Death-beam Wand Recipe
+table.insert(recipes, {
+  type = "recipe",
+  name = "death-beam-wand",
+  category = "hand-crafting-and-orbs",
+  subgroup = "gun",
+  energy_required = 10,
+  icon = "__orbs__/graphics/attack-wand.png",
+  icon_size = 1024,
+  ingredients = {
+    {type = "item", name = "iron-stick", amount = 2},
+    {type = "item", name = "active-magic-shard", amount = 1}
+  },
+  results = {
+    {type = "item", name = "death-beam-wand", amount = 1}
+  },
+  enabled = false,
+  order = "a[basic-clips]-c[death-beam-wand]"
+})
+
 -- Extend all recipes
 data:extend(recipes)
