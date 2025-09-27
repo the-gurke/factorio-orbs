@@ -2,6 +2,7 @@
 
 * Labs cannot be rotated
 * magic wand throws error messages when trying to insert orbs into machines
+* Attack wand doesn't need any ammo
 
 # Inconsistencies
 
@@ -32,6 +33,7 @@
 # From playtests
 
 * make telekensis effects quadratic
+* Attack wand -> death beam wand
 
 # Features
 
