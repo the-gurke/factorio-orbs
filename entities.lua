@@ -1368,8 +1368,33 @@ data:extend({
   }
 })
 
+-- Small purple cloud effect for starter wand (explosion type like laser-bubble)
+local small_purple_cloud = {
+  type = "explosion",
+  name = "small-purple-cloud",
+  flags = {"not-on-map"},
+  subgroup = "explosions",
+  order = "a-a-a",
+  hidden = true,
+  animations = {
+    {
+      filename = "__Nanobots2__/graphics/entity/cloud/cloud-45-frames.png",
+      priority = "extra-high",
+      width = 256,
+      height = 256,
+      frame_count = 45,
+      animation_speed = 0.5,
+      line_length = 7,
+      scale = 0.15, -- Very small scale
+      shift = {0.0, 0.0}, -- Center the cloud at firing position
+      tint = {r = 0.5, g = 0.3, b = 0.8, a = 0.6} -- Purple tint
+    }
+  }
+}
+
 -- Custom purple magical splash effect for channeled-mana
 data:extend({
+  small_purple_cloud,
   {
     type = "explosion",
     name = "purple-magical-splash",

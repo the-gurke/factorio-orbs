@@ -897,8 +897,8 @@ if data.raw.ammo["firearm-magazine"] then
             type = "instant",
             source_effects = {
               {
-                type = "create-explosion",
-                entity_name = "laser-bubble",
+                type = "create-entity",
+                entity_name = "small-purple-cloud",
                 only_when_visible = true
               }
             },
