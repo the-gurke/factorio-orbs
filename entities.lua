@@ -557,7 +557,7 @@ defense_ward_laser.action = {
       {
         type = "damage",
         damage = {
-          amount = 300,
+          amount = 50,
           type = "laser"
         }
       },
@@ -573,14 +573,29 @@ defense_ward_laser.action = {
 local defense_ward = util.table.deepcopy(data.raw["electric-turret"]["laser-turret"])
 
 defense_ward.name = "defense-ward"
+defense_ward.icon = "__orbs__/graphics/defense-ward.png"
+defense_ward.icon_size = 1024
 defense_ward.minable = {mining_time = 0.2, result = "defense-ward"}
 defense_ward.max_health = 50
 defense_ward.energy_source = {type = "void"}
 defense_ward.energy_usage = "0kW"
 
--- Set range to 8 and use custom beam
+-- Set range to 8, damage modifier to 1, and use custom beam
 defense_ward.attack_parameters.range = 8
+defense_ward.attack_parameters.damage_modifier = 1
 defense_ward.attack_parameters.ammo_type.action.action_delivery.beam = "defense-ward-laser"
+
+-- Configure to only attack biters and spitters (not spawners)
+defense_ward.attack_parameters.ammo_type.target_filter = {
+  "small-biter",
+  "medium-biter",
+  "big-biter",
+  "behemoth-biter",
+  "small-spitter",
+  "medium-spitter",
+  "big-spitter",
+  "behemoth-spitter"
+}
 defense_ward.collision_box = {{-0.35, -0.35}, {0.35, 0.35}}
 defense_ward.selection_box = {{-0.5, -0.5}, {0.5, 0.5}}
 
@@ -609,23 +624,16 @@ defense_ward.attacking_animation = defense_ward_animation
 defense_ward.ending_attack_animation = defense_ward_animation
 defense_ward.folding_animation = defense_ward_animation
 
--- Try to hide all possible base graphics
-defense_ward.base_picture = {
-  layers = {
-    {
-      filename = "__core__/graphics/empty.png",
-      width = 1,
-      height = 1,
-      frame_count = 1,
-      direction_count = 1
-    }
-  }
-}
+-- Remove base graphics from graphics_set
+defense_ward.graphics_set.base_visualisation = nil
 
 -- Also try to clear other potential base graphics
+defense_ward.base_picture = nil
 defense_ward.base_picture_secondary_draw_order = nil
 defense_ward.integration_patch = nil
 defense_ward.shadow = nil
+defense_ward.base_picture_render_layer = nil
+defense_ward.water_reflection = nil
 
 
 -- Create defense ward item
