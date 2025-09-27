@@ -1291,7 +1291,7 @@ table.insert(recipes, {
   name = "summon-fire",
   category = "hand-crafting-and-orbs",
   subgroup = "orbs-manifest",
-  energy_required = 5,
+  energy_required = 1,
   icon = "__orbs__/graphics/magical-fire.png",
   icon_size = 1024,
   ingredients = {
