@@ -58,6 +58,25 @@ conjuration_machine.graphics_set = {
         shift = {0, 0}
       }
     }
+  },
+  working_visualisations = {
+    {
+      north_position = {0, -1.5},
+      east_position = {1.5, 0},
+      south_position = {0, 1.5},
+      west_position = {-1.5, 0},
+      animation = {
+        filename = "__base__/graphics/entity/steam-engine/steam-engine-V-light.png",
+        priority = "high",
+        width = 28,
+        height = 60,
+        frame_count = 32,
+        line_length = 8,
+        animation_speed = 0.3,
+        scale = 0.8,
+        tint = {r = 1.0, g = 0.2, b = 1.0, a = 0.9}
+      }
+    }
   }
 }
 
