@@ -61,20 +61,20 @@ conjuration_machine.graphics_set = {
   },
   working_visualisations = {
     {
-      north_position = {0, -1.5},
-      east_position = {1.5, 0},
-      south_position = {0, 1.5},
-      west_position = {-1.5, 0},
+      north_position = {0, -1.0},
+      east_position = {1.0, 0},
+      south_position = {0, 1.0},
+      west_position = {-1.0, 0},
       animation = {
-        filename = "__base__/graphics/entity/steam-engine/steam-engine-V-light.png",
+        filename = "__base__/graphics/entity/smoke/smoke.png",
         priority = "high",
-        width = 28,
-        height = 60,
-        frame_count = 32,
-        line_length = 8,
+        width = 152,
+        height = 120,
+        frame_count = 60,
+        line_length = 5,
         animation_speed = 0.3,
-        scale = 0.8,
-        tint = {r = 1.0, g = 0.2, b = 1.0, a = 0.9}
+        scale = 0.3,
+        tint = {r = 1.0, g = 0.2, b = 1.0, a = 0.7}
       }
     }
   }
@@ -1246,23 +1246,27 @@ gold_plate_tile.map_color = {r = 255, g = 215, b = 0}
 gold_plate_tile.build_sound = {filename = "__space-age__/sound/entity/foundry/foundry-metal-clunk.ogg", volume = 0.7}
 gold_plate_tile.mined_sound = {filename = "__space-age__/sound/entity/foundry/foundry-metal-clunk.ogg", volume = 0.8}
 
--- Override all variants to use gold floor texture
-gold_plate_tile.variants = {
-  main = {
-    {
-      picture = "__orbs__/graphics/gold-floor.png",
-      count = 1,
-      size = 1,
-      probability = 1,
-      weights = {1.0}
-    }
-  },
-  material_background = {
+-- Override main variant to use gold floor texture
+gold_plate_tile.variants.main = {
+  {
     picture = "__orbs__/graphics/gold-floor.png",
     count = 1,
-    size = 1
+    size = 1,
+    probability = 1,
+    weights = {1.0},
+    scale = 0.1
   }
 }
+
+-- Override material background
+if gold_plate_tile.variants.material_background then
+  gold_plate_tile.variants.material_background = {
+    picture = "__orbs__/graphics/gold-floor.png",
+    count = 1,
+    size = 1,
+    scale = 0.1
+  }
+end
 
 
 data:extend({gold_plate_tile})
