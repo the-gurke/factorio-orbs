@@ -171,6 +171,27 @@ data:extend({
   },
   {
     type = "technology",
+    name = "death-beam-wand",
+    icon = "__orbs__/graphics/attack-wand.png",
+    icon_size = 1024,
+    prerequisites = {"conjuration-research"},
+    unit = {
+      count = 50,
+      ingredients = {
+        {"conjuration-research-pack", 1}
+      },
+      time = 30
+    },
+    effects = {
+      {
+        type = "unlock-recipe",
+        recipe = "death-beam-wand"
+      }
+    },
+    order = "a-h-b3"
+  },
+  {
+    type = "technology",
     name = "conjure-shards-i",
     icon = "__orbs__/graphics/conjure-shards.png",
     icon_size = 1024,

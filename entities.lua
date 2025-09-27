@@ -640,6 +640,49 @@ local defense_ward_recipe = {
   enabled = false
 }
 
+-- Create purple magical beam for attack wand
+local purple_magical_beam = util.table.deepcopy(data.raw["beam"]["laser-beam"])
+purple_magical_beam.name = "purple-magical-beam"
+purple_magical_beam.action = {
+  type = "direct",
+  action_delivery = {
+    type = "instant",
+    target_effects = {
+      {
+        type = "damage",
+        damage = {
+          amount = 5,
+          type = "laser"
+        }
+      },
+      {
+        type = "create-entity",
+        entity_name = "purple-magical-splash",
+        offsets = {{0, 0}},
+        offset_deviation = {{-0.2, -0.2}, {0.2, 0.2}},
+        only_when_visible = true
+      }
+    }
+  }
+}
+
+-- Apply purple tint to the beam graphics
+if purple_magical_beam.body then
+  for _, frame in pairs(purple_magical_beam.body) do
+    if frame.filename then
+      frame.tint = {r = 0.8, g = 0.4, b = 1.0, a = 1.0} -- Purple tint
+    end
+  end
+end
+
+if purple_magical_beam.head then
+  purple_magical_beam.head.tint = {r = 0.8, g = 0.4, b = 1.0, a = 1.0} -- Purple tint
+end
+
+if purple_magical_beam.tail then
+  purple_magical_beam.tail.tint = {r = 0.8, g = 0.4, b = 1.0, a = 1.0} -- Purple tint
+end
+
 -- Extend the entities
 data:extend({
   magic_grenade_projectile,
@@ -650,7 +693,8 @@ data:extend({
   defense_ward_laser,
   defense_ward,
   defense_ward_item,
-  defense_ward_recipe
+  defense_ward_recipe,
+  purple_magical_beam
 })
 
 

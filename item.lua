@@ -581,6 +581,38 @@ data:extend({
     }
   },
 
+  -- Death-beam Wand (magical weapon that fires purple laser beams)
+  {
+    type = "gun",
+    name = "death-beam-wand",
+    icon = "__orbs__/graphics/attack-wand.png",
+    icon_size = 1024,
+    subgroup = "gun",
+    order = "a[basic-clips]-c[death-beam-wand]",
+    stack_size = 5,
+    attack_parameters = {
+      type = "beam",
+      ammo_category = "channeled-mana",
+      cooldown = 6, -- 10 shots per second (same as SMG)
+      movement_slow_down_factor = 0.4,
+      range = 18,
+      damage_modifier = 1,
+      ammo_type = {
+        energy_consumption = "1kJ",
+        action = {
+          type = "direct",
+          action_delivery = {
+            type = "beam",
+            beam = "purple-magical-beam",
+            max_length = 18,
+            duration = 20,
+            source_offset = {0.15, -0.5}
+          }
+        }
+      }
+    }
+  },
+
   -- Mana Orb (spoils in 2h to magic orb, rifle ammunition with 200 shots)
   {
     type = "ammo",
