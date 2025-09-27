@@ -1239,7 +1239,7 @@ end
 local gold_plate_tile = util.table.deepcopy(data.raw["tile"]["concrete"])
 gold_plate_tile.name = "gold-plate-tile"
 gold_plate_tile.minable = {mining_time = 0.1, result = "gold-plate"}
-gold_plate_tile.walking_speed_modifier = 1.5
+gold_plate_tile.walking_speed_modifier = 1.8
 gold_plate_tile.map_color = {r = 255, g = 215, b = 0}
 
 -- Add metal build sound
