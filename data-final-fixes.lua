@@ -813,13 +813,18 @@ if data.raw.technology["lamp"] then
   }
 end
 
--- Modify speaker recipe
+-- Modify speaker recipe and entity
 if data.raw.recipe["programmable-speaker"] then
   data.raw.recipe["programmable-speaker"].ingredients = {
     {type = "item", name = "iron-stick", amount = 1},
     {type = "item", name = "iron-gear-wheel", amount = 5},
     {type = "item", name = "iron-plate", amount = 2}
   }
+end
+
+if data.raw["programmable-speaker"]["programmable-speaker"] then
+  data.raw["programmable-speaker"]["programmable-speaker"].energy_source = {type = "void"}
+  data.raw["programmable-speaker"]["programmable-speaker"].energy_usage = "0kW"
 end
 
 -- Modify display panel recipe
