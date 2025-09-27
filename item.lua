@@ -625,7 +625,7 @@ data:extend({
     stack_size = 5,
     spoil_ticks = 2 * 60 * 60 * 60, -- 2 hours * 60 minutes * 60 seconds * 60 ticks per second
     spoil_result = "magic-orb",
-    magazine_size = 200,
+    magazine_size = 1000,
     ammo_type = {
       category = "channeled-mana",
       action = {
