@@ -1091,7 +1091,7 @@ data:extend({
     icon_size = 1024,
     prerequisites = {"resonance-spire"},
     unit = {
-      count = 50,
+      count = 30,
       ingredients = {
         {"rune-research-pack", 1},
         {"conjuration-research-pack", 2}
