@@ -613,7 +613,7 @@ data:extend({
     }
   },
 
-  -- Mana Orb (spoils in 2h to magic orb, rifle ammunition with 200 shots)
+  -- Mana Orb (spoils in 4h to magic orb, wand ammunition with 1,000 shots)
   {
     type = "ammo",
     name = "mana-orb",
@@ -623,7 +623,7 @@ data:extend({
     subgroup = "orbs-manifest",
     order = "k[mana-orb]",
     stack_size = 5,
-    spoil_ticks = 2 * 60 * 60 * 60, -- 2 hours * 60 minutes * 60 seconds * 60 ticks per second
+    spoil_ticks = 4 * 60 * 60 * 60, -- 2 hours * 60 minutes * 60 seconds * 60 ticks per second
     spoil_result = "magic-orb",
     magazine_size = 1000,
     ammo_type = {
