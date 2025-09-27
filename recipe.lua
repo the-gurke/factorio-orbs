@@ -1042,7 +1042,7 @@ for source_rune, target_chain in pairs(rune_transformation_chains) do
       type = "recipe",
       name = recipe_name,
       category = "rune-transformation",
-      energy_required = 0.2,
+      energy_required = 0.1,
       icon = recipe_icon,
       icon_size = recipe_icon_size,
       ingredients = {
