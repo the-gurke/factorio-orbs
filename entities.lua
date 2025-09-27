@@ -1227,21 +1227,24 @@ gold_plate_tile.map_color = {r = 255, g = 215, b = 0}
 gold_plate_tile.build_sound = {filename = "__space-age__/sound/entity/foundry/foundry-metal-clunk.ogg", volume = 0.7}
 gold_plate_tile.mined_sound = {filename = "__space-age__/sound/entity/foundry/foundry-metal-clunk.ogg", volume = 0.8}
 
--- Override main variant to use gold floor texture
-gold_plate_tile.variants.main = {
-  {
+-- Override all variants to use gold floor texture
+gold_plate_tile.variants = {
+  main = {
+    {
+      picture = "__orbs__/graphics/gold-floor.png",
+      count = 1,
+      size = 1,
+      probability = 1,
+      weights = {1.0}
+    }
+  },
+  material_background = {
     picture = "__orbs__/graphics/gold-floor.png",
     count = 1,
-    size = 1,
-    probability = 1,
-    weights = {1.0}
+    size = 1
   }
 }
 
--- Keep transitions but tint them gold
-if gold_plate_tile.variants.transition and gold_plate_tile.variants.transition.overlay then
-  gold_plate_tile.variants.transition.overlay.tint = {r = 1.0, g = 0.8, b = 0.0, a = 0.5}
-end
 
 data:extend({gold_plate_tile})
 
