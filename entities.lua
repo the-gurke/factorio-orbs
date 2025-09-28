@@ -1447,28 +1447,23 @@ data:extend({
   }
 })
 
--- Small purple cloud effect for starter wand (explosion type like laser-bubble)
+-- Import constants for cloud animation
+local constants = require('constants')
+
+-- Small purple cloud effect for starter wand (copied from Nanobots2)
 local small_purple_cloud = {
-  type = "explosion",
-  name = "small-purple-cloud",
-  flags = {"not-on-map"},
-  subgroup = "explosions",
-  order = "a-a-a",
-  hidden = true,
-  animations = {
-    {
-      filename = "__Nanobots2__/graphics/entity/cloud/cloud-45-frames.png",
-      priority = "extra-high",
-      width = 256,
-      height = 256,
-      frame_count = 45,
-      animation_speed = 0.5,
-      line_length = 7,
-      scale = 0.15, -- Very small scale
-      shift = {0.0, 0.0}, -- Center the cloud at firing position
-      tint = {r = 0.5, g = 0.3, b = 0.8, a = 0.6} -- Purple tint
-    }
-  }
+  type = 'smoke-with-trigger',
+  name = 'small-purple-cloud',
+  flags = {'not-on-map'},
+  show_when_smoke_off = true,
+  animation = constants.cloud_animation(0.15),
+  affected_by_wind = false,
+  cyclic = true,
+  duration = 60 * 2,
+  fade_away_duration = 60,
+  spread_duration = 10,
+  color = {r = 0.5, g = 0.3, b = 0.8, a = 0.6},
+  action = nil
 }
 
 -- Custom purple magical splash effect for channeled-mana
@@ -1511,4 +1506,41 @@ data:extend({
       }
     }
   }
+})
+
+-- Purple summoning cloud (big - appears when firing)
+local summoning_cloud_big = {
+  type = 'smoke-with-trigger',
+  name = 'summoning-cloud-big',
+  flags = {'not-on-map'},
+  show_when_smoke_off = true,
+  animation = constants.cloud_animation(4),
+  affected_by_wind = false,
+  cyclic = true,
+  duration = 60 * 2,
+  fade_away_duration = 60,
+  spread_duration = 10,
+  color = {r = 0.7, g = 0.4, b = 1.0, a = 0.35},
+  action = nil
+}
+
+-- Purple summoning cloud (small - for projectile effects if needed)
+local summoning_cloud_small = {
+  type = 'smoke-with-trigger',
+  name = 'summoning-cloud-small',
+  flags = {'not-on-map'},
+  show_when_smoke_off = true,
+  animation = constants.cloud_animation(0.4),
+  affected_by_wind = false,
+  cyclic = true,
+  duration = 60 * 2,
+  fade_away_duration = 60,
+  spread_duration = 10,
+  color = {r = 0.7, g = 0.4, b = 1.0, a = 0.35},
+  action = nil
+}
+
+data:extend({
+  summoning_cloud_big,
+  summoning_cloud_small
 })

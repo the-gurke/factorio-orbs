@@ -675,3 +675,104 @@ script.on_event(defines.events.on_tick, function(event)
     end
   end
 end)
+
+--------------------------------------------------------
+--  Summoning Essence Functionality (Nanobots-style)  --
+--------------------------------------------------------
+
+-- Helper function to get gun and ammo
+local function get_summoning_gun_ammo(player)
+  if not player.character then return nil, nil end
+
+  local inventory = player.get_main_inventory()
+  if not inventory then return nil, nil end
+
+  -- Check if player has summoning wand equipped
+  local gun_inventory = player.get_inventory(defines.inventory.character_guns)
+  if not gun_inventory then return nil, nil end
+
+  for i = 1, #gun_inventory do
+    local gun = gun_inventory[i]
+    if gun.valid_for_read and gun.name == "summoning-wand" then
+      -- Found summoning wand, now check for summoning essence ammo
+      local ammo_inventory = player.get_inventory(defines.inventory.character_ammo)
+      if ammo_inventory then
+        for j = 1, #ammo_inventory do
+          local ammo = ammo_inventory[j]
+          if ammo.valid_for_read and ammo.name == "summoning-essence" then
+            return gun, ammo
+          end
+        end
+      end
+    end
+  end
+
+  return nil, nil
+end
+
+-- Helper function to handle ghost construction
+local function handle_ghost_construction(player, ghost)
+  if not ghost.valid then return false end
+
+  -- Store surface and position before reviving (ghost becomes invalid after revive)
+  local surface = ghost.surface
+  local position = ghost.position
+
+  -- Try to revive the ghost
+  local revived, entity, requests = ghost.revive({
+    return_item_request_proxy = true,
+    raise_revive = true
+  })
+
+  if revived and entity then
+    -- Successfully placed building - CREATE CLOUD EFFECT!
+    surface.create_entity{
+      name = "summoning-cloud-small",
+      position = position,
+      force = player.force
+    }
+
+    return true
+  end
+
+  return false
+end
+
+-- Main polling function (like nanobots poll_players)
+local function poll_summoning_players(event)
+  -- Run every few ticks to avoid performance issues
+  if event.tick % 30 == 0 then  -- Check every 30 ticks (0.5 seconds)
+    for _, player in pairs(game.connected_players) do
+      if player.character and player.character.valid then
+        local gun, ammo = get_summoning_gun_ammo(player)
+
+        if gun and ammo then
+          -- Player has summoning wand equipped with essence
+          local position = player.character.position
+          local surface = player.character.surface
+          local radius = 5  -- 5 tile radius around player
+
+          -- Find ghosts in range
+          local ghosts = surface.find_entities_filtered{
+            position = position,
+            radius = radius,
+            type = "entity-ghost",
+            force = player.force
+          }
+
+          -- Try to construct one ghost per tick cycle
+          for _, ghost in pairs(ghosts) do
+            if handle_ghost_construction(player, ghost) then
+              -- Successfully constructed something, consume ammo
+              ammo.count = ammo.count - 1
+              break  -- Only construct one ghost per cycle
+            end
+          end
+        end
+      end
+    end
+  end
+end
+
+script.on_event(defines.events.on_tick, poll_summoning_players)
+

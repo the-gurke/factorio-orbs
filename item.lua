@@ -662,6 +662,60 @@ data:extend({
     spent_ammo = "magic-orb"
   },
 
+  -- Summoning Wand (replaces nanobots gun)
+  {
+    type = "gun",
+    name = "summoning-wand",
+    icon = "__orbs__/graphics/summoning-wand.png",
+    icon_size = 1024,
+    subgroup = "gun",
+    order = "a[basic-clips]-d[summoning-wand]",
+    stack_size = 5,
+    attack_parameters = {
+      type = "projectile",
+      ammo_category = "summoning-essence",
+      cooldown = 60,
+      movement_slow_down_factor = 0.0,
+      shell_particle = nil,
+      projectile_creation_distance = 1.125,
+      range = 40,
+      sound = {
+        filename = "__base__/sound/roboport-door.ogg",
+        volume = 0.50
+      }
+    }
+  },
+
+  -- Summoning Essence (handles construction, deconstruction, and repair)
+  {
+    type = "ammo",
+    name = "summoning-essence",
+    icon = "__orbs__/graphics/summoning-essence.png",
+    icon_size = 1024,
+    ammo_category = "summoning-essence",
+    subgroup = "ammo",
+    order = "b[summoning-essence]",
+    stack_size = 200,
+    magazine_size = 50,
+    ammo_type = {
+      category = "summoning-essence",
+      target_type = "position",
+      action = {
+        type = "direct",
+        action_delivery = {
+          type = "instant",
+          target_effects = {
+            {
+              type = "create-entity",
+              entity_name = "summoning-cloud-big",
+              trigger_created_entity = false
+            }
+          }
+        }
+      }
+    }
+  },
+
   -- Magical Fire (spoils in 3s to nothing, high fuel value)
   {
     type = "item",
@@ -687,6 +741,7 @@ data:extend({
     order = "d[death]",
     stack_size = 1
   },
+
 
   -- Inactive Portal (placeable item)
   {
