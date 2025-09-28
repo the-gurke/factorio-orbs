@@ -9,7 +9,7 @@ if mods["Nanobots2"] then
     local tech = data.raw.technology["nanobots"]
     tech.icon = "__orbs__/graphics/summoning-technology.png"
     tech.icon_size = 1024
-    tech.prerequisites = {"orbs-technology"}
+    tech.prerequisites = {"magic-research"}
     tech.unit.count = 1
     tech.unit.ingredients = {{"magic-research-pack", 1}}
     tech.localised_name = {"technology-name.summon-machines"}
