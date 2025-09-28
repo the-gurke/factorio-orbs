@@ -1180,7 +1180,7 @@ table.insert(recipes, {
   name = "channeled-mana",
   category = "hand-crafting-and-orbs",
   subgroup = "ammo",
-  energy_required = 5,
+  energy_required = 4,
   ingredients = {
     -- No ingredients - conjured from nothing
   },
