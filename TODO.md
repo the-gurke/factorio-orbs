@@ -32,7 +32,6 @@
 
 # From playtests
 
-* make telekensis effects quadratic
 * Attack wand -> death beam wand
 
 # Features
