@@ -1415,6 +1415,46 @@ table.insert(recipes, {
   order = "b[summoning-essence]"
 })
 
+-- Arrows recipe
+table.insert(recipes, {
+  type = "recipe",
+  name = "arrows",
+  category = "crafting",
+  subgroup = "ammo",
+  energy_required = 1,
+  icon = "__orbs__/graphics/arrows.png",
+  icon_size = 1024,
+  ingredients = {
+    {type = "item", name = "stick", amount = 8},
+    {type = "item", name = "iron-plate", amount = 1}
+  },
+  results = {
+    {type = "item", name = "arrows", amount = 1}
+  },
+  enabled = false,
+  order = "a[basic-clips]-a[arrows]"
+})
+
+-- Crossbow recipe
+table.insert(recipes, {
+  type = "recipe",
+  name = "crossbow",
+  category = "crafting",
+  subgroup = "gun",
+  energy_required = 3,
+  icon = "__orbs__/graphics/crossbow.png",
+  icon_size = 1024,
+  ingredients = {
+    {type = "item", name = "iron-gear-wheel", amount = 10},
+    {type = "item", name = "iron-stick", amount = 2},
+    {type = "item", name = "wood", amount = 1}
+  },
+  results = {
+    {type = "item", name = "crossbow", amount = 1}
+  },
+  enabled = false,
+  order = "a[basic-clips]-b[crossbow]"
+})
 
 -- Extend all recipes
 data:extend(recipes)

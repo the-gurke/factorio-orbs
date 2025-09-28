@@ -767,6 +767,104 @@ data:extend({
     order = "z[inactive-portal]",
     place_result = "inactive-portal",
     stack_size = 1
+  },
+
+  -- Arrows (ammo for crossbow)
+  {
+    type = "ammo",
+    name = "arrows",
+    icon = "__orbs__/graphics/arrows.png",
+    icon_size = 1024,
+    subgroup = "ammo",
+    order = "a[basic-clips]-a[arrows]",
+    stack_size = 10,
+    magazine_size = 8,
+    ammo_category = "arrows",
+    ammo_type = {
+      category = "arrows",
+      action = {
+        type = "line",
+        range = 30,
+        range_effects = {
+          entity_name = "railgun-beam",
+          type = "create-explosion"
+        },
+        type = "line",
+        width = 1,
+        action_delivery = {
+          type = "instant",
+          target_effects = {
+            {
+              type = "damage",
+              damage = {amount = 80, type = "physical"}
+            },
+            {
+              type = "play-sound",
+              sound = {
+                {
+                  filename = "__base__/sound/bullets/bullet-impact-1.ogg",
+                  volume = 0.6
+                },
+                {
+                  filename = "__base__/sound/bullets/bullet-impact-2.ogg",
+                  volume = 0.6
+                },
+                {
+                  filename = "__base__/sound/bullets/bullet-impact-3.ogg",
+                  volume = 0.6
+                },
+                {
+                  filename = "__base__/sound/bullets/bullet-impact-4.ogg",
+                  volume = 0.6
+                },
+                {
+                  filename = "__base__/sound/bullets/bullet-impact-5.ogg",
+                  volume = 0.6
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+
+  -- Crossbow (ranged weapon)
+  {
+    type = "gun",
+    name = "crossbow",
+    icon = "__orbs__/graphics/crossbow.png",
+    icon_size = 1024,
+    subgroup = "gun",
+    order = "a[basic-clips]-b[crossbow]",
+    stack_size = 5,
+    attack_parameters = {
+      type = "projectile",
+      ammo_category = "arrows",
+      cooldown = 180, -- 3s seconds * 60 ticks per second
+      movement_slow_down_factor = 0.0,
+      range = 30,
+      damage_modifier = 1,
+      shell_particle = {
+        center = {
+          0,
+          0.1
+        },
+        creation_distance = -0.5,
+        direction_deviation = 0.1,
+        name = "shell-particle",
+        speed = 0.1,
+        speed_deviation = 0.03,
+        starting_frame_speed = 0.4,
+        starting_frame_speed_deviation = 0.1
+      },
+      sound = {
+        {
+          filename = "__base__/sound/fight/gun-turret-activate-1.ogg",
+          volume = 0.8
+        }
+      }
+    }
   }
 })
 
