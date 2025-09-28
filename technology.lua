@@ -708,19 +708,19 @@ for i = 1, 10 do
     effects = {
       {
         type = "character-build-distance",
-        modifier = 9 -- +9 build distance per tier (90 total)
+        modifier = i*2
       },
       {
         type = "character-reach-distance",
-        modifier = 9 -- +9 reach distance per tier (90 total)
+        modifier = i*2
       },
       {
         type = "character-resource-reach-distance",
-        modifier = 9 -- +9 resource reach distance per tier (90 total)
+        modifier = i*2
       },
       {
         type = "character-item-drop-distance",
-        modifier = 9 -- +9 item drop distance per tier (90 total)
+        modifier = i*2
       }
     },
     order = "a-h-c-" .. string.format("%02d", i)
