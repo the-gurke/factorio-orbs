@@ -140,6 +140,31 @@ data:extend({
   },
   {
     type = "technology",
+    name = "summoning-magic",
+    icon = "__orbs__/graphics/summoning-technology.png",
+    icon_size = 1024,
+    prerequisites = {"magic-research"},
+    unit = {
+      count = 1,
+      ingredients = {
+        {"magic-research-pack", 1}
+      },
+      time = 30
+    },
+    effects = {
+      {
+        type = "unlock-recipe",
+        recipe = "summoning-wand"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "summoning-essence"
+      }
+    },
+    order = "a-h-a1a"
+  },
+  {
+    type = "technology",
     name = "haste-orb",
     icon = "__orbs__/graphics/haste-orb.png",
     icon_size = 1024,

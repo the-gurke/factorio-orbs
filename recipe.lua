@@ -1375,5 +1375,46 @@ table.insert(recipes, {
   order = "a[basic-clips]-c[death-beam-wand]"
 })
 
+-- Summoning Wand Recipe
+table.insert(recipes, {
+  type = "recipe",
+  name = "summoning-wand",
+  category = "hand-crafting-and-orbs",
+  subgroup = "gun",
+  energy_required = 5,
+  icon = "__orbs__/graphics/summoning-wand.png",
+  icon_size = 1024,
+  ingredients = {
+    {type = "item", name = "iron-stick", amount = 3},
+    {type = "item", name = "active-magic-shard", amount = 2}
+  },
+  results = {
+    {type = "item", name = "summoning-wand", amount = 1}
+  },
+  enabled = false,
+  order = "a[basic-clips]-d[summoning-wand]"
+})
+
+-- Summoning Essence Recipe (unified - handles construction, deconstruction, and repair)
+table.insert(recipes, {
+  type = "recipe",
+  name = "summoning-essence",
+  category = "hand-crafting-and-orbs",
+  subgroup = "ammo",
+  energy_required = 2,
+  icon = "__orbs__/graphics/summoning-essence.png",
+  icon_size = 1024,
+  ingredients = {
+    {type = "item", name = "active-magic-shard", amount = 1},
+    {type = "item", name = "iron-stick", amount = 1}
+  },
+  results = {
+    {type = "item", name = "summoning-essence", amount = 10}
+  },
+  enabled = false,
+  order = "b[summoning-essence]"
+})
+
+
 -- Extend all recipes
 data:extend(recipes)
