@@ -727,7 +727,7 @@ data:extend({
           target_effects = {
             {
               type = "damage",
-              damage = {amount = 70, type = "physical"}
+              damage = {amount = 80, type = "physical"}
             },
             {
               type = "play-sound",
