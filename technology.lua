@@ -93,10 +93,6 @@ data:extend({
       },
       {
         type = "unlock-recipe",
-        recipe = "magic-research-pack"
-      },
-      {
-        type = "unlock-recipe",
         recipe = "craft-conjuration-machine"
       }
     },
@@ -104,10 +100,29 @@ data:extend({
   },
   {
     type = "technology",
+    name = "magic-research",
+    icon = "__orbs__/graphics/magic-research-pack.png",
+    icon_size = 1024,
+    prerequisites = {"orbs-technology"},
+    research_trigger = {
+      type = "craft-item",
+      item = "magic-orb",
+      count = 1
+    },
+    effects = {
+      {
+        type = "unlock-recipe",
+        recipe = "magic-research-pack"
+      }
+    },
+    order = "a-h-a0"
+  },
+  {
+    type = "technology",
     name = "conjuration-research",
     icon = "__orbs__/graphics/conjuration-research-pack.png",
     icon_size = 1024,
-    prerequisites = {"orbs-technology", "automation-science-pack"},
+    prerequisites = {"magic-research", "automation-science-pack"},
     unit = {
       count = 1,
       ingredients = {
@@ -697,7 +712,7 @@ for i = 1, 10 do
     localised_description = {"technology-description.telekinesis-" .. i},
     icon = "__orbs__/graphics/telekinesis-technology.png",
     icon_size = 1024,
-    prerequisites = i == 1 and {"conjuration-research"} or {"telekinesis-" .. (i-1)},
+    prerequisites = i == 1 and {"magic-research"} or (i == 2 and {"telekinesis-1", "conjuration-research"} or {"telekinesis-" .. (i-1)}),
     unit = {
       count = i == 1 and 1 or math.pow(2, i-1), -- 1 for telekinesis I, then 2^(i-1): 2, 4, 8, 16, 32, 64, 128, 256, 512
       ingredients = {
@@ -787,7 +802,7 @@ data:extend({
     localised_description = {"technology-description.magic-inserters"},
     icon = "__base__/graphics/technology/inserter-capacity.png",
     icon_size = 256,
-    prerequisites = {"orbs-technology", "metallurgy"},
+    prerequisites = {"magic-research", "metallurgy"},
     unit = {
       count = 1,
       ingredients = {
@@ -1013,7 +1028,7 @@ data:extend({
     name = "magic-axe",
     icon = "__base__/graphics/technology/steel-axe.png",
     icon_size = 256,
-    prerequisites = {"orbs-technology", "metallurgy"},
+    prerequisites = {"magic-research", "metallurgy"},
     unit = {
       count = 1,
       ingredients = {
@@ -1111,7 +1126,7 @@ data:extend({
     name = "defense-ward",
     icon = "__orbs__/graphics/defense-ward.png",
     icon_size = 1024,
-    prerequisites = {"orbs-technology"},
+    prerequisites = {"magic-research"},
     unit = {
       count = 1,
       ingredients = {
