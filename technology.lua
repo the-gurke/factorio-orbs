@@ -679,6 +679,29 @@ data:extend({
 data:extend({
   {
     type = "technology",
+    name = "crossbow-damage",
+    icon = "__orbs__/graphics/arrows.png",
+    icon_size = 1024,
+    effects = {
+      {
+        type = "ammo-damage",
+        ammo_category = "arrows",
+        modifier = 0.1
+      }
+    },
+    prerequisites = {"crossbow"},
+    unit = {
+      count_formula = "10*2^L",
+      ingredients = {
+        {"automation-science-pack", 1}
+      },
+      time = 30
+    },
+    max_level = "infinite",
+    order = "e-a-d"
+  },
+  {
+    type = "technology",
     name = "combat-wand-damage",
     icon = "__orbs__/graphics/starter-wand.png",
     icon_size = 1024,
@@ -906,6 +929,32 @@ data:extend({
       }
     },
     order = "a-h-u"
+  },
+  -- Crossbow Technology
+  {
+    type = "technology",
+    name = "crossbow",
+    icon = "__orbs__/graphics/crossbow.png",
+    icon_size = 1024,
+    prerequisites = {"automation-science-pack"},
+    unit = {
+      count = 40,
+      ingredients = {
+        {"automation-science-pack", 1}
+      },
+      time = 30
+    },
+    effects = {
+      {
+        type = "unlock-recipe",
+        recipe = "crossbow"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "arrows"
+      }
+    },
+    order = "e-a-c"
   },
   -- Crushing Technology
   {

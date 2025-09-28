@@ -139,5 +139,9 @@ data:extend({
   {
     type = "ammo-category",
     name = "channeled-mana"
+  },
+  {
+    type = "ammo-category",
+    name = "arrows"
   }
 })
