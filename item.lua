@@ -548,7 +548,20 @@ data:extend({
     magazine_size = 10,
     ammo_type = {
       category = "channeled-mana",
+      energy_consumption = "1kJ",
       action = {
+        {
+          type = "direct",
+          action_delivery = {
+            {
+              type = "beam",
+              beam = "purple-magical-beam",
+              max_length = 18,
+              duration = 20,
+              source_offset = {0.15, -0.5}
+            }
+          }
+        },
         {
           type = "direct",
           action_delivery = {
@@ -581,7 +594,7 @@ data:extend({
     }
   },
 
-  -- Death-beam Wand (magical weapon that fires purple laser beams)
+  -- Death-beam Wand (magical weapon that fires purple laser beams, based on railgun structure)
   {
     type = "gun",
     name = "death-beam-wand",
@@ -593,23 +606,9 @@ data:extend({
     attack_parameters = {
       type = "beam",
       ammo_category = "channeled-mana",
-      cooldown = 6, -- 10 shots per second (same as SMG)
+      cooldown = 4, -- 15 shots per second (faster than starter wand)
       movement_slow_down_factor = 0.4,
-      range = 18,
-      damage_modifier = 1,
-      ammo_type = {
-        energy_consumption = "1kJ",
-        action = {
-          type = "direct",
-          action_delivery = {
-            type = "beam",
-            beam = "purple-magical-beam",
-            max_length = 18,
-            duration = 20,
-            source_offset = {0.15, -0.5}
-          }
-        }
-      }
+      range = 20
     }
   },
 
