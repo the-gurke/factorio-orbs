@@ -61,10 +61,10 @@ conjuration_machine.graphics_set = {
   },
   working_visualisations = {
     {
-      north_position = {0, -1.0},
-      east_position = {1.0, 0},
-      south_position = {0, 1.0},
-      west_position = {-1.0, 0},
+      north_position = {0, -0.5},
+      east_position = {0, -0.5},
+      south_position = {0, -0.5},
+      west_position = {0, -0.5},
       animation = {
         filename = "__base__/graphics/entity/smoke/smoke.png",
         priority = "high",
@@ -72,8 +72,8 @@ conjuration_machine.graphics_set = {
         height = 120,
         frame_count = 60,
         line_length = 5,
-        animation_speed = 0.3,
-        scale = 0.3,
+        animation_speed = 0.4,
+        scale = 1.0,
         tint = {r = 1.0, g = 0.2, b = 1.0, a = 0.7}
       }
     }
@@ -557,7 +557,7 @@ defense_ward_laser.action = {
       {
         type = "damage",
         damage = {
-          amount = 300,
+          amount = 50,
           type = "laser"
         }
       },
@@ -573,14 +573,29 @@ defense_ward_laser.action = {
 local defense_ward = util.table.deepcopy(data.raw["electric-turret"]["laser-turret"])
 
 defense_ward.name = "defense-ward"
+defense_ward.icon = "__orbs__/graphics/defense-ward.png"
+defense_ward.icon_size = 1024
 defense_ward.minable = {mining_time = 0.2, result = "defense-ward"}
 defense_ward.max_health = 50
 defense_ward.energy_source = {type = "void"}
 defense_ward.energy_usage = "0kW"
 
--- Set range to 8 and use custom beam
+-- Set range to 8, damage modifier to 1, and use custom beam
 defense_ward.attack_parameters.range = 8
+defense_ward.attack_parameters.damage_modifier = 1
 defense_ward.attack_parameters.ammo_type.action.action_delivery.beam = "defense-ward-laser"
+
+-- Configure to only attack biters and spitters (not spawners)
+defense_ward.attack_parameters.ammo_type.target_filter = {
+  "small-biter",
+  "medium-biter",
+  "big-biter",
+  "behemoth-biter",
+  "small-spitter",
+  "medium-spitter",
+  "big-spitter",
+  "behemoth-spitter"
+}
 defense_ward.collision_box = {{-0.35, -0.35}, {0.35, 0.35}}
 defense_ward.selection_box = {{-0.5, -0.5}, {0.5, 0.5}}
 
@@ -609,23 +624,16 @@ defense_ward.attacking_animation = defense_ward_animation
 defense_ward.ending_attack_animation = defense_ward_animation
 defense_ward.folding_animation = defense_ward_animation
 
--- Try to hide all possible base graphics
-defense_ward.base_picture = {
-  layers = {
-    {
-      filename = "__core__/graphics/empty.png",
-      width = 1,
-      height = 1,
-      frame_count = 1,
-      direction_count = 1
-    }
-  }
-}
+-- Remove base graphics from graphics_set
+defense_ward.graphics_set.base_visualisation = nil
 
 -- Also try to clear other potential base graphics
+defense_ward.base_picture = nil
 defense_ward.base_picture_secondary_draw_order = nil
 defense_ward.integration_patch = nil
 defense_ward.shadow = nil
+defense_ward.base_picture_render_layer = nil
+defense_ward.water_reflection = nil
 
 
 -- Create defense ward item
@@ -1239,34 +1247,35 @@ end
 local gold_plate_tile = util.table.deepcopy(data.raw["tile"]["concrete"])
 gold_plate_tile.name = "gold-plate-tile"
 gold_plate_tile.minable = {mining_time = 0.1, result = "gold-plate"}
-gold_plate_tile.walking_speed_modifier = 1.5
+gold_plate_tile.walking_speed_modifier = 1.8
 gold_plate_tile.map_color = {r = 255, g = 215, b = 0}
 
 -- Add metal build sound
 gold_plate_tile.build_sound = {filename = "__space-age__/sound/entity/foundry/foundry-metal-clunk.ogg", volume = 0.7}
 gold_plate_tile.mined_sound = {filename = "__space-age__/sound/entity/foundry/foundry-metal-clunk.ogg", volume = 0.8}
-
--- Override main variant to use gold floor texture
-gold_plate_tile.variants.main = {
-  {
-    picture = "__orbs__/graphics/gold-floor.png",
-    count = 1,
-    size = 1,
-    probability = 1,
-    weights = {1.0},
-    scale = 0.1
+gold_plate_tile.walking_sound = {
+  variations = {
+    {filename = "__space-age__/sound/entity/foundry/foundry-metal-clunk.ogg", volume = 0.3}
   }
 }
 
--- Override material background
-if gold_plate_tile.variants.material_background then
-  gold_plate_tile.variants.material_background = {
-    picture = "__orbs__/graphics/gold-floor.png",
+-- Override material background to use gold floor texture and remove transitions
+gold_plate_tile.variants.main = {
+  {
     count = 1,
-    size = 1,
-    scale = 0.1
+    picture = "__orbs__/graphics/gold-floor.png",
+    size = 2,
+    scale = 0.125
   }
-end
+}
+gold_plate_tile.variants.material_background = {
+  count = 1,
+  picture = "__orbs__/graphics/gold-floor.png",
+  scale = 0.25
+}
+gold_plate_tile.variants.material_texture_width_in_tiles = 2
+gold_plate_tile.variants.material_texture_height_in_tiles = 2
+gold_plate_tile.variants.empty_transitions = true
 
 
 data:extend({gold_plate_tile})
