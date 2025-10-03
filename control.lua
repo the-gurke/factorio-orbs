@@ -849,10 +849,35 @@ local function handle_ghost_construction(player, ghost)
   end
 end
 
+-- Helper function to get summoning speed (how often to poll)
+local function get_summoning_speed(player)
+  -- Base polling rate: every 30 ticks (0.5 seconds)
+  -- Speed research makes it faster: 30, 23, 16, 9
+  local speed_modifier = player.force.get_gun_speed_modifier("summoning-essence")
+  return math.floor(30 - speed_modifier * 14)
+end
+
+-- Helper function to get summoning range
+local function get_summoning_range(player)
+  -- range: 8 + 6 / level
+  local damage_modifier = player.force.get_ammo_damage_modifier("summoning-essence")
+  local base_range = 8
+  return base_range + (damage_modifier * 6)
+end
+
 -- Main polling function (like nanobots poll_players)
 local function poll_summoning_players(event)
-  -- Run every few ticks to avoid performance issues
-  if event.tick % 30 == 0 then  -- Check every 30 ticks (0.5 seconds)
+  -- Dynamic polling rate based on any player's research
+  local min_poll_rate = 30  -- Default slowest rate
+  for _, player in pairs(game.connected_players) do
+    if player.character and player.character.valid then
+      local player_speed = get_summoning_speed(player)
+      min_poll_rate = math.min(min_poll_rate, player_speed)
+    end
+  end
+
+  -- Only run at the calculated rate
+  if event.tick % min_poll_rate == 0 then
     for _, player in pairs(game.connected_players) do
       if player.character and player.character.valid then
         local gun, ammo = get_summoning_wand_and_ammo(player)
@@ -860,7 +885,7 @@ local function poll_summoning_players(event)
           -- Player has summoning wand equipped with essence
           local position = player.character.position
           local surface = player.character.surface
-          local radius = 5  -- 5 tile radius around player
+          local radius = get_summoning_range(player)  -- Dynamic range based on research
 
           -- Priority order: Construction first, then deconstruction
           local did_work = false

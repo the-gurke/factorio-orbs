@@ -163,6 +163,160 @@ data:extend({
     },
     order = "a-h-a1a"
   },
+  -- Summoning Speed Technologies
+  {
+    type = "technology",
+    name = "summoning-speed-1",
+    localised_name = {"technology-name.summoning-speed-1"},
+    localised_description = {"technology-description.summoning-speed-1"},
+    icon = "__orbs__/graphics/summoning-technology.png",
+    icon_size = 1024,
+    prerequisites = {"summoning-magic"},
+    unit = {
+      count = 5,
+      ingredients = {
+        {"conjuration-research-pack", 1}
+      },
+      time = 30
+    },
+    effects = {
+      {
+        type = "gun-speed",
+        ammo_category = "summoning-essence",
+        modifier = 0.5
+      }
+    },
+    order = "a-h-a2a",
+    upgrade = true
+  },
+  {
+    type = "technology",
+    name = "summoning-speed-2",
+    localised_name = {"technology-name.summoning-speed-2"},
+    localised_description = {"technology-description.summoning-speed-2"},
+    icon = "__orbs__/graphics/summoning-technology.png",
+    icon_size = 1024,
+    prerequisites = {"summoning-speed-1"},
+    unit = {
+      count = 50,
+      ingredients = {
+        {"conjuration-research-pack", 1}
+      },
+      time = 30
+    },
+    effects = {
+      {
+        type = "gun-speed",
+        ammo_category = "summoning-essence",
+        modifier = 0.5
+      }
+    },
+    order = "a-h-a2b",
+    upgrade = true
+  },
+  {
+    type = "technology",
+    name = "summoning-speed-3",
+    localised_name = {"technology-name.summoning-speed-3"},
+    localised_description = {"technology-description.summoning-speed-3"},
+    icon = "__orbs__/graphics/summoning-technology.png",
+    icon_size = 1024,
+    prerequisites = {"summoning-speed-2"},
+    unit = {
+      count = 50,
+      ingredients = {
+        {"conjuration-research-pack", 1},
+        {"divination-research-pack", 1}
+      },
+      time = 30
+    },
+    effects = {
+      {
+        type = "gun-speed",
+        ammo_category = "summoning-essence",
+        modifier = 0.5
+      }
+    },
+    order = "a-h-a2c",
+    upgrade = true
+  },
+  -- Summoning Range Technologies
+  {
+    type = "technology",
+    name = "summoning-range-1",
+    localised_name = {"technology-name.summoning-range-1"},
+    localised_description = {"technology-description.summoning-range-1"},
+    icon = "__orbs__/graphics/summoning-technology.png",
+    icon_size = 1024,
+    prerequisites = {"summoning-magic"},
+    unit = {
+      count = 5,
+      ingredients = {
+        {"conjuration-research-pack", 1}
+      },
+      time = 30
+    },
+    effects = {
+      {
+        type = "ammo-damage",
+        ammo_category = "summoning-essence",
+        modifier = 1
+      }
+    },
+    order = "a-h-a3a",
+    upgrade = true
+  },
+  {
+    type = "technology",
+    name = "summoning-range-2",
+    localised_name = {"technology-name.summoning-range-2"},
+    localised_description = {"technology-description.summoning-range-2"},
+    icon = "__orbs__/graphics/summoning-technology.png",
+    icon_size = 1024,
+    prerequisites = {"summoning-range-1"},
+    unit = {
+      count = 50,
+      ingredients = {
+        {"conjuration-research-pack", 1}
+      },
+      time = 30
+    },
+    effects = {
+      {
+        type = "ammo-damage",
+        ammo_category = "summoning-essence",
+        modifier = 1
+      }
+    },
+    order = "a-h-a3b",
+    upgrade = true
+  },
+  {
+    type = "technology",
+    name = "summoning-range-3",
+    localised_name = {"technology-name.summoning-range-3"},
+    localised_description = {"technology-description.summoning-range-3"},
+    icon = "__orbs__/graphics/summoning-technology.png",
+    icon_size = 1024,
+    prerequisites = {"summoning-range-2"},
+    unit = {
+      count = 50,
+      ingredients = {
+        {"conjuration-research-pack", 1},
+        {"divination-research-pack", 1}
+      },
+      time = 30
+    },
+    effects = {
+      {
+        type = "ammo-damage",
+        ammo_category = "summoning-essence",
+        modifier = 1
+      }
+    },
+    order = "a-h-a3c",
+    upgrade = true
+  },
   {
     type = "technology",
     name = "haste-orb",
