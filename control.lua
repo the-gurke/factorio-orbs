@@ -782,6 +782,93 @@ local function player_has_items_for_ghost(player, ghost)
   return false
 end
 
+-- Helper function to handle item-request-proxy based module insertion
+local function handle_module_insertion(player, proxy)
+  if not proxy.valid or proxy.name ~= "item-request-proxy" then
+    return false
+  end
+
+  local target = proxy.proxy_target
+  if not target or not target.valid then
+    return false
+  end
+
+  -- Check if target has module inventory
+  if not target.get_module_inventory then
+    return false
+  end
+
+  local module_inventory = target.get_module_inventory()
+  if not module_inventory then
+    return false
+  end
+
+  -- Get the item requests from the proxy
+  local item_requests = proxy.item_requests
+  if not item_requests then
+    return false
+  end
+
+  -- Check if player has ALL requested modules before doing anything
+  local can_fulfill_all = true
+  local module_requests = {}
+
+  -- First pass: check if all requests can be fulfilled
+  for i, request in pairs(item_requests) do
+    if type(request) == "table" and request.name and request.count then
+      local item_name = request.name
+      local count = request.count
+
+      -- Check if this is a module
+      local item_prototype = prototypes.item[item_name]
+      if item_prototype and item_prototype.type == "module" then
+        -- Check if player has enough of this module
+        if player.get_item_count(item_name) >= count then
+          -- Check if target can accept all these modules
+          if target.can_insert({name = item_name, count = count}) then
+            table.insert(module_requests, {name = item_name, count = count})
+          else
+            can_fulfill_all = false
+            break
+          end
+        else
+          can_fulfill_all = false
+          break
+        end
+      end
+    end
+  end
+
+  -- If we can fulfill all requests, do it all at once
+  if can_fulfill_all and #module_requests > 0 then
+    local total_inserted = 0
+
+    for _, req in pairs(module_requests) do
+      local inserted = target.insert({name = req.name, count = req.count})
+      if inserted > 0 then
+        player.remove_item({name = req.name, count = inserted})
+        total_inserted = total_inserted + inserted
+      end
+    end
+
+    if total_inserted > 0 then
+      -- All modules inserted successfully, destroy the proxy
+      proxy.destroy()
+
+      -- Create visual effect
+      target.surface.create_entity{
+        name = "summoning-cloud-small",
+        position = target.position,
+        force = player.force
+      }
+
+      return true
+    end
+  end
+
+  return false
+end
+
 -- Helper function to handle entity deconstruction
 local function handle_entity_deconstruction(player, entity)
   if not entity.valid or not entity.to_be_deconstructed(player.force) then
@@ -887,7 +974,7 @@ local function poll_summoning_players(event)
           local surface = player.character.surface
           local radius = get_summoning_range(player)  -- Dynamic range based on research
 
-          -- Priority order: Construction first, then deconstruction
+          -- Priority order: Construction first, then module insertion, then deconstruction
           local did_work = false
 
           -- Find ghosts in range for construction
@@ -908,7 +995,28 @@ local function poll_summoning_players(event)
             end
           end
 
-          -- If no construction was done, try deconstruction
+          -- If no construction was done, try module insertion
+          if not did_work then
+            -- Find item-request-proxy entities in range
+            local proxy_entities = surface.find_entities_filtered{
+              position = position,
+              radius = radius,
+              force = player.force,
+              name = "item-request-proxy"
+            }
+
+            -- Try to fulfill one module request per tick cycle
+            for _, proxy in pairs(proxy_entities) do
+              if handle_module_insertion(player, proxy) then
+                -- Successfully inserted module, consume ammo
+                drain_summoning_ammo(player, ammo, 1)
+                did_work = true
+                break  -- Only do one action per cycle
+              end
+            end
+          end
+
+          -- If no construction or module insertion was done, try deconstruction
           if not did_work then
             -- Find entities marked for deconstruction
             local entities_to_deconstruct = surface.find_entities_filtered{
