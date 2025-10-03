@@ -680,6 +680,35 @@ end)
 --  Summoning Essence Functionality (Nanobots-style)  --
 --------------------------------------------------------
 
+-- Helper function to insert items with spill to ground if inventory full
+local function insert_with_spill(player, item_stacks)
+  if not player or not player.valid or not player.character then
+    return false
+  end
+
+  local new_stacks = {}
+  if item_stacks then
+    if item_stacks[1] and item_stacks[1].name then
+      new_stacks = item_stacks
+    elseif item_stacks and item_stacks.name then
+      new_stacks = { item_stacks }
+    end
+
+    for _, stack in pairs(new_stacks) do
+      local name, count, health = stack.name, stack.count, stack.health or 1
+      if prototypes.item[name] and not prototypes.item[name].hidden then
+        local inserted = player.insert({ name = name, count = count, health = health })
+        if inserted ~= count then
+          -- Spill remaining items to ground at player position
+          player.surface.spill_item_stack(player.character.position, { name = name, count = count - inserted, health = health }, true)
+        end
+      end
+    end
+    return new_stacks[1] and new_stacks[1].name and true
+  end
+  return false
+end
+
 -- Helper function to check if player has summoning wand selected and essence
 local function has_summoning_wand_and_essence(player)
   if not player.character then return false end
@@ -712,6 +741,32 @@ local function player_has_items_for_ghost(player, ghost)
     if player.get_item_count(item_proto.name) > 0 then
       return true, item_proto.name
     end
+  end
+
+  return false
+end
+
+-- Helper function to handle entity deconstruction
+local function handle_entity_deconstruction(player, entity)
+  if not entity.valid or not entity.to_be_deconstructed(player.force) then
+    return false
+  end
+
+  -- Store surface and position for visual effects
+  local surface = entity.surface
+  local position = entity.position
+
+  -- Use player.mine_entity which automatically handles item returns
+  local mined = player.mine_entity(entity)
+
+  if mined then
+    -- Successfully deconstructed - CREATE CLOUD EFFECT!
+    surface.create_entity{
+      name = "summoning-cloud-small",
+      position = position,
+      force = player.force
+    }
+    return true
   end
 
   return false
@@ -770,7 +825,10 @@ local function poll_summoning_players(event)
           local surface = player.character.surface
           local radius = 5  -- 5 tile radius around player
 
-          -- Find ghosts in range
+          -- Priority order: Construction first, then deconstruction
+          local did_work = false
+
+          -- Find ghosts in range for construction
           local ghosts = surface.find_entities_filtered{
             position = position,
             radius = radius,
@@ -783,10 +841,35 @@ local function poll_summoning_players(event)
             if handle_ghost_construction(player, ghost) then
               -- Successfully constructed something, consume essence from player inventory
               if player.remove_item({name = "summoning-essence", count = 1}) > 0 then
-                break  -- Only construct one ghost per cycle
+                did_work = true
+                break  -- Only do one action per cycle
               else
                 -- If we can't consume essence, stop processing (shouldn't happen due to pre-check)
                 break
+              end
+            end
+          end
+
+          -- If no construction was done, try deconstruction
+          if not did_work then
+            -- Find entities marked for deconstruction
+            local entities_to_deconstruct = surface.find_entities_filtered{
+              position = position,
+              radius = radius,
+              force = player.force,
+              to_be_deconstructed = true
+            }
+
+            -- Try to deconstruct one entity per tick cycle
+            for _, entity in pairs(entities_to_deconstruct) do
+              if handle_entity_deconstruction(player, entity) then
+                -- Successfully deconstructed something, consume essence from player inventory
+                if player.remove_item({name = "summoning-essence", count = 1}) > 0 then
+                  break  -- Only do one action per cycle
+                else
+                  -- If we can't consume essence, stop processing (shouldn't happen due to pre-check)
+                  break
+                end
               end
             end
           end
