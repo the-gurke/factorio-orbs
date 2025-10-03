@@ -143,6 +143,9 @@ data:extend({
   {
     type = "ammo-category",
     name = "summoning-essence"
+  },
+  {
+    type = "ammo-category",
     name = "arrows"
   }
 })
