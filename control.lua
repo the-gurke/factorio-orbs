@@ -680,43 +680,64 @@ end)
 --  Summoning Essence Functionality (Nanobots-style)  --
 --------------------------------------------------------
 
--- Helper function to get gun and ammo
-local function get_summoning_gun_ammo(player)
-  if not player.character then return nil, nil end
-
-  local inventory = player.get_main_inventory()
-  if not inventory then return nil, nil end
+-- Helper function to check if player has summoning wand and essence
+local function has_summoning_wand_and_essence(player)
+  if not player.character then return false end
 
   -- Check if player has summoning wand equipped
   local gun_inventory = player.get_inventory(defines.inventory.character_guns)
-  if not gun_inventory then return nil, nil end
+  if not gun_inventory then return false end
 
+  local has_wand = false
   for i = 1, #gun_inventory do
     local gun = gun_inventory[i]
     if gun.valid_for_read and gun.name == "summoning-wand" then
-      -- Found summoning wand, now check for summoning essence ammo
-      local ammo_inventory = player.get_inventory(defines.inventory.character_ammo)
-      if ammo_inventory then
-        for j = 1, #ammo_inventory do
-          local ammo = ammo_inventory[j]
-          if ammo.valid_for_read and ammo.name == "summoning-essence" then
-            return gun, ammo
-          end
-        end
-      end
+      has_wand = true
+      break
     end
   end
 
-  return nil, nil
+  if not has_wand then return false end
+
+  -- Check if player has summoning essence anywhere in their inventory
+  return player.get_item_count("summoning-essence") > 0
+end
+
+-- Helper function to check if player has required items for ghost
+local function player_has_items_for_ghost(player, ghost)
+  if not ghost.valid or not ghost.ghost_prototype then return false end
+
+  local items_to_place = ghost.ghost_prototype.items_to_place_this
+  if not items_to_place then return false end
+
+  -- Check if player has any of the items that can place this ghost
+  for _, item_proto in pairs(items_to_place) do
+    if player.get_item_count(item_proto.name) > 0 then
+      return true, item_proto.name
+    end
+  end
+
+  return false
 end
 
 -- Helper function to handle ghost construction
 local function handle_ghost_construction(player, ghost)
   if not ghost.valid then return false end
 
+  -- Check if player has the required items BEFORE trying to revive
+  local has_items, item_name = player_has_items_for_ghost(player, ghost)
+  if not has_items then
+    return false  -- Player doesn't have the required items
+  end
+
   -- Store surface and position before reviving (ghost becomes invalid after revive)
   local surface = ghost.surface
   local position = ghost.position
+
+  -- Remove the required item from player's inventory
+  if player.remove_item({name = item_name, count = 1}) == 0 then
+    return false  -- Couldn't remove item (shouldn't happen due to pre-check)
+  end
 
   -- Try to revive the ghost
   local revived, entity, requests = ghost.revive({
@@ -733,9 +754,11 @@ local function handle_ghost_construction(player, ghost)
     }
 
     return true
+  else
+    -- Failed to revive, give back the item
+    player.insert({name = item_name, count = 1})
+    return false
   end
-
-  return false
 end
 
 -- Main polling function (like nanobots poll_players)
@@ -744,9 +767,7 @@ local function poll_summoning_players(event)
   if event.tick % 30 == 0 then  -- Check every 30 ticks (0.5 seconds)
     for _, player in pairs(game.connected_players) do
       if player.character and player.character.valid then
-        local gun, ammo = get_summoning_gun_ammo(player)
-
-        if gun and ammo then
+        if has_summoning_wand_and_essence(player) then
           -- Player has summoning wand equipped with essence
           local position = player.character.position
           local surface = player.character.surface
@@ -763,9 +784,13 @@ local function poll_summoning_players(event)
           -- Try to construct one ghost per tick cycle
           for _, ghost in pairs(ghosts) do
             if handle_ghost_construction(player, ghost) then
-              -- Successfully constructed something, consume ammo
-              ammo.count = ammo.count - 1
-              break  -- Only construct one ghost per cycle
+              -- Successfully constructed something, consume essence from player inventory
+              if player.remove_item({name = "summoning-essence", count = 1}) > 0 then
+                break  -- Only construct one ghost per cycle
+              else
+                -- If we can't consume essence, stop processing (shouldn't happen due to pre-check)
+                break
+              end
             end
           end
         end
