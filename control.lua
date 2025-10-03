@@ -709,24 +709,60 @@ local function insert_with_spill(player, item_stacks)
   return false
 end
 
--- Helper function to check if player has summoning wand selected and essence
-local function has_summoning_wand_and_essence(player)
-  if not player.character then return false end
+-- Helper function to get summoning wand and ammo if available
+local function get_summoning_wand_and_ammo(player)
+  if not player.character then return nil, nil end
 
   -- Check if player has summoning wand as the SELECTED gun
   local gun_inventory = player.get_inventory(defines.inventory.character_guns)
-  if not gun_inventory then return false end
+  if not gun_inventory then return nil, nil end
 
   local selected_gun_index = player.character.selected_gun_index
-  if not selected_gun_index then return false end
+  if not selected_gun_index then return nil, nil end
 
   local selected_gun = gun_inventory[selected_gun_index]
   if not (selected_gun and selected_gun.valid_for_read and selected_gun.name == "summoning-wand") then
-    return false
+    return nil, nil
   end
 
-  -- Check if player has summoning essence anywhere in their inventory
-  return player.get_item_count("summoning-essence") > 0
+  -- Get the ammo from the corresponding ammo slot
+  local ammo_inventory = player.get_inventory(defines.inventory.character_ammo)
+  if not ammo_inventory then return nil, nil end
+
+  local ammo = ammo_inventory[selected_gun_index]
+  if ammo and ammo.valid_for_read and ammo.name == "summoning-essence" then
+    return selected_gun, ammo
+  end
+
+  -- Check if player has summoning essence in main inventory that could be loaded
+  if player.get_item_count("summoning-essence") > 0 then
+    return selected_gun, nil  -- Gun available, but need to load ammo
+  end
+
+  return nil, nil
+end
+
+-- Helper function to drain ammo and reload if needed (based on Nanobots2)
+local function drain_summoning_ammo(player, ammo, amount)
+  if player.cheat_mode then
+    return true
+  end
+
+  amount = amount or 1
+  local name = ammo.name
+  ammo.drain_ammo(amount)
+
+  if not ammo.valid_for_read then
+    -- Ammo depleted, try to reload from main inventory
+    local new_ammo = player.get_main_inventory().find_item_stack(name)
+    if new_ammo then
+      ammo.set_stack(new_ammo)
+      new_ammo.clear()
+    end
+    return true
+  end
+
+  return true
 end
 
 -- Helper function to check if player has required items for ghost
@@ -819,7 +855,8 @@ local function poll_summoning_players(event)
   if event.tick % 30 == 0 then  -- Check every 30 ticks (0.5 seconds)
     for _, player in pairs(game.connected_players) do
       if player.character and player.character.valid then
-        if has_summoning_wand_and_essence(player) then
+        local gun, ammo = get_summoning_wand_and_ammo(player)
+        if gun and ammo then
           -- Player has summoning wand equipped with essence
           local position = player.character.position
           local surface = player.character.surface
@@ -839,14 +876,10 @@ local function poll_summoning_players(event)
           -- Try to construct one ghost per tick cycle
           for _, ghost in pairs(ghosts) do
             if handle_ghost_construction(player, ghost) then
-              -- Successfully constructed something, consume essence from player inventory
-              if player.remove_item({name = "summoning-essence", count = 1}) > 0 then
-                did_work = true
-                break  -- Only do one action per cycle
-              else
-                -- If we can't consume essence, stop processing (shouldn't happen due to pre-check)
-                break
-              end
+              -- Successfully constructed something, consume ammo
+              drain_summoning_ammo(player, ammo, 1)
+              did_work = true
+              break  -- Only do one action per cycle
             end
           end
 
@@ -863,13 +896,9 @@ local function poll_summoning_players(event)
             -- Try to deconstruct one entity per tick cycle
             for _, entity in pairs(entities_to_deconstruct) do
               if handle_entity_deconstruction(player, entity) then
-                -- Successfully deconstructed something, consume essence from player inventory
-                if player.remove_item({name = "summoning-essence", count = 1}) > 0 then
-                  break  -- Only do one action per cycle
-                else
-                  -- If we can't consume essence, stop processing (shouldn't happen due to pre-check)
-                  break
-                end
+                -- Successfully deconstructed something, consume ammo
+                drain_summoning_ammo(player, ammo, 1)
+                break  -- Only do one action per cycle
               end
             end
           end
