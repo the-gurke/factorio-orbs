@@ -680,24 +680,21 @@ end)
 --  Summoning Essence Functionality (Nanobots-style)  --
 --------------------------------------------------------
 
--- Helper function to check if player has summoning wand and essence
+-- Helper function to check if player has summoning wand selected and essence
 local function has_summoning_wand_and_essence(player)
   if not player.character then return false end
 
-  -- Check if player has summoning wand equipped
+  -- Check if player has summoning wand as the SELECTED gun
   local gun_inventory = player.get_inventory(defines.inventory.character_guns)
   if not gun_inventory then return false end
 
-  local has_wand = false
-  for i = 1, #gun_inventory do
-    local gun = gun_inventory[i]
-    if gun.valid_for_read and gun.name == "summoning-wand" then
-      has_wand = true
-      break
-    end
-  end
+  local selected_gun_index = player.character.selected_gun_index
+  if not selected_gun_index then return false end
 
-  if not has_wand then return false end
+  local selected_gun = gun_inventory[selected_gun_index]
+  if not (selected_gun and selected_gun.valid_for_read and selected_gun.name == "summoning-wand") then
+    return false
+  end
 
   -- Check if player has summoning essence anywhere in their inventory
   return player.get_item_count("summoning-essence") > 0
