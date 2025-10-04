@@ -1,6 +1,8 @@
 # Known bugs
 
 * Labs cannot be rotated
+* modules don't insert in slots if there's not enough modules to fulfill the
+  whole request in one go
 
 # Inconsistencies
 
@@ -19,7 +21,6 @@
 * The burner mining drill should show that its mining area is 4x4 with a rectangle while placing, just as the electric miner does
 * The offshore pump "no fuel" icon should be centered
 * Resonance spires don't show their orbs, neither in graphics nor in alt mode
-* spoil result of the volatile orb should have an explosion icon
 * the pipe connections for the conjuration machine are blue, should be gold/pink
 
 # Features
