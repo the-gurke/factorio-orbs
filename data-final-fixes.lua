@@ -863,8 +863,20 @@ if data.raw["utility-constants"] and data.raw["utility-constants"].default then
     ]]
   }
 
+  menu_simulations.orbs_stability_explode = {
+    checkboard = false,
+    save = "__orbs__/menu_sims/stability_explode.zip",
+    length = 60 * 60,
+    init = [[
+      game.tick_paused = false
+    ]],
+    update = [[
+    ]]
+  }
+
   data.raw["utility-constants"].default.main_menu_simulations.orbs_conjuration_machine_cycle = menu_simulations.orbs_conjuration_machine_cycle
   data.raw["utility-constants"].default.main_menu_simulations.orbs_flux_orbs = menu_simulations.orbs_flux_orbs
+  data.raw["utility-constants"].default.main_menu_simulations.orbs_stability_explode = menu_simulations.orbs_stability_explode
 end
 
 -- Finally, as a last step, remove all the content we don't want
