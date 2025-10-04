@@ -486,7 +486,7 @@ table.insert(recipes, {
   name = "extract-stability",
   category = "orbs",
   subgroup = "divination",
-  energy_required = 60,
+  energy_required = 40,
   icon = "__orbs__/graphics/stability-liquid.png",
   icon_size = 1024,
   reset_freshness_on_craft = true,
