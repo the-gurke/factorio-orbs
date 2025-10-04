@@ -163,6 +163,28 @@ data:extend({
     },
     order = "a-h-a1a"
   },
+  {
+    type = "technology",
+    name = "teleportation-magic",
+    icon = "__orbs__/graphics/teleportation-research.png",
+    icon_size = 1024,
+    prerequisites = {"stability-extraction"},
+    unit = {
+      count = 100,
+      ingredients = {
+        {"conjuration-research-pack", 1},
+        {"divination-research-pack", 1}
+      },
+      time = 30
+    },
+    effects = {
+      {
+        type = "unlock-recipe",
+        recipe = "teleportation-wand"
+      }
+    },
+    order = "a-h-a1b"
+  },
   -- Summoning Speed Technologies
   {
     type = "technology",

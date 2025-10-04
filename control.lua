@@ -13,6 +13,97 @@ script.on_event(defines.events.on_script_trigger_effect, function(event)
       event.source_entity.destroy()
     end
   end
+
+  -- Handle teleportation wand usage
+  if event.effect_id == "teleportation-wand-used" then
+    -- Find the player who triggered this
+    local player = nil
+    local source_position = nil
+    local target_position = event.target_position
+
+    -- Try to get player from source entity
+    if event.source_entity and event.source_entity.valid then
+      if event.source_entity.player then
+        player = event.source_entity.player
+      elseif event.source_entity.name == "character" then
+        player = event.source_entity.player
+      end
+      source_position = event.source_entity.position
+    end
+
+    -- If we still don't have a player, try to find nearby players
+    if not player and source_position and event.surface then
+      local nearby_players = event.surface.find_entities_filtered{
+        position = source_position,
+        radius = 2,
+        type = "character"
+      }
+      if #nearby_players > 0 then
+        player = nearby_players[1].player
+      end
+    end
+
+    if not player or not target_position then
+      return
+    end
+
+    if player and player.valid and player.character then
+      -- Check if player has teleportation wand equipped
+      local gun_inventory = player.get_inventory(defines.inventory.character_guns)
+      if not gun_inventory then return end
+
+      local selected_gun_index = player.character.selected_gun_index
+      if not selected_gun_index then return end
+
+      local selected_gun = gun_inventory[selected_gun_index]
+      if not (selected_gun and selected_gun.valid_for_read and selected_gun.name == "teleportation-wand") then
+        return  -- Not using teleportation wand, ignore
+      end
+
+      -- Calculate direction from player to target
+      local player_pos = player.character.position
+      local dx = target_position.x - player_pos.x
+      local dy = target_position.y - player_pos.y
+      local distance = math.sqrt(dx * dx + dy * dy)
+
+      -- Normalize direction and teleport 20 tiles in that direction
+      if distance > 0 then
+        local teleport_distance = 20
+        local normalized_dx = dx / distance
+        local normalized_dy = dy / distance
+
+        local new_x = player_pos.x + normalized_dx * teleport_distance
+        local new_y = player_pos.y + normalized_dy * teleport_distance
+
+        -- Find a safe position to teleport to
+        local safe_position = player.surface.find_non_colliding_position(
+          "character",
+          {x = new_x, y = new_y},
+          5,  -- Search radius
+          0.5  -- Precision
+        )
+
+        if safe_position then
+          -- Create visual effect at old position
+          player.surface.create_entity{
+            name = "teleportation-cloud",
+            position = player_pos,
+            force = player.force
+          }
+
+          -- Teleport the player
+          player.teleport(safe_position)
+
+          -- Create visual effect at new position
+          player.surface.create_entity{
+            name = "teleportation-cloud",
+            position = safe_position,
+            force = player.force
+          }
+        end
+      end
+    end
+  end
 end)
 
 --------------------------------------------------------
