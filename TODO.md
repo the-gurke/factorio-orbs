@@ -22,10 +22,6 @@
 * spoil result of the volatile orb should have an explosion icon
 * the pipe connections for the conjuration machine are blue, should be gold/pink
 
-# From playtests
-
-* Attack wand -> death beam wand
-
 # Features
 
 * Hide the research tree from the player
