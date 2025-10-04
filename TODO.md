@@ -1,8 +1,6 @@
 # Known bugs
 
 * Labs cannot be rotated
-* magic wand throws error messages when trying to insert orbs into machines
-* Attack wand doesn't need any ammo
 
 # Inconsistencies
 
@@ -36,4 +34,3 @@
 * add more triggers to the rune altar
 * add a magic chest
 * player movement speed upgrade
-* teleportation wand

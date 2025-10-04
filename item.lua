@@ -547,46 +547,58 @@ data:extend({
     spoil_result = nil, -- Spoils into nothing
     magazine_size = 10,
     ammo_type = {
-      category = "channeled-mana",
-      energy_consumption = "1kJ",
-      action = {
-        {
-          type = "direct",
-          action_delivery = {
-            {
-              type = "beam",
-              beam = "purple-magical-beam",
-              max_length = 18,
-              duration = 20,
-              source_offset = {0.15, -0.5}
+      {
+        source_type = "default",
+        category = "channeled-mana",
+        target_type = "position",
+        clamp_position = true,
+        energy_consumption = "1kJ",
+        action = {
+          {
+            type = "direct",
+            action_delivery = {
+              {
+                type = "beam",
+                beam = "purple-magical-beam",
+                max_length = 18,
+                duration = 20,
+                source_offset = {0.15, -0.5}
+              }
             }
-          }
-        },
-        {
-          type = "direct",
-          action_delivery = {
-            {
-              type = "instant",
-              source_effects = {
-                {
-                  type = "create-explosion",
-                  entity_name = "laser-bubble",
-                  only_when_visible = true
-                }
-              },
-              target_effects = {
-                {
-                  type = "create-entity",
-                  entity_name = "purple-magical-splash",
-                  offsets = {{0, 0}},
-                  offset_deviation = {{-0.3, -0.3}, {0.3, 0.3}},
-                  only_when_visible = true
+          },
+          {
+            type = "direct",
+            action_delivery = {
+              {
+                type = "instant",
+                source_effects = {
+                  {
+                    type = "create-explosion",
+                    entity_name = "laser-bubble",
+                    only_when_visible = true
+                  }
                 },
-                {
-                  type = "damage",
-                  damage = {amount = 5, type = "laser"}
+                target_effects = {
+                  {
+                    type = "create-entity",
+                    entity_name = "purple-magical-splash",
+                    offsets = {{0, 0}},
+                    offset_deviation = {{-0.3, -0.3}, {0.3, 0.3}},
+                    only_when_visible = true
+                  },
+                  {
+                    type = "damage",
+                    damage = {amount = 5, type = "laser"}
+                  }
                 }
               }
+            }
+          },
+          {
+            type = "direct",
+            action_delivery = {
+              type = "stream",
+              stream = "teleportation-stream"
             }
           }
         }
@@ -628,46 +640,58 @@ data:extend({
     spoil_result = "magic-orb",
     magazine_size = 1000,
     ammo_type = {
-      category = "channeled-mana",
-      energy_consumption = "1kJ",
-      action = {
-        {
-          type = "direct",
-          action_delivery = {
-            {
-              type = "beam",
-              beam = "purple-magical-beam",
-              max_length = 20,
-              duration = 20,
-              source_offset = {0.15, -0.5}
+      {
+        source_type = "default",
+        category = "channeled-mana",
+        target_type = "position",
+        clamp_position = true,
+        energy_consumption = "1kJ",
+        action = {
+          {
+            type = "direct",
+            action_delivery = {
+              {
+                type = "beam",
+                beam = "purple-magical-beam",
+                max_length = 20,
+                duration = 20,
+                source_offset = {0.15, -0.5}
+              }
             }
-          }
-        },
-        {
-          type = "direct",
-          action_delivery = {
-            {
-              type = "instant",
-              source_effects = {
-                {
-                  type = "create-explosion",
-                  entity_name = "laser-bubble",
-                  only_when_visible = true
-                }
-              },
-              target_effects = {
-                {
-                  type = "create-entity",
-                  entity_name = "purple-magical-splash",
-                  offsets = {{0, 0}},
-                  offset_deviation = {{-0.3, -0.3}, {0.3, 0.3}},
-                  only_when_visible = true
+          },
+          {
+            type = "direct",
+            action_delivery = {
+              {
+                type = "instant",
+                source_effects = {
+                  {
+                    type = "create-explosion",
+                    entity_name = "laser-bubble",
+                    only_when_visible = true
+                  }
                 },
-                {
-                  type = "damage",
-                  damage = {amount = 7, type = "laser"}
+                target_effects = {
+                  {
+                    type = "create-entity",
+                    entity_name = "purple-magical-splash",
+                    offsets = {{0, 0}},
+                    offset_deviation = {{-0.3, -0.3}, {0.3, 0.3}},
+                    only_when_visible = true
+                  },
+                  {
+                    type = "damage",
+                    damage = {amount = 7, type = "laser"}
+                  }
                 }
               }
+            }
+          },
+          {
+            type = "direct",
+            action_delivery = {
+              type = "stream",
+              stream = "teleportation-stream"
             }
           }
         }
@@ -726,6 +750,31 @@ data:extend({
             }
           }
         }
+      }
+    }
+  },
+
+  -- Teleportation Wand (gun that uses channeled-mana)
+  {
+    type = "gun",
+    name = "teleportation-wand",
+    icon = "__orbs__/graphics/teleportation-wand.png",
+    icon_size = 1024,
+    subgroup = "gun",
+    order = "a[basic-clips]-e[teleportation-wand]",
+    stack_size = 5,
+    attack_parameters = {
+      type = "stream",
+      ammo_category = "channeled-mana",
+      cooldown = 30,
+      movement_slow_down_factor = 0.0,
+      range = 20,
+      min_range = 3,
+      gun_barrel_length = 0.5,
+      gun_center_shift = {0, -0.5},
+      sound = {
+        filename = "__base__/sound/fight/heavy-gunshot-1.ogg",
+        volume = 0.30
       }
     }
   },

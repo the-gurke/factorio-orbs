@@ -1395,6 +1395,28 @@ table.insert(recipes, {
   order = "a[basic-clips]-d[summoning-wand]"
 })
 
+-- Teleportation Wand Recipe
+table.insert(recipes, {
+  type = "recipe",
+  name = "teleportation-wand",
+  category = "hand-crafting-and-orbs",
+  subgroup = "gun",
+  energy_required = 10,
+  icon = "__orbs__/graphics/teleportation-wand.png",
+  icon_size = 1024,
+  ingredients = {
+    {type = "item", name = "gold-plate", amount = 1},
+    {type = "item", name = "iron-stick", amount = 2},
+    {type = "item", name = "mana-orb", amount = 1},
+    {type = "fluid", name = "stability", amount = 50}
+  },
+  results = {
+    {type = "item", name = "teleportation-wand", amount = 1}
+  },
+  enabled = false,
+  order = "a[basic-clips]-e[teleportation-wand]"
+})
+
 -- Summoning Essence Recipe (unified - handles construction, deconstruction, and repair)
 table.insert(recipes, {
   type = "recipe",

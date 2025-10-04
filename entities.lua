@@ -804,6 +804,38 @@ end
 
 data:extend({rage_fire_stream})
 
+-- Create teleportation stream (fast, triggers script effect)
+local teleportation_stream = util.table.deepcopy(data.raw.stream["flamethrower-fire-stream"])
+teleportation_stream.name = "teleportation-stream"
+teleportation_stream.particle_buffer_size = 1
+teleportation_stream.particle_spawn_interval = 1
+teleportation_stream.particle_horizontal_speed = 5.0  -- Much faster
+teleportation_stream.particle_horizontal_speed_deviation = 0.1
+teleportation_stream.particle_vertical_acceleration = 0.02
+teleportation_stream.particle_start_alpha = 0.3
+teleportation_stream.particle_end_alpha = 0
+teleportation_stream.action = {
+  {
+    type = "direct",
+    action_delivery = {
+      type = "instant",
+      target_effects = {
+        {
+          type = "script",
+          effect_id = "teleportation-wand-used"
+        }
+      }
+    }
+  }
+}
+
+-- Make particle light blue and mostly transparent
+if teleportation_stream.particle then
+  teleportation_stream.particle.tint = {r = 0.3, g = 0.8, b = 1.0, a = 0.4}
+end
+
+data:extend({teleportation_stream})
+
 -- Create the rune transformer (based on steel furnace)
 local rune_transformer = util.table.deepcopy(data.raw["furnace"]["steel-furnace"])
 
@@ -1540,7 +1572,24 @@ local summoning_cloud_small = {
   action = nil
 }
 
+-- Light blue teleportation cloud (small and fast)
+local teleportation_cloud = {
+  type = 'smoke-with-trigger',
+  name = 'teleportation-cloud',
+  flags = {'not-on-map'},
+  show_when_smoke_off = true,
+  animation = constants.cloud_animation(0.4, 2.0),  -- Same size, 2x animation speed
+  affected_by_wind = false,
+  cyclic = false,
+  duration = 30,  -- Shorter duration (0.5 seconds)
+  fade_away_duration = 20,
+  spread_duration = 5,
+  color = {r = 0.3, g = 0.8, b = 1.0, a = 0.5},  -- Light blue
+  action = nil
+}
+
 data:extend({
   summoning_cloud_big,
-  summoning_cloud_small
+  summoning_cloud_small,
+  teleportation_cloud
 })
