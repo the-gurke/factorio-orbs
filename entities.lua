@@ -502,9 +502,11 @@ magic_explosion.light.size = 15
 -- Volatile Orb Explosion Entity
 local volatile_orb_explosion = util.table.deepcopy(data.raw["explosion"]["grenade-explosion"])
 volatile_orb_explosion.name = "volatile-orb-explosion"
--- Use the custom explosion icon
-volatile_orb_explosion.icon = "__orbs__/graphics/volatile-orb-explosion.png"
-volatile_orb_explosion.icon_size = 1024
+-- Use the custom explosion icon (grenade-explosion uses icons array, not icon)
+volatile_orb_explosion.icon = nil
+volatile_orb_explosion.icons = {
+  {icon = "__orbs__/graphics/volatile-orb-explosion.png", icon_size = 1024}
+}
 -- Safely set light properties
 if not volatile_orb_explosion.light then
   volatile_orb_explosion.light = {}
