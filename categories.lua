@@ -147,5 +147,9 @@ data:extend({
   {
     type = "ammo-category",
     name = "arrows"
+  },
+  {
+    type = "ammo-category",
+    name = "teleportation-magic"
   }
 })

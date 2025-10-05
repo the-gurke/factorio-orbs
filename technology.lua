@@ -181,6 +181,10 @@ data:extend({
       {
         type = "unlock-recipe",
         recipe = "teleportation-wand"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "teleportation-charge"
       }
     },
     order = "a-h-a1b"

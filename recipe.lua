@@ -1419,6 +1419,26 @@ table.insert(recipes, {
   order = "a[basic-clips]-d[summoning-wand]"
 })
 
+-- Teleportation Charge Recipe
+table.insert(recipes, {
+  type = "recipe",
+  name = "teleportation-charge",
+  category = "hand-crafting-and-orbs",
+  subgroup = "ammo",
+  energy_required = 2,
+  icon = "__orbs__/graphics/teleportation-wand.png",
+  icon_size = 1024,
+  ingredients = {
+    {type = "item", name = "channeled-mana", amount = 1},
+    {type = "fluid", name = "stability", amount = 5}
+  },
+  results = {
+    {type = "item", name = "teleportation-charge", amount = 1}
+  },
+  enabled = false,
+  order = "a[basic-clips]-d[teleportation-charge]"
+})
+
 -- Teleportation Wand Recipe
 table.insert(recipes, {
   type = "recipe",
