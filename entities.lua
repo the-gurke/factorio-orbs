@@ -104,6 +104,7 @@ if data.raw["lab"]["lab"] then
   lab.energy_usage = "150kW"
   lab.researching_speed = 1
   lab.inputs = {"automation-science-pack", "magic-research-pack", "conjuration-research-pack", "divination-research-pack", "rune-research-pack"}
+  lab.allowed_module_categories = {"orb-speed", "orb-pollution", "orb-productivity"} -- Only allow orb modules
   lab.effect_receiver = {
     uses_beacon_effects = true,
     uses_module_effects = true,
