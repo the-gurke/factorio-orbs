@@ -1046,7 +1046,7 @@ inactive_portal.energy_source = {
   type = "burner",
   fuel_categories = {"divination-energy"},
   effectivity = 1,
-  fuel_inventory_size = 10,
+  fuel_inventory_size = 1,
   emissions_per_minute = {pollution = 500}
 }
 inactive_portal.energy_usage = "1MW"
