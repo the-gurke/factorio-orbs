@@ -3,6 +3,7 @@
 * Labs cannot be rotated
 * modules don't insert in slots if there's not enough modules to fulfill the
   whole request in one go
+* death beam wand deals no damage
 
 # Inconsistencies
 
@@ -16,11 +17,12 @@
 
 * Rune transformer needs its own sprite
 * Rune altar should have a flash animation and a sound when it triggers a recipe
-* Gold plate floor needs a metal sound when building
 * The burner mining drill should show that its mining area is 4x4 with a rectangle while placing, just as the electric miner does
 * The offshore pump "no fuel" icon should be centered
 * Resonance spires don't show their orbs, neither in graphics nor in alt mode
 * the pipe connections for the conjuration machine are blue, should be gold/pink
+* teleportation wand has gun animations
+* death beam wand fire animations are borked
 
 # Features
 
@@ -28,5 +30,4 @@
 * Maybe make a science with the divination research pack that lets you look
   further ahead in the research tree
 * add more triggers to the rune altar
-* add a magic chest
 * player movement speed upgrade
