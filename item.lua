@@ -805,6 +805,17 @@ data:extend({
     stack_size = 1
   },
 
+  -- Night Item (sets time to midnight when crafted)
+  {
+    type = "item",
+    name = "night",
+    icon = "__orbs__/graphics/night.png",
+    icon_size = 1024,
+    subgroup = "orbs-manifest",
+    order = "e[night]",
+    stack_size = 1
+  },
+
 
   -- Inactive Portal (placeable item)
   {

@@ -1536,5 +1536,27 @@ data:extend({
       }
     },
     order = "z-d[summon-death]"
+  },
+  -- Summon Night Technology
+  {
+    type = "technology",
+    name = "summon-night",
+    icon = "__orbs__/graphics/rune-word-umbra.png",
+    icon_size = 1024,
+    prerequisites = {"rune-words"},
+    unit = {
+      count = 10,
+      ingredients = {
+        {"rune-research-pack", 1}
+      },
+      time = 30
+    },
+    effects = {
+      {
+        type = "unlock-recipe",
+        recipe = "summon-night"
+      }
+    },
+    order = "z-e[summon-night]"
   }
 })
