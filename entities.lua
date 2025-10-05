@@ -1058,6 +1058,7 @@ inactive_portal.module_specification = {
 }
 inactive_portal.module_slots = 2  -- Ensure module slots are set
 inactive_portal.allowed_effects = {"speed", "pollution"}
+inactive_portal.allowed_module_categories = {"orb-speed", "orb-pollution"} -- Only allow haste orbs and cleansing orbs
 inactive_portal.collision_box = {{-0.1, -0.1}, {2.9, 2.9}} -- 3x3 collision box containing [0,0]
 inactive_portal.selection_box = {{-3.5, -3.5}, {3.5, 3.5}} -- 7x7 selection box
 inactive_portal.icon = "__orbs__/graphics/portal.png"
