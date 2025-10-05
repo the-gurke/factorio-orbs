@@ -7,7 +7,6 @@
 # Inconsistencies
 
 * Magic orbs take 10 active magic shards to craft, but flux orbs take 50/10/0.05 = 100 active magic shards to craft
-* Some buildings still accept vanilla modules
 
 # Balancing Notes
 
