@@ -1466,7 +1466,7 @@ data:extend({
   {
     type = "recipe",
     name = "craft-resonance-spire",
-    category = "crafting",
+    category = "hand-crafting-and-orbs",
     energy_required = 15,
     icon = "__orbs__/graphics/resonance-spire.png",
     icon_size = 1024,
