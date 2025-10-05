@@ -857,22 +857,37 @@ data:extend({
       },
       {
         type = "unlock-recipe",
-        recipe = "rune-altar"
-      },
-      {
-        type = "unlock-recipe",
         recipe = "conjure-rune-word-aqua"
       },
       {
         type = "unlock-recipe",
         recipe = "conjure-rune-word-spiritus"
+      }
+    },
+    order = "z-d[rune-words]"
+  },
+  {
+    type = "technology",
+    name = "rune-research-packs",
+    icon = "__base__/graphics/icons/utility-science-pack.png",
+    icon_size = 64,
+    prerequisites = {"rune-words"},
+    research_trigger = {
+      type = "craft-item",
+      item = "rune-word-vitae",
+      count = 1
+    },
+    effects = {
+      {
+        type = "unlock-recipe",
+        recipe = "rune-altar"
       },
       {
         type = "unlock-recipe",
         recipe = "rune-research-pack"
       }
     },
-    order = "z-d[rune-words]"
+    order = "z-d[rune-research-packs]"
   }
 })
 
@@ -1328,7 +1343,7 @@ data:extend({
     name = "resonance-spire",
     icon = "__orbs__/graphics/resonance-spire.png",
     icon_size = 1024,
-    prerequisites = {"rune-words", "transmutation-ii"},
+    prerequisites = {"rune-research-packs", "transmutation-ii"},
     unit = {
       count = 10,
       ingredients = {
@@ -1426,7 +1441,7 @@ data:extend({
     name = "silva-ritual",
     icon = "__base__/graphics/icons/tree-01.png",
     icon_size = 64,
-    prerequisites = {"rune-words"},
+    prerequisites = {"rune-research-packs"},
     effects = {
       -- This technology enables the SILVA ritual functionality
     },
@@ -1449,7 +1464,7 @@ data:extend({
     name = "portal",
     icon = "__orbs__/graphics/portal.png",
     icon_size = 1024,
-    prerequisites = {"transmutation-ii", "rune-words"},
+    prerequisites = {"transmutation-ii", "rune-research-packs"},
     effects = {
       {
         type = "unlock-recipe",
@@ -1477,7 +1492,7 @@ data:extend({
     name = "summon-water",
     icon = "__orbs__/graphics/rune-word-aqua.png",
     icon_size = 1024,
-    prerequisites = {"rune-words"},
+    prerequisites = {"rune-research-packs"},
     unit = {
       count = 10,
       ingredients = {
@@ -1499,7 +1514,7 @@ data:extend({
     name = "summon-fire",
     icon = "__orbs__/graphics/rune-word-ignis.png",
     icon_size = 1024,
-    prerequisites = {"rune-words"},
+    prerequisites = {"rune-research-packs"},
     unit = {
       count = 10,
       ingredients = {
@@ -1521,7 +1536,7 @@ data:extend({
     name = "summon-death",
     icon = "__orbs__/graphics/rune-word-mortis.png",
     icon_size = 1024,
-    prerequisites = {"rune-words"},
+    prerequisites = {"rune-research-packs"},
     unit = {
       count = 10,
       ingredients = {
@@ -1543,7 +1558,7 @@ data:extend({
     name = "summon-night",
     icon = "__orbs__/graphics/rune-word-umbra.png",
     icon_size = 1024,
-    prerequisites = {"rune-words"},
+    prerequisites = {"rune-research-packs"},
     unit = {
       count = 10,
       ingredients = {
