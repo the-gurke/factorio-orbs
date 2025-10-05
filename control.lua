@@ -565,16 +565,17 @@ script.on_nth_tick(120, function(event)
 end)
 
 --------------------------------------------------------
---  Death Magic System                               --
+--  Handcrafting Triggers                            --
 --------------------------------------------------------
 
--- Handle death magic when summon-death recipe is completed
+-- Handle special items when crafted
 script.on_event(defines.events.on_player_crafted_item, function(event)
   local player = game.get_player(event.player_index)
   if not player or not player.valid then return end
 
   local crafted_item = event.item_stack
 
+  -- Death Magic System
   if crafted_item and crafted_item.valid_for_read and crafted_item.name == "death" then
     game.print("Death has been summoned! The magic consumes you...")
 
@@ -587,6 +588,25 @@ script.on_event(defines.events.on_player_crafted_item, function(event)
         local removed = player.remove_item({name = "death", count = death_count})
         -- Kill the player
         player.character.die()
+      end
+      -- Unregister this one-time callback
+      script.on_nth_tick(game.tick, nil)
+    end)
+  end
+
+  -- Night Magic System
+  if crafted_item and crafted_item.valid_for_read and crafted_item.name == "night" then
+    game.print("Night has been summoned! Darkness falls...")
+
+    -- Schedule night summoning for next tick to allow item to be transferred to inventory
+    local night_count = crafted_item.count
+
+    script.on_nth_tick(game.tick + 1, function()
+      if player and player.valid then
+        -- Remove night items from inventory
+        local removed = player.remove_item({name = "night", count = night_count})
+        -- Set time to midnight (0.5 = midnight in Factorio)
+        player.surface.daytime = 0.5
       end
       -- Unregister this one-time callback
       script.on_nth_tick(game.tick, nil)

@@ -1334,6 +1334,30 @@ table.insert(recipes, {
   order = "d[summon-death]"
 })
 
+-- Summon Night recipe (hand-crafting only)
+table.insert(recipes, {
+  type = "recipe",
+  name = "summon-night",
+  category = "hand-crafting-only",
+  subgroup = "orbs-manifest",
+  energy_required = 5,
+  icon = "__orbs__/graphics/night.png",
+  icon_size = 1024,
+  ingredients = {
+    {type = "item", name = "magic-orb", amount = 1, ignored_by_stats = 1},
+    {type = "item", name = "rune-word-umbra", amount = 1, ignored_by_stats = 1}
+  },
+  results = {
+    {type = "item", name = "magic-orb", amount = 1, probability = 1.0, ignored_by_productivity = 1, ignored_by_stats = 1},
+    {type = "item", name = "rune-word-umbra", amount = 1, probability = 0.999, ignored_by_productivity = 1, ignored_by_stats = 1},
+    {type = "item", name = "night", amount = 1}
+  },
+  enabled = false,
+  allow_productivity = true,
+  main_product = "night",
+  order = "e[summon-night]"
+})
+
 -- Mana Orb recipe
 table.insert(recipes, {
   type = "recipe",
