@@ -4,6 +4,6 @@
   "title": "Orbs",
   "author": "thegurke, boesemilch",
   "factorio_version": "2.0",
-  "dependencies": ["base >= 2.0", "space-age >= 2.0"],
+  "dependencies": ["base >= 2.0", "space-age >= 2.0", "?MechanicusMiniMAX"],
   "description": "If you want to ponder your orb, this mod is for you."
 }

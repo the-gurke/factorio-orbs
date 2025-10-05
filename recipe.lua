@@ -1428,7 +1428,7 @@ table.insert(recipes, {
   category = "hand-crafting-and-orbs",
   subgroup = "ammo",
   energy_required = 2,
-  icon = "__orbs__/graphics/teleportation-wand.png",
+  icon = "__orbs__/graphics/teleportation-charge.png",
   icon_size = 1024,
   ingredients = {
     {type = "item", name = "channeled-mana", amount = 1},
