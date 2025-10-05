@@ -509,7 +509,7 @@ end
 
 -- Update bulk inserter technology
 if data.raw.technology["bulk-inserter"] then
-  data.raw.technology["bulk-inserter"].prerequisites = {"rune-words", "magic-inserters"}
+  data.raw.technology["bulk-inserter"].prerequisites = {"rune-research-packs", "magic-inserters"}
   data.raw.technology["bulk-inserter"].unit = {
     count = 20,
     ingredients = {
