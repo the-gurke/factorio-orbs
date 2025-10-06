@@ -624,9 +624,9 @@ data:extend({
     subgroup = "orbs-manifest",
     order = "k[mana-orb]",
     stack_size = 5,
-    spoil_ticks = 4 * 60 * 60 * 60, -- 2 hours * 60 minutes * 60 seconds * 60 ticks per second
+    spoil_ticks = 4 * 60 * 60 * 60, -- 4 hours * 60 minutes * 60 seconds * 60 ticks per second
     spoil_result = "magic-orb",
-    magazine_size = 1000,
+    magazine_size = 200,
     ammo_type = {
       category = "channeled-mana",
       energy_consumption = "1kJ",
