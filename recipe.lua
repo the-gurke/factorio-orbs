@@ -433,6 +433,8 @@ table.insert(recipes, {
     {type = "item", name = "magic-orb", amount = 1, ignored_by_stats = 1},
     {type = "item", name = "dust-of-serendipity", amount = 1}
   },
+  reset_freshness_on_craft = true,
+  allow_productivity = false,
   enabled = false,
   order = "d[conjure-serendipity]"
 })
