@@ -147,13 +147,24 @@ end
 -- Apply telekinesis bonuses when players join, respawn, or change forces
 script.on_event({
   defines.events.on_player_joined_game,
-  defines.events.on_player_respawned,
   defines.events.on_player_changed_force,
   defines.events.on_player_created
 }, function(event)
   local player = game.get_player(event.player_index)
   if player and player.valid then
     apply_telekinesis_bonuses(player)
+  end
+end)
+
+-- Handle respawn separately to clear items and apply bonuses
+script.on_event(defines.events.on_player_respawned, function(event)
+  local player = game.get_player(event.player_index)
+  if player and player.valid and player.character then
+    -- Apply telekinesis bonuses
+    apply_telekinesis_bonuses(player)
+
+    -- Clear all inventories
+    player.character.clear_items_inside()
   end
 end)
 
