@@ -606,10 +606,10 @@ data:extend({
     attack_parameters = {
       type = "beam",
       ammo_category = "channeled-mana",
-      cooldown = 4, -- 15 shots per second (faster than starter wand)
+      cooldown = 3, -- 20 shots per second
       movement_slow_down_factor = 0.4,
       range = 20,
-      damage_modifier = 1.25
+      damage_modifier = 0.5
 
     }
   },
