@@ -8,10 +8,12 @@
 # Inconsistencies
 
 * Magic orbs take 10 active magic shards to craft, but flux orbs take 50/10/0.05 = 100 active magic shards to craft
+* Remove oil from the map
 
-# Balancing Notes
+# Balancing
 
 * add 10s setup timer for defense wards
+* add more summoning speed research
 
 # Art
 
@@ -22,7 +24,7 @@
 * Resonance spires don't show their orbs, neither in graphics nor in alt mode
 * the pipe connections for the conjuration machine are blue, should be gold/pink
 * teleportation wand has gun animations
-* death beam wand fire animations are borked
+* death beam wand fire animations are borked, shows nossle fire
 
 # Features
 
@@ -31,3 +33,4 @@
   further ahead in the research tree
 * add more triggers to the rune altar
 * player movement speed upgrade
+* summoning wand doesn't remove trees
