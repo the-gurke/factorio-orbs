@@ -1180,7 +1180,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "channeled-mana",
-  category = "hand-crafting",
+  category = "hand-crafting-only",
   subgroup = "ammo",
   energy_required = 4,
   ingredients = {
