@@ -776,7 +776,7 @@ data:extend({
       movement_slow_down_factor = 0.0,
       range = 20,
       min_range = 3,
-      gun_barrel_length = 0.5,
+      gun_barrel_length = 0,  -- No barrel length = no muzzle flash
       gun_center_shift = {0, -0.5},
       sound = {
         filename = "__base__/sound/fight/heavy-gunshot-1.ogg",
