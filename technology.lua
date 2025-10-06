@@ -159,6 +159,10 @@ data:extend({
       {
         type = "unlock-recipe",
         recipe = "summoning-essence"
+      },
+      {
+        type = "create-ghost-on-entity-death",
+        modifier = true
       }
     },
     order = "a-h-a1a"
