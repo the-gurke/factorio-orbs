@@ -1256,6 +1256,29 @@ data:extend({
       }
     },
     order = "z-p[potions]"
+  },
+  -- Sticky Potion Technology
+  {
+    type = "technology",
+    name = "sticky-potion",
+    icon = "__orbs__/graphics/sticky-potion.png",
+    icon_size = 1024,
+    prerequisites = {"potions", "stability-extraction"},
+    unit = {
+      count = 30,
+      ingredients = {
+        {"divination-research-pack", 1},
+        {"conjuration-research-pack", 1}
+      },
+      time = 30
+    },
+    effects = {
+      {
+        type = "unlock-recipe",
+        recipe = "sticky-potion"
+      }
+    },
+    order = "z-p[sticky-potion]"
   }
 })
 

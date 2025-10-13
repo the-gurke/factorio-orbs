@@ -1055,6 +1055,41 @@ data:extend({
     stack_size = 100,
     spoil_ticks = 20 * 60, -- 20 seconds * 60 ticks per second
     spoil_result = "spoilage"
+  },
+
+  -- Sticky Potion (slowdown capsule)
+  {
+    type = "capsule",
+    name = "sticky-potion",
+    icon = "__orbs__/graphics/sticky-potion.png",
+    icon_size = 1024,
+    subgroup = "capsule",
+    order = "z[sticky-potion]",
+    stack_size = 20,
+    capsule_action = {
+      type = "throw",
+      attack_parameters = {
+        type = "projectile",
+        activation_type = "throw",
+        ammo_category = "capsule",
+        cooldown = 30,
+        projectile_creation_distance = 0.6,
+        range = 30,
+        ammo_type = {
+          target_type = "position",
+          action = {
+            {
+              type = "direct",
+              action_delivery = {
+                type = "projectile",
+                projectile = "slowdown-capsule",
+                starting_speed = 0.3
+              }
+            }
+          }
+        }
+      }
+    }
   }
 })
 

@@ -1608,7 +1608,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "health-potion",
-  category = "crafting",
+  category = "orbs",
   subgroup = "capsule",
   energy_required = 3,
   icon = "__orbs__/graphics/health-potion.png",
@@ -1624,6 +1624,28 @@ table.insert(recipes, {
   enabled = false,
   allow_productivity = true,
   order = "z[health-potion]"
+})
+
+-- Sticky Potion recipe (conjuration machine)
+table.insert(recipes, {
+  type = "recipe",
+  name = "sticky-potion",
+  category = "orbs",
+  subgroup = "capsule",
+  energy_required = 5,
+  icon = "__orbs__/graphics/sticky-potion.png",
+  icon_size = 1024,
+  ingredients = {
+    {type = "fluid", name = "stability", amount = 5},
+    {type = "item", name = "wood", amount = 10},
+    {type = "item", name = "base-potion", amount = 1}
+  },
+  results = {
+    {type = "item", name = "sticky-potion", amount = 1}
+  },
+  enabled = false,
+  allow_productivity = true,
+  order = "z[sticky-potion]"
 })
 
 -- Extend all recipes
