@@ -1648,5 +1648,27 @@ table.insert(recipes, {
   order = "z[sticky-potion]"
 })
 
+-- Poison Potion recipe (conjuration machine)
+table.insert(recipes, {
+  type = "recipe",
+  name = "poison-potion",
+  category = "orbs",
+  subgroup = "capsule",
+  energy_required = 5,
+  icon = "__orbs__/graphics/poison-potion.png",
+  icon_size = 1024,
+  ingredients = {
+    {type = "item", name = "spoilage", amount = 100},
+    {type = "item", name = "base-potion", amount = 1},
+    {type = "item", name = "raw-fish", amount = 1}
+  },
+  results = {
+    {type = "item", name = "poison-potion", amount = 1}
+  },
+  enabled = false,
+  allow_productivity = true,
+  order = "z[poison-potion]"
+})
+
 -- Extend all recipes
 data:extend(recipes)

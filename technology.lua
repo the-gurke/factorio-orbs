@@ -1279,6 +1279,29 @@ data:extend({
       }
     },
     order = "z-p[sticky-potion]"
+  },
+  -- Poison Potion Technology
+  {
+    type = "technology",
+    name = "poison-potion",
+    icon = "__orbs__/graphics/poison-potion.png",
+    icon_size = 1024,
+    prerequisites = {"potions"},
+    unit = {
+      count = 30,
+      ingredients = {
+        {"divination-research-pack", 1},
+        {"conjuration-research-pack", 1}
+      },
+      time = 30
+    },
+    effects = {
+      {
+        type = "unlock-recipe",
+        recipe = "poison-potion"
+      }
+    },
+    order = "z-p[poison-potion]"
   }
 })
 
