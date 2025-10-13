@@ -105,7 +105,7 @@ if data.raw.capsule["raw-fish"] then
       ammo_category = "grenade",
       cooldown = 30,
       projectile_creation_distance = 0.6,
-      range = 15,
+      range = 20,
       ammo_type = {
         target_type = "position",
         action = {
@@ -114,7 +114,7 @@ if data.raw.capsule["raw-fish"] then
             action_delivery = {
               type = "projectile",
               projectile = "fish-projectile",
-              starting_speed = 0.3
+              starting_speed = 1.3
             }
           }
         }
