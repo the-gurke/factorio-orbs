@@ -931,6 +931,44 @@ data:extend({
         }
       }
     }
+  },
+
+  -- Apple (dropped by trees, edible capsule that heals 10 HP, spoils in 2h)
+  {
+    type = "capsule",
+    name = "apple",
+    icon = "__orbs__/graphics/apple_icon.png",
+    icon_size = 1024,
+    subgroup = "capsule",
+    order = "z[apple]",
+    stack_size = 50,
+    spoil_ticks = 2 * 60 * 60 * 60, -- 2 hours * 60 minutes * 60 seconds * 60 ticks per second
+    spoil_result = "spoilage",
+    capsule_action = {
+      type = "use-on-self",
+      attack_parameters = {
+        type = "projectile",
+        activation_type = "consume",
+        ammo_category = "capsule",
+        cooldown = 30,
+        range = 0,
+        ammo_type = {
+          target_type = "position",
+          action = {
+            type = "direct",
+            action_delivery = {
+              type = "instant",
+              target_effects = {
+                {
+                  type = "damage",
+                  damage = {type = "physical", amount = -10}  -- Negative damage = healing
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   }
 })
 

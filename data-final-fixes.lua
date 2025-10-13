@@ -879,5 +879,31 @@ if data.raw["utility-constants"] and data.raw["utility-constants"].default then
   data.raw["utility-constants"].default.main_menu_simulations.orbs_stability_explode = menu_simulations.orbs_stability_explode
 end
 
+-- Add apple drops to all trees (0.5% chance)
+for _, tree in pairs(data.raw["tree"]) do
+  if tree.minable then
+    -- Store original results or use wood as default
+    local original_results = tree.minable.results or {{type = "item", name = "wood", amount = 4}}
+
+    -- If minable.result is used instead of results, convert it
+    if tree.minable.result and not tree.minable.results then
+      original_results = {{type = "item", name = tree.minable.result, amount = tree.minable.count or 1}}
+    end
+
+    -- Add apple as an additional loot with 0.5% chance
+    tree.minable.results = original_results
+    table.insert(tree.minable.results, {
+      type = "item",
+      name = "apple",
+      amount = 1,
+      probability = 0.1  -- 10% chance
+    })
+
+    -- Clear the old result field if it exists
+    tree.minable.result = nil
+    tree.minable.count = nil
+  end
+end
+
 -- Finally, as a last step, remove all the content we don't want
 require("removals")
