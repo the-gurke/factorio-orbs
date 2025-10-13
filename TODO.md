@@ -34,10 +34,10 @@
 
 # Features
 
-* Hide the research tree from the player
 * Maybe make a science with the divination research pack that lets you look
   further ahead in the research tree
 * add more triggers to the rune altar
 * player movement speed upgrade
 * summoning wand doesn't remove trees
 * add teleportation range upgrade
+* add achievements
