@@ -21,5 +21,3 @@ Features:
 * Creating gold from other metals.
 
 This mod is currently under active development, so expect savegame-breaking changes (although we will try to minimize these).
-
-The source code is available at https://github.com/the-gurke/factorio-orbs.

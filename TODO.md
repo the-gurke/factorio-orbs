@@ -3,7 +3,6 @@
 * Labs cannot be rotated
 * modules don't insert in slots if there's not enough modules to fulfill the
   whole request in one go
-* death beam wand deals no damage
 
 # Inconsistencies
 
@@ -14,7 +13,7 @@
 
 * add 10s setup timer for defense wards
 * add more summoning speed research
-* there is no good way to harvest apples or fish
+* there is no scalable way to harvest apples or fish
 
 # Art
 
