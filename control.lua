@@ -14,6 +14,31 @@ script.on_event(defines.events.on_script_trigger_effect, function(event)
     end
   end
 
+  -- Handle volatile orb explosion destroying items on ground
+  if event.effect_id == "volatile-orb-destroy-items" then
+    -- Use source_position (explosion origin) instead of target_position
+    local position = event.source_position or event.target_position
+
+    if position then
+      -- Check all surfaces since event.surface is not provided
+      for _, surface in pairs(game.surfaces) do
+        -- Find all item entities within 1 tile radius
+        local items_on_ground = surface.find_entities_filtered{
+          position = position,
+          radius = 1,
+          type = "item-entity"
+        }
+
+        -- Destroy all found items
+        for _, item in pairs(items_on_ground) do
+          if item.valid then
+            item.destroy()
+          end
+        end
+      end
+    end
+  end
+
   -- Handle teleportation wand usage
   if event.effect_id == "teleportation-wand-used" then
     -- Find the player who triggered this

@@ -971,7 +971,7 @@ for i = 2, 6 do
       order = "j[volatile-orb-" .. string.format("%02d", i) .. "]",
       stack_size = 5,
       spoil_ticks = 40 * 60 + 1, -- 40 seconds * 60 ticks per second
-      spoil_result = nil, -- Spoils into nothing
+      spoil_result = "volatile-orb-" .. letter_name, -- Spoils into itself, but will get removed if the explosion is triggered
       spoil_to_trigger_result = {
         items_per_trigger = 1,
         trigger = {
@@ -982,6 +982,10 @@ for i = 2, 6 do
               {
                 type = "create-entity",
                 entity_name = "volatile-orb-explosion"
+              },
+              {
+                type = "script",
+                effect_id = "volatile-orb-destroy-items"
               }
             }
           }
