@@ -1253,6 +1253,10 @@ data:extend({
       {
         type = "unlock-recipe",
         recipe = "health-potion"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "mash-apple"
       }
     },
     order = "z-p[potions]"
