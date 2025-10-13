@@ -533,6 +533,66 @@ data:extend({
     stack_size = 100
   },
 
+  -- Glass Vial
+  {
+    type = "item",
+    name = "glass-vial",
+    icon = "__orbs__/graphics/empty-vial.png",
+    icon_size = 1024,
+    subgroup = "intermediate-product",
+    order = "d[glass-vial]",
+    stack_size = 50
+  },
+
+  -- Base Potion
+  {
+    type = "item",
+    name = "base-potion",
+    icon = "__orbs__/graphics/base-potion.png",
+    icon_size = 1024,
+    subgroup = "intermediate-product",
+    order = "e[base-potion]",
+    stack_size = 50
+  },
+
+  -- Health Potion (edible capsule that heals 100 HP, spoils in 5h)
+  {
+    type = "capsule",
+    name = "health-potion",
+    icon = "__orbs__/graphics/health-potion.png",
+    icon_size = 1024,
+    subgroup = "capsule",
+    order = "z[health-potion]",
+    stack_size = 20,
+    spoil_ticks = 5 * 60 * 60 * 60, -- 5 hours * 60 minutes * 60 seconds * 60 ticks per second
+    spoil_result = "glass-vial",
+    capsule_action = {
+      type = "use-on-self",
+      attack_parameters = {
+        type = "projectile",
+        activation_type = "consume",
+        ammo_category = "capsule",
+        cooldown = 30,
+        range = 0,
+        ammo_type = {
+          target_type = "position",
+          action = {
+            type = "direct",
+            action_delivery = {
+              type = "instant",
+              target_effects = {
+                {
+                  type = "damage",
+                  damage = {type = "physical", amount = -100}  -- Negative damage = healing
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+
   -- Channeled Mana (spoils in 30 minutes, player crafted only)
   {
     type = "ammo",
@@ -937,7 +997,7 @@ data:extend({
   {
     type = "capsule",
     name = "apple",
-    icon = "__orbs__/graphics/apple_icon.png",
+    icon = "__orbs__/graphics/apple-realistic.png",
     icon_size = 1024,
     subgroup = "capsule",
     order = "z[apple]",
@@ -969,6 +1029,32 @@ data:extend({
         }
       }
     }
+  },
+
+  -- Mashed Apple (spoils in 10 minutes to fermented apple mash)
+  {
+    type = "item",
+    name = "mashed-apple",
+    icon = "__orbs__/graphics/apple-mashed.png",
+    icon_size = 1024,
+    subgroup = "intermediate-product",
+    order = "z[apple]-b[mashed-apple]",
+    stack_size = 100,
+    spoil_ticks = 10 * 60 * 60, -- 10 minutes * 60 seconds * 60 ticks per second
+    spoil_result = "fermented-apple-mash"
+  },
+
+  -- Fermented Apple Mash (spoils in 20 seconds to spoilage)
+  {
+    type = "item",
+    name = "fermented-apple-mash",
+    icon = "__orbs__/graphics/apple-mashed-fermented.png",
+    icon_size = 1024,
+    subgroup = "intermediate-product",
+    order = "z[apple]-c[fermented-apple-mash]",
+    stack_size = 100,
+    spoil_ticks = 20 * 60, -- 20 seconds * 60 ticks per second
+    spoil_result = "spoilage"
   }
 })
 

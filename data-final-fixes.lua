@@ -82,6 +82,16 @@ if data.raw.item.coal then
   data.raw.item.coal.fuel_category = nil
 end
 
+-- Remove fuel value from spoilage
+if data.raw.item.spoilage then
+  data.raw.item.spoilage.fuel_value = nil
+  data.raw.item.spoilage.fuel_category = nil
+  data.raw.item.spoilage.fuel_acceleration_multiplier = nil
+  data.raw.item.spoilage.fuel_top_speed_multiplier = nil
+  data.raw.item.spoilage.fuel_emissions_multiplier = nil
+  data.raw.item.spoilage.fuel_glow_color = nil
+end
+
 -- Create new burner inserter from burner inserter prototype with normal inserter speed
 local new_burner_inserter = table.deepcopy(data.raw["inserter"]["burner-inserter"])
 new_burner_inserter.name = "burner-inserter"

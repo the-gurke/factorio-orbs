@@ -1241,6 +1241,18 @@ data:extend({
       {
         type = "unlock-recipe",
         recipe = "heat-pipe"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "glass-vial"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "base-potion"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "health-potion"
       }
     },
     order = "z-p[potions]"

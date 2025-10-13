@@ -1524,5 +1524,107 @@ table.insert(recipes, {
   order = "a[basic-clips]-b[crossbow]"
 })
 
+-- Mash Apple recipe (assembler)
+table.insert(recipes, {
+  type = "recipe",
+  name = "mash-apple",
+  category = "crafting",
+  subgroup = "intermediate-product",
+  energy_required = 2,
+  icon = "__orbs__/graphics/apple-mashed.png",
+  icon_size = 1024,
+  ingredients = {
+    {type = "item", name = "apple", amount = 1}
+  },
+  results = {
+    {type = "item", name = "mashed-apple", amount = 10}
+  },
+  enabled = true,
+  allow_productivity = true,
+  order = "z[apple]-d[mash-apple]"
+})
+
+-- Burn Spoilage to Smoldering Remains (furnace recipe)
+table.insert(recipes, {
+  type = "recipe",
+  name = "burn-spoilage",
+  category = "smelting",
+  subgroup = "intermediate-product",
+  energy_required = 0.5,
+  icon = "__orbs__/graphics/smoldering-remains.png",
+  icon_size = 1024,
+  ingredients = {
+    {type = "item", name = "spoilage", amount = 1}
+  },
+  results = {
+    {type = "item", name = "smoldering-remains", amount = 1}
+  },
+  enabled = true,
+  order = "z[smoldering-remains]-a[burn-spoilage]"
+})
+
+-- Glass Vial recipe (assembler)
+table.insert(recipes, {
+  type = "recipe",
+  name = "glass-vial",
+  category = "crafting",
+  subgroup = "intermediate-product",
+  energy_required = 1,
+  icon = "__orbs__/graphics/empty-vial.png",
+  icon_size = 1024,
+  ingredients = {
+    {type = "item", name = "glass", amount = 1}
+  },
+  results = {
+    {type = "item", name = "glass-vial", amount = 1}
+  },
+  enabled = false,
+  allow_productivity = true,
+  order = "d[glass-vial]"
+})
+
+-- Base Potion recipe (distillery)
+table.insert(recipes, {
+  type = "recipe",
+  name = "base-potion",
+  category = "distilling",
+  subgroup = "intermediate-product",
+  energy_required = 5,
+  icon = "__orbs__/graphics/base-potion.png",
+  icon_size = 1024,
+  ingredients = {
+    {type = "item", name = "fermented-apple-mash", amount = 60},
+    {type = "item", name = "glass-vial", amount = 1}
+  },
+  results = {
+    {type = "item", name = "base-potion", amount = 1}
+  },
+  enabled = false,
+  allow_productivity = true,
+  order = "e[base-potion]"
+})
+
+-- Health Potion recipe (assembler)
+table.insert(recipes, {
+  type = "recipe",
+  name = "health-potion",
+  category = "crafting",
+  subgroup = "capsule",
+  energy_required = 3,
+  icon = "__orbs__/graphics/health-potion.png",
+  icon_size = 1024,
+  ingredients = {
+    {type = "item", name = "base-potion", amount = 1},
+    {type = "item", name = "mashed-apple", amount = 5},
+    {type = "item", name = "spark-of-luck", amount = 1}
+  },
+  results = {
+    {type = "item", name = "health-potion", amount = 1}
+  },
+  enabled = false,
+  allow_productivity = true,
+  order = "z[health-potion]"
+})
+
 -- Extend all recipes
 data:extend(recipes)
