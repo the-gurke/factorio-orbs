@@ -999,5 +999,19 @@ for _, tree in pairs(data.raw["tree"]) do
   end
 end
 
+-- Modify poison capsule cloud color to be green instead of turquoise
+if data.raw["smoke-with-trigger"]["poison-cloud"] then
+  local poison_cloud = data.raw["smoke-with-trigger"]["poison-cloud"]
+  -- Change the main cloud color to bright green
+  poison_cloud.color = {r = 0.2, g = 0.8, b = 0.2, a = 0.690}
+end
+
+-- Modify the visual dummy clouds that surround the main poison cloud
+if data.raw["smoke-with-trigger"]["poison-cloud-visual-dummy"] then
+  local visual_dummy = data.raw["smoke-with-trigger"]["poison-cloud-visual-dummy"]
+  -- Change the surrounding cloud color to darker green
+  visual_dummy.color = {r = 0.014, g = 0.395, b = 0.1, a = 0.322}
+end
+
 -- Finally, as a last step, remove all the content we don't want
 require("removals")
