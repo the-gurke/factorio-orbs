@@ -1608,7 +1608,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "health-potion",
-  category = "orbs",
+  category = "distilling",
   subgroup = "capsule",
   energy_required = 3,
   icon = "__orbs__/graphics/health-potion.png",
@@ -1652,7 +1652,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "poison-potion",
-  category = "orbs",
+  category = "distilling",
   subgroup = "capsule",
   energy_required = 5,
   icon = "__orbs__/graphics/poison-potion.png",
