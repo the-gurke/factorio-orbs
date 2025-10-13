@@ -644,7 +644,7 @@ data:extend({
                 },
                 {
                   type = "damage",
-                  damage = {amount = 5, type = "laser"}
+                  damage = {amount = 5, type = "arcane"}
                 }
               }
             }
@@ -725,7 +725,7 @@ data:extend({
                 },
                 {
                   type = "damage",
-                  damage = {amount = 7, type = "laser"}
+                  damage = {amount = 7, type = "arcane"}
                 }
               }
             }

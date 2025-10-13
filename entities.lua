@@ -561,7 +561,7 @@ defense_ward_laser.action = {
         type = "damage",
         damage = {
           amount = 50,
-          type = "laser"
+          type = "arcane"
         }
       },
       {
@@ -682,7 +682,7 @@ purple_magical_beam.action = {
         type = "damage",
         damage = {
           amount = 5,
-          type = "laser"
+          type = "arcane"
         }
       },
       {
