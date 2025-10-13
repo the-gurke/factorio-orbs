@@ -833,7 +833,7 @@ data:extend({
       type = "stream",
       ammo_category = "teleportation-magic",
       cooldown = 30,
-      movement_slow_down_factor = 0.0,
+      movement_slow_down_factor = 1.0,
       range = 20,
       min_range = 3,
       gun_barrel_length = 0,  -- No barrel length = no muzzle flash
