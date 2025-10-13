@@ -247,9 +247,36 @@ end)
 --  Orbs research                                     --
 --------------------------------------------------------
 
+-- Function to enable dependent technologies when a technology is researched
+local function enable_dependent_technologies(force, technology_name)
+  -- Check all technologies to see if their prerequisites are now met
+  for _, tech in pairs(force.technologies) do
+    if not tech.researched and not tech.enabled then
+      -- Check if all prerequisites are met
+      local all_prerequisites_met = true
+      if tech.prerequisites then
+        for _, prereq in pairs(tech.prerequisites) do
+          if not prereq.researched then
+            all_prerequisites_met = false
+            break
+          end
+        end
+      end
+
+      -- If all prerequisites are met, enable the technology
+      if all_prerequisites_met then
+        tech.enabled = true
+      end
+    end
+  end
+end
+
 -- Handle research completion events
 script.on_event(defines.events.on_research_finished, function(event)
   local research = event.research
+
+  -- Enable dependent technologies after any research is completed
+  enable_dependent_technologies(research.force, research.name)
 
   if research.name:match("^telekinesis%-") then
     -- Apply telekinesis bonuses when any telekinesis technology is researched

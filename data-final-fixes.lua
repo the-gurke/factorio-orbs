@@ -1013,5 +1013,22 @@ if data.raw["smoke-with-trigger"]["poison-cloud-visual-dummy"] then
   visual_dummy.color = {r = 0.014, g = 0.395, b = 0.1, a = 0.322}
 end
 
+-- Hide technologies until their prerequisites are met
+for _, technology in pairs(data.raw.technology) do
+  technology.visible_when_disabled = false
+  -- Disable all technologies initially
+  -- Technologies with research_trigger will auto-enable when triggered
+  -- Technologies with prerequisites will auto-enable when prerequisites are met
+  technology.enabled = false
+end
+
+-- Enable starter technologies that have no prerequisites
+if data.raw.technology["fire-science"] then
+  data.raw.technology["fire-science"].enabled = true
+end
+if data.raw.technology["orbs-technology"] then
+  data.raw.technology["orbs-technology"].enabled = true
+end
+
 -- Finally, as a last step, remove all the content we don't want
 require("removals")
