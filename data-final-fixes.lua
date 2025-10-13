@@ -92,6 +92,90 @@ if data.raw.item.spoilage then
   data.raw.item.spoilage.fuel_glow_color = nil
 end
 
+-- Modify fish to be a throwable weapon instead of healing
+if data.raw.capsule["raw-fish"] then
+  local fish = data.raw.capsule["raw-fish"]
+
+  -- Remove healing action and make it a throwable weapon
+  fish.capsule_action = {
+    type = "throw",
+    attack_parameters = {
+      type = "projectile",
+      activation_type = "throw",
+      ammo_category = "grenade",
+      cooldown = 30,
+      projectile_creation_distance = 0.6,
+      range = 15,
+      ammo_type = {
+        target_type = "position",
+        action = {
+          {
+            type = "direct",
+            action_delivery = {
+              type = "projectile",
+              projectile = "fish-projectile",
+              starting_speed = 0.3
+            }
+          }
+        }
+      }
+    }
+  }
+end
+
+-- Create fish projectile (based on grenade but without explosion graphics)
+data:extend({
+  {
+    type = "projectile",
+    name = "fish-projectile",
+    flags = {"not-on-map"},
+    acceleration = 0.005,
+    turn_speed = 0.01,
+    action = {
+      {
+        type = "direct",
+        action_delivery = {
+          type = "instant",
+          target_effects = {
+            {
+              type = "damage",
+              damage = {amount = 3, type = "physical"}
+            }
+          }
+        }
+      },
+      {
+        type = "area",
+        radius = 1,
+        action_delivery = {
+          type = "instant",
+          target_effects = {
+            {
+              type = "damage",
+              damage = {amount = 3, type = "physical"}
+            }
+          }
+        }
+      }
+    },
+    animation = {
+      filename = "__base__/graphics/icons/fish.png",
+      frame_count = 1,
+      width = 32,
+      height = 32,
+      priority = "high"
+    },
+    shadow = {
+      filename = "__base__/graphics/icons/fish.png",
+      frame_count = 1,
+      width = 32,
+      height = 32,
+      priority = "high",
+      draw_as_shadow = true
+    }
+  }
+})
+
 -- Create new burner inserter from burner inserter prototype with normal inserter speed
 local new_burner_inserter = table.deepcopy(data.raw["inserter"]["burner-inserter"])
 new_burner_inserter.name = "burner-inserter"
