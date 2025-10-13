@@ -85,14 +85,6 @@ data:extend({
       },
       {
         type = "unlock-recipe",
-        recipe = "transfigure-conjuration-orb"
-      },
-      {
-        type = "unlock-recipe",
-        recipe = "neutralize-conjuration-orb"
-      },
-      {
-        type = "unlock-recipe",
         recipe = "craft-conjuration-machine"
       }
     },
@@ -113,6 +105,14 @@ data:extend({
       {
         type = "unlock-recipe",
         recipe = "magic-research-pack"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "transfigure-conjuration-orb"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "neutralize-conjuration-orb"
       }
     },
     order = "a-h-a0"
