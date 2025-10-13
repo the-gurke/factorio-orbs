@@ -153,3 +153,11 @@ data:extend({
     name = "teleportation-magic"
   }
 })
+
+-- Damage type
+data:extend({
+  {
+    type = "damage-type",
+    name = "arcane"
+  }
+})
