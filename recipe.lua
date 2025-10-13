@@ -1539,7 +1539,7 @@ table.insert(recipes, {
   results = {
     {type = "item", name = "mashed-apple", amount = 10}
   },
-  enabled = true,
+  enabled = false,
   allow_productivity = true,
   order = "z[apple]-d[mash-apple]"
 })
