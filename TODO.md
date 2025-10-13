@@ -20,6 +20,8 @@
 * there is no scalable way to harvest apples or fish
 * move mana orb behind stability
 * lamps are pretty early, maybe make them take 2 orbs and return one
+* make base potion in bulk, i.e. have one expensive recipe that takes many
+  vials and mash
 
 # Art
 
