@@ -1593,7 +1593,7 @@ table.insert(recipes, {
   icon = "__orbs__/graphics/base-potion.png",
   icon_size = 1024,
   ingredients = {
-    {type = "item", name = "fermented-apple-mash", amount = 60},
+    {type = "item", name = "fermented-apple-mash", amount = 5},
     {type = "item", name = "glass-vial", amount = 1}
   },
   results = {
