@@ -8,7 +8,7 @@ Magic orbs are the source of your power. You don't recall how they work, but you
 
 It is meant for Factorio veterans who are looking for harder challenges and a distinct new playing experience.
 
-Several elements of the game have been simplified signficantly: you don't need to worry about electricity distribution, you don't need to build for scale, and you don't need to solve complex logistical challenges (no trains or bots). Everything you need to build to unlock the next level of the technology tree fits on one screen. However, it is not straightforward and you'll probably need several iterations to get it working automatically.
+Several elements of the game have been simplified significantly: you don't need to worry about electricity distribution, you don't need to build for scale, and you don't need to solve complex logistical challenges (no trains or bots). Everything you need to build to unlock the next level of the technology tree fits on one screen. However, it is not straightforward and you'll probably need several iterations to get it working automatically.
 
 Features:
 
