@@ -48,33 +48,33 @@ conjuration_machine.graphics_set = {
   animation = {
     layers = {
       {
-        filename = "__orbs__/graphics/conjuration-machine-entity.png",
+        filename = "__orbs__/graphics/conjuration-machine-sprite.png",
         priority = "high",
-        width = 1024,
-        height = 1024,
+        width = 512,
+        height = 512,
         frame_count = 1,
-        line_length = 1,
-        scale = 0.12,
+        line_length = 7,
+        scale = 0.18,
         shift = {0, 0}
       }
     }
   },
   working_visualisations = {
     {
-      north_position = {0, -0.5},
-      east_position = {0, -0.5},
-      south_position = {0, -0.5},
-      west_position = {0, -0.5},
+      north_position = {0, 0},
+      east_position = {0, 0},
+      south_position = {0, 0},
+      west_position = {0, 0},
       animation = {
-        filename = "__base__/graphics/entity/smoke/smoke.png",
+        filename = "__orbs__/graphics/conjuration-machine-sprite.png",
         priority = "high",
-        width = 152,
-        height = 120,
-        frame_count = 60,
-        line_length = 5,
-        animation_speed = 0.4,
-        scale = 1.0,
-        tint = {r = 1.0, g = 0.2, b = 1.0, a = 0.7}
+        width = 512,
+        height = 512,
+        frame_count = 45,
+        line_length = 7,
+        animation_speed = 0.5,
+        scale = 0.18,
+        shift = {0, 0}
       }
     }
   }
