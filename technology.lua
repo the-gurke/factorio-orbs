@@ -85,14 +85,6 @@ data:extend({
       },
       {
         type = "unlock-recipe",
-        recipe = "transfigure-conjuration-orb"
-      },
-      {
-        type = "unlock-recipe",
-        recipe = "neutralize-conjuration-orb"
-      },
-      {
-        type = "unlock-recipe",
         recipe = "craft-conjuration-machine"
       }
     },
@@ -113,6 +105,14 @@ data:extend({
       {
         type = "unlock-recipe",
         recipe = "magic-research-pack"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "transfigure-conjuration-orb"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "neutralize-conjuration-orb"
       }
     },
     order = "a-h-a0"
@@ -201,7 +201,7 @@ data:extend({
     localised_description = {"technology-description.summoning-speed-1"},
     icon = "__orbs__/graphics/summoning-technology.png",
     icon_size = 1024,
-    prerequisites = {"summoning-magic"},
+    prerequisites = {"summoning-magic", "conjuration-research"},
     unit = {
       count = 5,
       ingredients = {
@@ -278,7 +278,7 @@ data:extend({
     localised_description = {"technology-description.summoning-range-1"},
     icon = "__orbs__/graphics/summoning-technology.png",
     icon_size = 1024,
-    prerequisites = {"summoning-magic"},
+    prerequisites = {"summoning-magic", "conjuration-research"},
     unit = {
       count = 5,
       ingredients = {
