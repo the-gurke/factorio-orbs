@@ -1527,6 +1527,18 @@ data:extend({
   }
 })
 
+-- Stone Wall Technology (modify base game tech)
+if data.raw.technology["stone-wall"] then
+  data.raw.technology["stone-wall"].prerequisites = {"automation-science-pack"}
+  data.raw.technology["stone-wall"].unit = {
+    count = 10,
+    ingredients = {
+      {"automation-science-pack", 1}
+    },
+    time = 30
+  }
+end
+
 -- Portal Technology
 data:extend({
   {
