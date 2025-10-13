@@ -1593,7 +1593,7 @@ table.insert(recipes, {
   icon = "__orbs__/graphics/base-potion.png",
   icon_size = 1024,
   ingredients = {
-    {type = "item", name = "fermented-apple-mash", amount = 60},
+    {type = "item", name = "fermented-apple-mash", amount = 5},
     {type = "item", name = "glass-vial", amount = 1}
   },
   results = {
@@ -1608,7 +1608,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "health-potion",
-  category = "orbs",
+  category = "distilling",
   subgroup = "capsule",
   energy_required = 3,
   icon = "__orbs__/graphics/health-potion.png",
@@ -1652,7 +1652,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "poison-potion",
-  category = "orbs",
+  category = "distilling",
   subgroup = "capsule",
   energy_required = 5,
   icon = "__orbs__/graphics/poison-potion.png",

@@ -541,7 +541,7 @@ data:extend({
     icon_size = 1024,
     subgroup = "intermediate-product",
     order = "d[glass-vial]",
-    stack_size = 50
+    stack_size = 20
   },
 
   -- Base Potion
@@ -552,7 +552,7 @@ data:extend({
     icon_size = 1024,
     subgroup = "intermediate-product",
     order = "e[base-potion]",
-    stack_size = 50
+    stack_size = 20
   },
 
   -- Health Potion (edible capsule that heals 100 HP, spoils in 5h)
@@ -997,7 +997,7 @@ data:extend({
   {
     type = "capsule",
     name = "apple",
-    icon = "__orbs__/graphics/apple-realistic.png",
+    icon = "__orbs__/graphics/apple.png",
     icon_size = 1024,
     subgroup = "capsule",
     order = "z[apple]",
