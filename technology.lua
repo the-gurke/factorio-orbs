@@ -251,7 +251,7 @@ data:extend({
     localised_description = {"technology-description.summoning-speed-3"},
     icon = "__orbs__/graphics/summoning-technology.png",
     icon_size = 1024,
-    prerequisites = {"summoning-speed-2"},
+    prerequisites = {"summoning-speed-2", "divination"},
     unit = {
       count = 50,
       ingredients = {
@@ -328,7 +328,7 @@ data:extend({
     localised_description = {"technology-description.summoning-range-3"},
     icon = "__orbs__/graphics/summoning-technology.png",
     icon_size = 1024,
-    prerequisites = {"summoning-range-2"},
+    prerequisites = {"summoning-range-2", "divination"},
     unit = {
       count = 50,
       ingredients = {

@@ -9,9 +9,6 @@
 * Magic orbs take 10 active magic shards to craft, but flux orbs take 50/10/0.05 = 100 active magic shards to craft
 * Remove oil from the map
 * remove barreling
-* don't give the player the combat wand or channeled mana to start (i.e. pistol
-  and ammo)
-* lock summoning speed 3 and range 3 behind divination science
 
 # Balancing
 
