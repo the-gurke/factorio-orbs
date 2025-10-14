@@ -181,8 +181,8 @@ script.on_event({
 
     -- Remove pistol/starter-wand and firearm-magazine/channeled-mana from starting items
     if event.name == defines.events.on_player_created then
-      player.remove_item({name = "pistol", count = 1000})
-      player.remove_item({name = "firearm-magazine", count = 1000})
+      player.remove_item({name = "pistol", count = 1})
+      player.remove_item({name = "firearm-magazine", count = 10})
     end
   end
 end)
