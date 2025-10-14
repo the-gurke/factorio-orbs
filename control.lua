@@ -178,6 +178,12 @@ script.on_event({
   local player = game.get_player(event.player_index)
   if player and player.valid then
     apply_telekinesis_bonuses(player)
+
+    -- Remove pistol/starter-wand and firearm-magazine/channeled-mana from starting items
+    if event.name == defines.events.on_player_created then
+      player.remove_item({name = "pistol", count = 1000})
+      player.remove_item({name = "firearm-magazine", count = 1000})
+    end
   end
 end)
 
