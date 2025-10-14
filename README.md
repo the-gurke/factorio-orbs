@@ -1,5 +1,7 @@
 # Orbs
 
+_By thegurke & boesemilch_
+
 You are a wizard waking up in a strange land full of giant insects. You don't remember how you got here or anything about your past life. But you know you must find your way back.
 
 Magic orbs are the source of your power. You don't recall how they work, but you're itching to figure it out. Can you use them to unravel the secrets of magic?
