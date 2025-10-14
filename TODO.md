@@ -8,15 +8,12 @@
 
 * Magic orbs take 10 active magic shards to craft, but flux orbs take 50/10/0.05 = 100 active magic shards to craft
 * Remove oil from the map
-* remove barreling
 
 # Balancing
 
 * add 10s setup timer for defense wards
 * add more summoning speed research
 * there is no scalable way to harvest apples or fish
-* move mana orb behind stability
-* lamps are pretty early, maybe make them take 2 orbs and return one
 * make base potion in bulk, i.e. have one expensive recipe that takes many
   vials and mash
 
@@ -33,10 +30,11 @@
 
 # Features
 
+* Make distillery not work when it's too hot
 * Maybe make a science with the divination research pack that lets you look
   further ahead in the research tree
 * add more triggers to the rune altar
 * player movement speed upgrade
-* summoning wand doesn't remove trees
+* summoning wand doesn't remove trees (not sure if desired)
 * add teleportation range upgrade
 * add achievements

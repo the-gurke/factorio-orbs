@@ -428,18 +428,14 @@ if data.raw.technology["fluid-handling"] then
     time = 30
   }
 
-  -- Remove all barreling recipes except water and stability
+  -- Remove all barreling recipes
   if tech.effects then
     for i = #tech.effects, 1, -1 do
       local effect = tech.effects[i]
       if effect.type == "unlock-recipe" then
         local recipe_name = effect.recipe
-        -- Keep only water and stability barreling/unbarreling recipes
-        if recipe_name and (
-          string.find(recipe_name, "barrel") and
-          not string.find(recipe_name, "water") and
-          not string.find(recipe_name, "stability")
-        ) then
+        -- Remove all barreling/unbarreling recipes
+        if recipe_name and string.find(recipe_name, "barrel") then
           table.remove(tech.effects, i)
         end
       end
@@ -717,8 +713,20 @@ if data.raw.recipe["small-lamp"] then
   data.raw.recipe["small-lamp"].ingredients = {
     {type = "item", name = "copper-cable", amount = 3},
     {type = "item", name = "iron-plate", amount = 1},
+    {type = "item", name = "magic-orb", amount = 2}
+  }
+  -- Convert from result to results format and add magic orb return
+  data.raw.recipe["small-lamp"].result = nil
+  data.raw.recipe["small-lamp"].result_count = nil
+  data.raw.recipe["small-lamp"].results = {
+    {type = "item", name = "small-lamp", amount = 1},
     {type = "item", name = "magic-orb", amount = 1}
   }
+  -- Set the recipe icon to the lamp icon
+  data.raw.recipe["small-lamp"].icon = data.raw.item["small-lamp"].icon
+  data.raw.recipe["small-lamp"].icon_size = data.raw.item["small-lamp"].icon_size
+  -- Move to production tab
+  data.raw.recipe["small-lamp"].subgroup = "energy"
 end
 
 if data.raw.lamp["small-lamp"] then

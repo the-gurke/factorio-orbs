@@ -377,11 +377,12 @@ data:extend({
     name = "mana-orb",
     icon = "__orbs__/graphics/mana-orb.png",
     icon_size = 1024,
-    prerequisites = {"conjuration-research"},
+    prerequisites = {"stability-extraction"},
     unit = {
       count = 20,
       ingredients = {
-        {"conjuration-research-pack", 1}
+        {"conjuration-research-pack", 1},
+        {"divination-research-pack", 1}
       },
       time = 30
     },

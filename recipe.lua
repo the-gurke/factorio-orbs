@@ -1371,7 +1371,8 @@ table.insert(recipes, {
   icon_size = 1024,
   ingredients = {
     {type = "item", name = "magic-orb", amount = 1},
-    {type = "item", name = "channeled-mana", amount = 10}
+    {type = "item", name = "channeled-mana", amount = 10},
+    {type = "fluid", name = "stability", amount = 40}
   },
   results = {
     {type = "item", name = "mana-orb", amount = 1}
