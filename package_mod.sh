@@ -12,40 +12,49 @@ ZIP_FILE="${MOD_FOLDER}.zip"
 
 echo "Packaging ${MOD_NAME} v${MOD_VERSION}..."
 
+# Get current directory name
+CURRENT_DIR=$(basename "$PWD")
+
 # Remove old zip if it exists
 rm -f "$ZIP_FILE"
+
+# Go to parent directory and create zip with enclosing folder
+cd ..
 
 # Check if 7z is available
 if command -v 7z &> /dev/null; then
   echo "Using 7z..."
 
   # Create zip with 7z, excluding unwanted files
-  7z a -tzip "$ZIP_FILE" \
+  7z a -tzip "${CURRENT_DIR}/${ZIP_FILE}" \
     -xr'!.*' \
     -xr'!gallery' \
     -xr'!*.md' \
     -xr'!package_mod.py' \
     -xr'!package_mod.sh' \
-    ./*
+    "${CURRENT_DIR}/*"
 
   # Add back README.md and LICENSE
-  7z a -tzip "$ZIP_FILE" README.md LICENSE
+  7z a -tzip "${CURRENT_DIR}/${ZIP_FILE}" "${CURRENT_DIR}/README.md" "${CURRENT_DIR}/LICENSE"
 
 else
   echo "Using zip..."
 
   # Create zip with regular zip command
-  zip -r "$ZIP_FILE" . \
-    -x '.*' \
-    -x '**/.*' \
-    -x 'gallery/*' \
-    -x '*.md' \
-    -x 'package_mod.py' \
-    -x 'package_mod.sh'
+  zip -r "${CURRENT_DIR}/${ZIP_FILE}" "${CURRENT_DIR}" \
+    -x "${CURRENT_DIR}/.*" \
+    -x "${CURRENT_DIR}/**/.*" \
+    -x "${CURRENT_DIR}/gallery/*" \
+    -x "${CURRENT_DIR}/*.md" \
+    -x "${CURRENT_DIR}/package_mod.py" \
+    -x "${CURRENT_DIR}/package_mod.sh"
 
   # Add back README.md and LICENSE
-  zip "$ZIP_FILE" README.md LICENSE
+  zip "${CURRENT_DIR}/${ZIP_FILE}" "${CURRENT_DIR}/README.md" "${CURRENT_DIR}/LICENSE"
 fi
+
+# Go back to original directory
+cd "${CURRENT_DIR}"
 
 # Show result
 FILE_SIZE=$(du -h "$ZIP_FILE" | cut -f1)
