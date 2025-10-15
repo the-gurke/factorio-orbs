@@ -14,6 +14,8 @@ Basic knowledge of the circuit network is required to finish the game.
 
 Several elements of the game are simplified: you don't need to worry about electricity distribution, you don't need to build for scale, and you don't need to solve complex logistical challenges (no trains or bots). Everything you need to build to unlock the next level of the technology tree fits on one screen. However, the puzzle-solving and timing challenges are significantly harder and require iteration on different designs.
 
+While not likely, it is possible to lose too many orbs such that the game completely deadlocks and winning becomes impossible!
+
 Features:
 
 * Production chains that require solving unique puzzles.
