@@ -76,6 +76,23 @@ conjuration_machine.graphics_set = {
         scale = 0.18,
         shift = {0, 0}
       }
+    },
+    {
+      north_position = {0, -0.5},
+      east_position = {0, -0.5},
+      south_position = {0, -0.5},
+      west_position = {0, -0.5},
+      animation = {
+        filename = "__base__/graphics/entity/smoke/smoke.png",
+        priority = "high",
+        width = 152,
+        height = 120,
+        frame_count = 60,
+        line_length = 5,
+        animation_speed = 0.4,
+        scale = 1.0,
+        tint = {r = 1.0, g = 0.2, b = 1.0, a = 0.7}
+      }
     }
   }
 }
