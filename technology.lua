@@ -270,6 +270,60 @@ data:extend({
     order = "a-h-a2c",
     upgrade = true
   },
+  {
+    type = "technology",
+    name = "summoning-speed-4",
+    localised_name = {"technology-name.summoning-speed-4"},
+    localised_description = {"technology-description.summoning-speed-4"},
+    icon = "__orbs__/graphics/summoning-technology.png",
+    icon_size = 1024,
+    prerequisites = {"summoning-speed-3", "rune-research-packs"},
+    unit = {
+      count = 10,
+      ingredients = {
+        {"conjuration-research-pack", 5},
+        {"divination-research-pack", 5},
+        {"rune-research-pack", 1}
+      },
+      time = 150
+    },
+    effects = {
+      {
+        type = "gun-speed",
+        ammo_category = "summoning-essence",
+        modifier = 0.5
+      }
+    },
+    order = "a-h-a2c",
+    upgrade = true
+  },
+  {
+    type = "technology",
+    name = "summoning-speed-5",
+    localised_name = {"technology-name.summoning-speed-5"},
+    localised_description = {"technology-description.summoning-speed-5"},
+    icon = "__orbs__/graphics/summoning-technology.png",
+    icon_size = 1024,
+    prerequisites = {"summoning-speed-4"},
+    unit = {
+      count = 100,
+      ingredients = {
+        {"conjuration-research-pack", 1},
+        {"divination-research-pack", 1},
+        {"rune-research-pack", 1}
+      },
+      time = 60
+    },
+    effects = {
+      {
+        type = "gun-speed",
+        ammo_category = "summoning-essence",
+        modifier = 0.5
+      }
+    },
+    order = "a-h-a2c",
+    upgrade = true
+  },
   -- Summoning Range Technologies
   {
     type = "technology",

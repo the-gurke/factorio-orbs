@@ -12,7 +12,6 @@
 # Balancing
 
 * add 10s setup timer for defense wards
-* add more summoning speed research
 * there is no scalable way to harvest apples or fish
 * make base potion in bulk, i.e. have one expensive recipe that takes many
   vials and mash

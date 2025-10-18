@@ -1119,9 +1119,9 @@ end
 -- Helper function to get summoning speed (how often to poll)
 local function get_summoning_speed(player)
   -- Base polling rate: every 30 ticks (0.5 seconds)
-  -- Speed research makes it faster: 30, 23, 16, 9
+  -- Speed research makes it faster: 30, 20, 15, 12, 10
   local speed_modifier = player.force.get_gun_speed_modifier("summoning-essence")
-  return math.floor(30 - speed_modifier * 14)
+  return math.ceil(30 / (1 + speed_modifier))
 end
 
 -- Helper function to get summoning range
