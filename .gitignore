@@ -1,2 +1,35 @@
+# Operating System Files
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
 
+# Editor and IDE Files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+*~
+.project
+.settings/
+.classpath
+
+# Lua Files
+luac.out
+*.luac
+
+# Logs and Temporary Files
+*.log
+*.tmp
+*.temp
+*.bak
+*.cache
+
+# Factorio Mod Distribution
+orbs_*.zip
