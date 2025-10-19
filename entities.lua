@@ -227,13 +227,32 @@ distillery.graphics_set = {
   animation = {
     layers = {
       {
-        filename = "__orbs__/graphics/distillery.png",
+        filename = "__orbs__/graphics/distillery-sprite.png",
         priority = "high",
-        width = 1024,
-        height = 1024,
+        width = 512,
+        height = 540,
         frame_count = 1,
-        line_length = 1,
-        scale = 0.1,
+        line_length = 4,
+        scale = 0.2,
+        shift = {0, 0}
+      }
+    }
+  },
+  working_visualisations = {
+    {
+      north_position = {0, 0},
+      east_position = {0, 0},
+      south_position = {0, 0},
+      west_position = {0, 0},
+      animation = {
+        filename = "__orbs__/graphics/distillery-sprite.png",
+        priority = "high",
+        width = 512,
+        height = 540,
+        frame_count = 15,
+        line_length = 4,
+        animation_speed = 0.3,
+        scale = 0.2,
         shift = {0, 0}
       }
     }
