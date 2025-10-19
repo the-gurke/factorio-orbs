@@ -874,6 +874,12 @@ if teleportation_stream.particle then
   teleportation_stream.particle.tint = {r = 0.3, g = 0.8, b = 1.0, a = 0.4}
 end
 
+-- Disable initial fire effects and muzzle flash
+teleportation_stream.initial_action = nil
+teleportation_stream.smoke_sources = nil
+teleportation_stream.spine_animation = nil
+teleportation_stream.shadow = nil
+
 data:extend({teleportation_stream})
 
 -- Create the rune transformer (based on steel furnace)
