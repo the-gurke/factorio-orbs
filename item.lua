@@ -878,11 +878,21 @@ data:extend({
       movement_slow_down_factor = 1.0,
       range = 20,
       min_range = 3,
-      gun_barrel_length = 0,  -- No barrel length = no muzzle flash
+      gun_barrel_length = 0,
       gun_center_shift = {0, -0.5},
-      sound = {
-        filename = "__base__/sound/fight/heavy-gunshot-1.ogg",
-        volume = 0.30
+      cyclic_sound = {
+        begin_sound = {
+          filename = "__orbs__/sound/teleport.ogg",
+          volume = 2.0
+        },
+        middle_sound = {
+          filename = "__orbs__/sound/teleport.ogg",
+          volume = 2.0
+        },
+        end_sound = {
+          filename = "__base__/sound/silence-1sec.ogg",
+          volume = 0.0
+        }
       }
     }
   },
