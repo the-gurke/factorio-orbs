@@ -1299,3 +1299,77 @@ end
 
 script.on_event(defines.events.on_tick, poll_summoning_players)
 
+--------------------------------------------------------
+--  Orb Spillage on Entity Destruction                --
+--------------------------------------------------------
+
+-- Handle entity death and spill magic orbs
+script.on_event(defines.events.on_entity_died, function(event)
+  local entity = event.entity
+  if not entity or not entity.valid then return end
+
+  local surface = entity.surface
+  local position = entity.position
+  local total_magic_orbs = 0
+  local total_conjuration_orbs = 0
+
+  -- Check if entity is a conjuration machine - always drops 1 magic orb
+  if entity.name == "conjuration-machine" then
+    total_conjuration_orbs = total_conjuration_orbs + 1
+  end
+
+  -- Special case for inserters: check held_stack
+  if entity.type == "inserter" and entity.held_stack and entity.held_stack.valid_for_read then
+    local held_item = entity.held_stack
+    if held_item.name == "magic-orb" then
+      total_magic_orbs = total_magic_orbs + held_item.count
+      entity.held_stack.clear()
+    elseif held_item.name == "conjuration-orb" then
+      total_conjuration_orbs = total_conjuration_orbs + held_item.count
+      entity.held_stack.clear()
+    end
+  end
+
+  -- Get ALL inventories from the entity and check each one
+  -- This avoids hardcoding inventory types and missing some
+  for inventory_id = 1, 100 do  -- Check all possible inventory indices
+    local inventory = entity.get_inventory(inventory_id)
+    if inventory and inventory.valid then
+      -- Count magic orbs and conjuration orbs in this inventory
+      local magic_count = inventory.get_item_count("magic-orb")
+      local conjuration_count = inventory.get_item_count("conjuration-orb")
+
+      if magic_count > 0 or conjuration_count > 0 then
+        -- Remove the orbs from the inventory so they don't drop normally
+        if magic_count > 0 then
+          inventory.remove({name = "magic-orb", count = magic_count})
+          total_magic_orbs = total_magic_orbs + magic_count
+        end
+        if conjuration_count > 0 then
+          inventory.remove({name = "conjuration-orb", count = conjuration_count})
+          total_conjuration_orbs = total_conjuration_orbs + conjuration_count
+        end
+      end
+    end
+  end
+
+  -- Spill all collected orbs at the entity position
+  if total_magic_orbs > 0 then
+    surface.spill_item_stack{
+      position = position,
+      stack = {name = "magic-orb", count = total_magic_orbs},
+      enable_looted = true,
+      force = entity.force
+    }
+  end
+
+  if total_conjuration_orbs > 0 then
+    surface.spill_item_stack{
+      position = position,
+      stack = {name = "conjuration-orb", count = total_conjuration_orbs},
+      enable_looted = true,
+      force = entity.force
+    }
+  end
+end)
+
