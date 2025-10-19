@@ -698,9 +698,74 @@ end)
 --  Portal System                                    --
 --------------------------------------------------------
 
--- Combined portal management every 60 ticks (fuel checking and power management)
+-- Combined portal and distillery management every 60 ticks
 script.on_nth_tick(60, function(event)
   for _, surface in pairs(game.surfaces) do
+    -- Process distilleries (temperature checking)
+    local distilleries = surface.find_entities_filtered{name = "distillery"}
+
+    for _, distillery in pairs(distilleries) do
+      if distillery.valid then
+        -- Get current temperature from the heat energy source
+        local temperature = distillery.temperature or 15
+
+        if temperature > 85 then
+          -- Check if it's crafting before stopping
+          if distillery.is_crafting() then
+            local recipe = distillery.get_recipe()
+            if recipe then
+              -- Get the crafting progress to determine how many ingredients were consumed
+              local progress = distillery.crafting_progress
+
+              -- Save ingredients to return them
+              local ingredients_to_return = {}
+              for _, ingredient in pairs(recipe.ingredients) do
+                local ingredient_name = ingredient.name
+                local ingredient_amount = ingredient.amount or 1
+
+                -- Return full ingredient amount (we're stopping the craft)
+                table.insert(ingredients_to_return, {
+                  name = ingredient_name,
+                  count = ingredient_amount
+                })
+              end
+
+              -- Stop crafting by clearing the recipe
+              distillery.set_recipe(nil)
+
+              -- Return ingredients to the distillery's output inventory
+              local output_inventory = distillery.get_output_inventory()
+              if output_inventory then
+                for _, item in pairs(ingredients_to_return) do
+                  local inserted = output_inventory.insert(item)
+                  -- If output is full, spill items on the ground
+                  if inserted < item.count then
+                    distillery.surface.spill_item_stack{
+                      position = distillery.position,
+                      stack = {name = item.name, count = item.count - inserted},
+                      enable_looted = true,
+                      force = distillery.force
+                    }
+                  end
+                end
+              end
+
+              -- Notify nearby players
+              for _, player in pairs(game.connected_players) do
+                if player.surface == surface then
+                  local distance = math.sqrt((player.position.x - distillery.position.x)^2 +
+                                           (player.position.y - distillery.position.y)^2)
+                  if distance <= 50 then
+                    player.print("Distillery overheated! Temperature: " .. math.floor(temperature) .. "°C - Ingredients spilled on the floor.")
+                  end
+                end
+              end
+            end
+          end
+        end
+      end
+    end
+
     -- Process inactive portals (fuel checking)
     local inactive_portals = surface.find_entities_filtered{name = "inactive-portal"}
 

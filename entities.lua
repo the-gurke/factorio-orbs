@@ -205,7 +205,7 @@ distillery.crafting_categories = {"distilling"}
 distillery.crafting_speed = 1
 distillery.energy_source = {
   type = "heat",
-  max_temperature = 85,
+  max_temperature = 100,
   default_temperature = 15,
   specific_heat = "1MJ",
   max_transfer = "2GW",
@@ -218,6 +218,7 @@ distillery.energy_source = {
   }
 }
 distillery.energy_usage = "50kW"
+distillery.heating_energy = "50kW"  -- Energy needed to maintain working temperature
 distillery.icon = "__orbs__/graphics/distillery.png"
 distillery.icon_size = 1024
 
