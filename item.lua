@@ -349,6 +349,27 @@ data:extend({
     name = "burning-wood",
     icon = "__orbs__/graphics/burning-wood.png",
     icon_size = 1024,
+    pictures = {
+      {
+        layers = {
+          {
+            filename = "__orbs__/graphics/burning-wood.png",
+            size = 1024,
+            scale = 0.03125, -- 1024 * 0.03125 = 32 pixels
+            mipmap_count = 4
+          },
+          {
+            filename = "__orbs__/graphics/burning-wood.png",
+            size = 1024,
+            scale = 0.03125,
+            blend_mode = "additive",
+            draw_as_light = true,
+            tint = {r = 1.0, g = 0.4, b = 0.1, a = 0.5}, -- Orange-red glow
+            mipmap_count = 4
+          }
+        }
+      }
+    },
     subgroup = "intermediate-product",
     order = "z[burning-wood]",
     stack_size = 50,
@@ -364,6 +385,27 @@ data:extend({
     name = "burning-coal",
     icon = "__orbs__/graphics/burning-coal.png",
     icon_size = 1024,
+    pictures = {
+      {
+        layers = {
+          {
+            filename = "__orbs__/graphics/burning-coal.png",
+            size = 1024,
+            scale = 0.03125, -- 1024 * 0.03125 = 32 pixels
+            mipmap_count = 4
+          },
+          {
+            filename = "__orbs__/graphics/burning-coal.png",
+            size = 1024,
+            scale = 0.03125,
+            blend_mode = "additive",
+            draw_as_light = true,
+            tint = {r = 1.0, g = 0.2, b = 0.0, a = 0.5}, -- Pure red glow
+            mipmap_count = 4
+          }
+        }
+      }
+    },
     subgroup = "intermediate-product",
     order = "z[burning-coal]",
     stack_size = 50,
