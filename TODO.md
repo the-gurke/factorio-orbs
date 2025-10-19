@@ -5,7 +5,6 @@
   whole request in one go
 * if technology is added it is not revealed unless one set the mod setting to
   show all research
-* rage throwers cannot be build because they require engine units and steel
 
 # Inconsistencies
 

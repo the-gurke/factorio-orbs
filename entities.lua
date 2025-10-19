@@ -790,9 +790,9 @@ if data.raw["fluid-turret"]["flamethrower-turret"] then
       icon = "__base__/graphics/icons/flamethrower-turret.png",
       icon_size = 64,
       ingredients = {
-        {type = "item", name = "engine-unit", amount = 5},
+        {type = "item", name = "iron-stick", amount = 5},
         {type = "item", name = "iron-gear-wheel", amount = 10},
-        {type = "item", name = "steel-plate", amount = 20},
+        {type = "item", name = "iron-plate", amount = 50},
         {type = "item", name = "rage-orb", amount = 1}
       },
       results = {
