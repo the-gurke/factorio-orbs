@@ -199,9 +199,39 @@ script.on_event(defines.events.on_player_respawned, function(event)
   end
 end)
 
+--------------------------------------------------------
+--  Technology Management                             --
+--------------------------------------------------------
+
+-- Function to enable dependent technologies when a technology is researched
+local function enable_dependent_technologies(force, technology_name)
+  -- Check all technologies to see if their prerequisites are now met
+  for _, tech in pairs(force.technologies) do
+    if not tech.researched and not tech.enabled then
+      -- Check if all prerequisites are met
+      local all_prerequisites_met = true
+      if tech.prerequisites then
+        for _, prereq in pairs(tech.prerequisites) do
+          if not prereq.researched then
+            all_prerequisites_met = false
+            break
+          end
+        end
+      end
+
+      -- If all prerequisites are met, enable the technology
+      if all_prerequisites_met then
+        tech.enabled = true
+      end
+    end
+  end
+end
+
 script.on_configuration_changed(function()
   for _, force in pairs(game.forces) do
     apply_telekinesis_bonuses_to_force(force)
+    -- Enable technologies whose prerequisites are met
+    enable_dependent_technologies(force, nil)
   end
 end)
 
@@ -252,30 +282,6 @@ end)
 --------------------------------------------------------
 --  Orbs research                                     --
 --------------------------------------------------------
-
--- Function to enable dependent technologies when a technology is researched
-local function enable_dependent_technologies(force, technology_name)
-  -- Check all technologies to see if their prerequisites are now met
-  for _, tech in pairs(force.technologies) do
-    if not tech.researched and not tech.enabled then
-      -- Check if all prerequisites are met
-      local all_prerequisites_met = true
-      if tech.prerequisites then
-        for _, prereq in pairs(tech.prerequisites) do
-          if not prereq.researched then
-            all_prerequisites_met = false
-            break
-          end
-        end
-      end
-
-      -- If all prerequisites are met, enable the technology
-      if all_prerequisites_met then
-        tech.enabled = true
-      end
-    end
-  end
-end
 
 -- Handle research completion events
 script.on_event(defines.events.on_research_finished, function(event)
@@ -427,6 +433,11 @@ script.on_init(function()
   -- Apply telekinesis bonuses to all players
   for _, force in pairs(game.forces) do
     apply_telekinesis_bonuses_to_force(force)
+  end
+
+  -- Enable technologies whose prerequisites are met (for all forces)
+  for _, force in pairs(game.forces) do
+    enable_dependent_technologies(force, nil)
   end
 
   -- Remove crash site and customize intro using freeplay remote interface
