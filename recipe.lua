@@ -1590,15 +1590,15 @@ table.insert(recipes, {
   name = "base-potion",
   category = "distilling",
   subgroup = "intermediate-product",
-  energy_required = 5,
+  energy_required = 20,
   icon = "__orbs__/graphics/base-potion.png",
   icon_size = 1024,
   ingredients = {
-    {type = "item", name = "fermented-apple-mash", amount = 5},
-    {type = "item", name = "glass-vial", amount = 1}
+    {type = "item", name = "fermented-apple-mash", amount = 50},
+    {type = "item", name = "glass-vial", amount = 10}
   },
   results = {
-    {type = "item", name = "base-potion", amount = 1}
+    {type = "item", name = "base-potion", amount = 10}
   },
   enabled = false,
   allow_productivity = true,
