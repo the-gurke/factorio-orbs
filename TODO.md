@@ -25,7 +25,6 @@
 
 # Features
 
-* Make distillery not work when it's too hot
 * Maybe make a science with the divination research pack that lets you look
   further ahead in the research tree
 * add more triggers to the rune altar
