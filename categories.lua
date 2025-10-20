@@ -154,10 +154,14 @@ data:extend({
   }
 })
 
--- Damage type
+-- Damage types
 data:extend({
   {
     type = "damage-type",
     name = "arcane"
+  },
+  {
+    type = "damage-type",
+    name = "fish"
   }
 })

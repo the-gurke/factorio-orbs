@@ -139,7 +139,7 @@ data:extend({
           target_effects = {
             {
               type = "damage",
-              damage = {amount = 3, type = "physical"}
+              damage = {amount = 3, type = "fish"}
             }
           }
         }
@@ -152,7 +152,7 @@ data:extend({
           target_effects = {
             {
               type = "damage",
-              damage = {amount = 3, type = "physical"}
+              damage = {amount = 3, type = "fish"}
             }
           }
         }
