@@ -22,7 +22,6 @@
 * The offshore pump "no fuel" icon should be centered
 * Resonance spires don't show their orbs, neither in graphics nor in alt mode
 * the pipe connections for the conjuration machine are blue, should be gold/pink
-* death beam wand fire animations are borked, shows nossle fire
 
 # Features
 

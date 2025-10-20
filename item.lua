@@ -669,13 +669,6 @@ data:extend({
           action_delivery = {
             {
               type = "instant",
-              source_effects = {
-                {
-                  type = "create-explosion",
-                  entity_name = "laser-bubble",
-                  only_when_visible = true
-                }
-              },
               target_effects = {
                 {
                   type = "create-entity",
@@ -750,13 +743,6 @@ data:extend({
           action_delivery = {
             {
               type = "instant",
-              source_effects = {
-                {
-                  type = "create-explosion",
-                  entity_name = "laser-bubble",
-                  only_when_visible = true
-                }
-              },
               target_effects = {
                 {
                   type = "create-entity",
