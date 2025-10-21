@@ -12,7 +12,7 @@
 # Balancing
 
 * add 10s setup timer for defense wards
-* there is no scalable way to harvest apples or fish
+* there is no scalable way to harvest apples or fish, or channel mana
 
 # Art
 
@@ -31,4 +31,5 @@
 * player movement speed upgrade
 * summoning wand doesn't remove trees (not sure if desired)
 * add teleportation range upgrade
-* add achievements
+* add inventory size upgrade
+* add more achievements
