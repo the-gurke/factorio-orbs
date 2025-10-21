@@ -18,7 +18,7 @@ CURRENT_DIR=$(basename "$PWD")
 # Define exclude patterns
 EXCLUDE_PATTERNS=(
   ".*"           # Hidden files
-  "gallery"      # Gallery folder
+  "gallery/*"      # Gallery folder
   "*.md"         # Markdown files (will add back specific ones)
   "orbs_*.zip"        # Zip files
   "package_mod.sh"  # This script
