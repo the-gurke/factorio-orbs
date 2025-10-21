@@ -10,7 +10,6 @@
 # Inconsistencies
 
 * Magic orbs take 10 active magic shards to craft, but flux orbs take 50/10/0.05 = 100 active magic shards to craft
-* Some orbs use magic orbs to craft, but not others.
 * Remove oil from the map
 
 # Balancing

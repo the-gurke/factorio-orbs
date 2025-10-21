@@ -110,10 +110,6 @@ data:extend({
         type = "unlock-recipe",
         recipe = "transfigure-conjuration-orb"
       },
-      {
-        type = "unlock-recipe",
-        recipe = "neutralize-conjuration-orb"
-      }
     },
     order = "a-h-a0"
   },
@@ -418,10 +414,6 @@ data:extend({
       {
         type = "unlock-recipe",
         recipe = "transfigure-haste-orb"
-      },
-      {
-        type = "unlock-recipe",
-        recipe = "neutralize-haste-orb"
       }
     },
     order = "a-h-b"
