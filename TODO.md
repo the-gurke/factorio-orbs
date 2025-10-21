@@ -18,9 +18,7 @@
 * add 10s setup timer for defense wards
 * there is no scalable way to harvest apples or fish
 * increase the throw range of the Glitter Bomb as part of telekinesis research
-* cost scaling on the infinite combat researches is too steep
 * Adding a research for crossbow reload speed
-* Add inventory size research
 * Consider adjusting volatile orb spoil time to be longer to make it less stressful.
 
 # Art
