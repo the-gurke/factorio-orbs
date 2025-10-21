@@ -20,7 +20,7 @@ EXCLUDE_PATTERNS=(
   ".*"           # Hidden files
   "gallery"      # Gallery folder
   "*.md"         # Markdown files (will add back specific ones)
-  "*.zip"        # Zip files
+  "orbs_*.zip"        # Zip files
   "package_mod.sh"  # This script
 )
 
