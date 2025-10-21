@@ -970,7 +970,7 @@ data:extend({
     },
     prerequisites = {"crossbow"},
     unit = {
-      count_formula = "10*2^L",
+      count_formula = "10*2^(L/4)",
       ingredients = {
         {"automation-science-pack", 1}
       },
@@ -993,7 +993,7 @@ data:extend({
     },
     prerequisites = {"conjuration-research"},
     unit = {
-      count_formula = "10*2^L",
+      count_formula = "10*2^(L/4)",
       ingredients = {
         {"conjuration-research-pack", 1}
       },
