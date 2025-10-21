@@ -15,6 +15,21 @@ echo "Packaging ${MOD_NAME} v${MOD_VERSION}..."
 # Get current directory name
 CURRENT_DIR=$(basename "$PWD")
 
+# Define exclude patterns
+EXCLUDE_PATTERNS=(
+  ".*"           # Hidden files
+  "gallery/*"      # Gallery folder
+  "*.md"         # Markdown files (will add back specific ones)
+  "orbs_*.zip"        # Zip files
+  "package_mod.sh"  # This script
+)
+
+# Define files to include back
+INCLUDE_FILES=(
+  "README.md"
+  "LICENSE"
+)
+
 # Remove old zip if it exists
 rm -f "$ZIP_FILE"
 
@@ -25,32 +40,40 @@ cd ..
 if command -v 7z &> /dev/null; then
   echo "Using 7z..."
 
-  # Create zip with 7z, excluding unwanted files
-  7z a -tzip "${CURRENT_DIR}/${ZIP_FILE}" \
-    -xr'!.*' \
-    -xr'!gallery' \
-    -xr'!*.md' \
-    -xr'!package_mod.py' \
-    -xr'!package_mod.sh' \
-    "${CURRENT_DIR}/*"
+  # Build exclude arguments for 7z
+  EXCLUDE_ARGS=()
+  for pattern in "${EXCLUDE_PATTERNS[@]}"; do
+    EXCLUDE_ARGS+=("-xr!${pattern}")
+  done
 
-  # Add back README.md and LICENSE
-  7z a -tzip "${CURRENT_DIR}/${ZIP_FILE}" "${CURRENT_DIR}/README.md" "${CURRENT_DIR}/LICENSE"
+  # Create zip with 7z, excluding unwanted files
+  7z a -tzip "${CURRENT_DIR}/${ZIP_FILE}" "${EXCLUDE_ARGS[@]}" "${CURRENT_DIR}/*"
+
+  # Add back specific files
+  for file in "${INCLUDE_FILES[@]}"; do
+    7z a -tzip "${CURRENT_DIR}/${ZIP_FILE}" "${CURRENT_DIR}/${file}" 2>/dev/null || true
+  done
 
 else
   echo "Using zip..."
 
-  # Create zip with regular zip command
-  zip -r "${CURRENT_DIR}/${ZIP_FILE}" "${CURRENT_DIR}" \
-    -x "${CURRENT_DIR}/.*" \
-    -x "${CURRENT_DIR}/**/.*" \
-    -x "${CURRENT_DIR}/gallery/*" \
-    -x "${CURRENT_DIR}/*.md" \
-    -x "${CURRENT_DIR}/package_mod.py" \
-    -x "${CURRENT_DIR}/package_mod.sh"
+  # Build exclude arguments for zip
+  EXCLUDE_ARGS=()
+  for pattern in "${EXCLUDE_PATTERNS[@]}"; do
+    EXCLUDE_ARGS+=("-x" "${CURRENT_DIR}/${pattern}")
+    # Also exclude in subdirectories for hidden files
+    if [[ "$pattern" == ".*" ]]; then
+      EXCLUDE_ARGS+=("-x" "${CURRENT_DIR}/**/${pattern}")
+    fi
+  done
 
-  # Add back README.md and LICENSE
-  zip "${CURRENT_DIR}/${ZIP_FILE}" "${CURRENT_DIR}/README.md" "${CURRENT_DIR}/LICENSE"
+  # Create zip with regular zip command
+  zip -r "${CURRENT_DIR}/${ZIP_FILE}" "${CURRENT_DIR}" "${EXCLUDE_ARGS[@]}"
+
+  # Add back specific files
+  for file in "${INCLUDE_FILES[@]}"; do
+    zip "${CURRENT_DIR}/${ZIP_FILE}" "${CURRENT_DIR}/${file}" 2>/dev/null || true
+  done
 fi
 
 # Go back to original directory

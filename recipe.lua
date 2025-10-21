@@ -113,11 +113,11 @@ table.insert(recipes, {
   icon = "__orbs__/graphics/inactive-magic-shard.png",
   icon_size = 1024,
   ingredients = {
-    {type = "item", name = "magic-orb", amount = 1},
+    {type = "item", name = "magic-orb", amount = 1, ignored_by_stats = 1},
     {type = "item", name = "inactive-magic-shard", amount = 10}
   },
   results = {
-    {type = "item", name = "magic-orb", amount = 1}
+    {type = "item", name = "magic-orb", amount = 1, ignored_by_stats = 1}
   },
   enabled = false,
   order = "c[banish-shards]"
@@ -154,11 +154,11 @@ table.insert(recipes, {
   icon = "__orbs__/graphics/conjuration-orb.png",
   icon_size = 1024,
   ingredients = {
-    {type = "item", name = "magic-orb", amount = 2}
+    {type = "item", name = "magic-orb", amount = 2, ignored_by_stats = 1}
   },
   results = {
     {type = "item", name = "conjuration-orb", amount = 1},
-    {type = "item", name = "magic-orb", amount = 1}
+    {type = "item", name = "magic-orb", amount = 1, ignored_by_stats = 1}
   },
   enabled = false,
   order = "b[transfigure-conjuration-orb]"
@@ -195,11 +195,11 @@ table.insert(recipes, {
   icon = "__orbs__/graphics/magic-research-pack.png",
   icon_size = 1024,
   ingredients = {
-    {type = "item", name = "magic-orb", amount = 2}
+    {type = "item", name = "magic-orb", amount = 2, ignored_by_stats = 1}
   },
   results = {
     {type = "item", name = "magic-research-pack", amount = 1},
-    {type = "item", name = "magic-orb", amount = 1}
+    {type = "item", name = "magic-orb", amount = 1, ignored_by_stats = 1}
   },
   enabled = false,
   allow_productivity = true,
@@ -216,51 +216,14 @@ table.insert(recipes, {
   icon = "__orbs__/graphics/haste-orb.png",
   icon_size = 1024,
   ingredients = {
-    {type = "item", name = "magic-orb", amount = 1}
+    {type = "item", name = "magic-orb", amount = 2, ignored_by_stats = 1}
   },
   results = {
-    {type = "item", name = "haste-orb", amount = 1}
+    {type = "item", name = "haste-orb", amount = 1},
+    {type = "item", name = "magic-orb", amount = 1, ignored_by_stats = 1}
   },
   enabled = false,
   order = "c[transfigure-haste-orb]"
-})
-
--- Neutralize Haste Orb
-table.insert(recipes, {
-  type = "recipe",
-  name = "neutralize-haste-orb",
-  category = "hand-crafting-and-orbs",
-  subgroup = "orbs-manifest",
-  energy_required = 1,
-  icon = "__orbs__/graphics/magic-orb.png",
-  icon_size = 1024,
-  ingredients = {
-    {type = "item", name = "haste-orb", amount = 1}
-  },
-  results = {
-    {type = "item", name = "magic-orb", amount = 1}
-  },
-  enabled = false,
-  order = "d[neutralize-haste-orb]"
-})
-
--- Neutralize Conjuration Orb
-table.insert(recipes, {
-  type = "recipe",
-  name = "neutralize-conjuration-orb",
-  category = "hand-crafting-and-orbs",
-  subgroup = "orbs-manifest",
-  energy_required = 1,
-  icon = "__orbs__/graphics/magic-orb.png",
-  icon_size = 1024,
-  ingredients = {
-    {type = "item", name = "conjuration-orb", amount = 1}
-  },
-  results = {
-    {type = "item", name = "magic-orb", amount = 1}
-  },
-  enabled = false,
-  order = "e[neutralize-conjuration-orb]"
 })
 
 -- Conjure Productivity Orb
@@ -273,13 +236,14 @@ table.insert(recipes, {
   icon = "__orbs__/graphics/productivity-orb.png",
   icon_size = 1024,
   ingredients = {
-    {type = "item", name = "magic-orb", amount = 1},
+    {type = "item", name = "magic-orb", amount = 2, ignored_by_stats = 1},
     {type = "item", name = "gold-plate", amount = 4},
     {type = "item", name = "copper-cable", amount = 2},
     {type = "item", name = "dust-of-serendipity", amount = 1}
   },
   results = {
-    {type = "item", name = "productivity-orb", amount = 1}
+    {type = "item", name = "productivity-orb", amount = 1},
+    {type = "item", name = "magic-orb", amount = 1, ignored_by_stats = 1}
   },
   enabled = false,
   order = "f[conjure-productivity-orb]"
@@ -295,12 +259,13 @@ table.insert(recipes, {
   icon = "__orbs__/graphics/cleansing-orb.png",
   icon_size = 1024,
   ingredients = {
-    {type = "item", name = "magic-orb", amount = 1},
+    {type = "item", name = "magic-orb", amount = 2, ignored_by_stats = 1},
     {type = "fluid", name = "water", amount = 50},
     {type = "item", name = "dust-of-serendipity", amount = 1}
   },
   results = {
-    {type = "item", name = "cleansing-orb", amount = 1}
+    {type = "item", name = "cleansing-orb", amount = 1},
+    {type = "item", name = "magic-orb", amount = 1, ignored_by_stats = 1}
   },
   enabled = false,
   order = "g[conjure-cleansing-orb]"
@@ -338,10 +303,10 @@ table.insert(recipes, {
   icon = "__orbs__/graphics/flux-orb-alpha.png",
   icon_size = 1024,
   ingredients = {
-    {type = "item", name = "flux-orb-alpha", amount = 1}
+    {type = "item", name = "flux-orb-alpha", amount = 1, ignored_by_stats = 1}
   },
   results = {
-    {type = "item", name = "flux-orb-alpha", amount = 1}
+    {type = "item", name = "flux-orb-alpha", amount = 1, ignored_by_stats = 1}
   },
   reset_freshness_on_craft = true,
   enabled = false,
@@ -360,11 +325,11 @@ table.insert(recipes, {
   icon = "__orbs__/graphics/divination-essence.png",
   icon_size = 1024,
   ingredients = {
-    {type = "item", name = "flux-orb-beta", amount = 1},
-    {type = "item", name = "flux-orb-gamma", amount = 1}
+    {type = "item", name = "flux-orb-beta", amount = 1, ignored_by_stats = 1},
+    {type = "item", name = "flux-orb-gamma", amount = 1, ignored_by_stats = 1}
   },
   results = {
-    {type = "item", name = "flux-orb-alpha", amount = 2, ignored_by_productivity = 2},
+    {type = "item", name = "flux-orb-alpha", amount = 2, ignored_by_stats = 2, ignored_by_productivity = 2},
     {type = "item", name = "divination-essence", amount = 1}
   },
   reset_freshness_on_craft = true,
@@ -731,11 +696,12 @@ table.insert(recipes, {
   icon = "__orbs__/graphics/rage-orb.png",
   icon_size = 1024,
   ingredients = {
-    {type = "item", name = "magic-orb", amount = 1},
+    {type = "item", name = "magic-orb", amount = 2, ignored_by_stats = 1},
     {type = "fluid", name = "rage", amount = 50}
   },
   results = {
-    {type = "item", name = "rage-orb", amount = 1}
+    {type = "item", name = "rage-orb", amount = 1},
+    {type = "item", name = "magic-orb", amount = 1, ignored_by_stats = 1},
   },
   enabled = false,
   order = "k[rage-orb]"
@@ -1370,12 +1336,13 @@ table.insert(recipes, {
   icon = "__orbs__/graphics/mana-orb.png",
   icon_size = 1024,
   ingredients = {
-    {type = "item", name = "magic-orb", amount = 1},
+    {type = "item", name = "magic-orb", amount = 2, ignored_by_stats = 1},
     {type = "item", name = "channeled-mana", amount = 10},
     {type = "fluid", name = "stability", amount = 40}
   },
   results = {
-    {type = "item", name = "mana-orb", amount = 1}
+    {type = "item", name = "mana-orb", amount = 1},
+    {type = "item", name = "magic-orb", amount = 1, ignored_by_stats = 1}
   },
   enabled = false,
   allow_productivity = false,

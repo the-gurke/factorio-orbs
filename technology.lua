@@ -110,10 +110,6 @@ data:extend({
         type = "unlock-recipe",
         recipe = "transfigure-conjuration-orb"
       },
-      {
-        type = "unlock-recipe",
-        recipe = "neutralize-conjuration-orb"
-      }
     },
     order = "a-h-a0"
   },
@@ -418,10 +414,6 @@ data:extend({
       {
         type = "unlock-recipe",
         recipe = "transfigure-haste-orb"
-      },
-      {
-        type = "unlock-recipe",
-        recipe = "neutralize-haste-orb"
       }
     },
     order = "a-h-b"
@@ -970,7 +962,7 @@ data:extend({
     },
     prerequisites = {"crossbow"},
     unit = {
-      count_formula = "10*2^L",
+      count_formula = "10*2^(L/4)",
       ingredients = {
         {"automation-science-pack", 1}
       },
@@ -993,7 +985,7 @@ data:extend({
     },
     prerequisites = {"conjuration-research"},
     unit = {
-      count_formula = "10*2^L",
+      count_formula = "10*2^(L/4)",
       ingredients = {
         {"conjuration-research-pack", 1}
       },
@@ -1710,5 +1702,78 @@ data:extend({
       }
     },
     order = "z-e[summon-night]"
+  },
+  -- Toolbelt Technologies
+  {
+    type = "technology",
+    name = "toolbelt-1",
+    localised_name = {"technology-name.toolbelt-1"},
+    localised_description = {"technology-description.toolbelt-1"},
+    icon = "__base__/graphics/technology/toolbelt.png",
+    icon_size = 256,
+    prerequisites = {"conjuration-research"},
+    unit = {
+      count = 10,
+      ingredients = {
+        {"conjuration-research-pack", 1}
+      },
+      time = 30
+    },
+    effects = {
+      {
+        type = "character-inventory-slots-bonus",
+        modifier = 10
+      }
+    },
+    order = "c-k-m-a"
+  },
+  {
+    type = "technology",
+    name = "toolbelt-2",
+    localised_name = {"technology-name.toolbelt-2"},
+    localised_description = {"technology-description.toolbelt-2"},
+    icon = "__base__/graphics/technology/toolbelt.png",
+    icon_size = 256,
+    prerequisites = {"toolbelt-1", "divination"},
+    unit = {
+      count = 10,
+      ingredients = {
+        {"conjuration-research-pack", 1},
+        {"divination-research-pack", 1}
+      },
+      time = 30
+    },
+    effects = {
+      {
+        type = "character-inventory-slots-bonus",
+        modifier = 20
+      }
+    },
+    order = "c-k-m-b"
+  },
+  {
+    type = "technology",
+    name = "toolbelt-3",
+    localised_name = {"technology-name.toolbelt-3"},
+    localised_description = {"technology-description.toolbelt-3"},
+    icon = "__base__/graphics/technology/toolbelt.png",
+    icon_size = 256,
+    prerequisites = {"toolbelt-2", "rune-research-packs"},
+    unit = {
+      count = 10,
+      ingredients = {
+        {"conjuration-research-pack", 1},
+        {"divination-research-pack", 1},
+        {"rune-research-pack", 1}
+      },
+      time = 30
+    },
+    effects = {
+      {
+        type = "character-inventory-slots-bonus",
+        modifier = 40
+      }
+    },
+    order = "c-k-m-c"
   }
 })
