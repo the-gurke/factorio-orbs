@@ -5,10 +5,12 @@
   whole request in one go
 * Volatile orbs in your editor inventory causes explosions in "your current location" when they spoil. And explosions continue to happen (repeatedly) even after leaving the editor.
 * Searching in the Factoriopedia gets broken by the Rune Transformers. Specifically after pressing Ctrl+F in the Factoriopedia the search box will randomly grey out after some time.
+* A lot of space age items/recipes are no longer accessible in the game and should be removed; right now they clutter menus and the Factoriopedia.
 
 # Inconsistencies
 
 * Magic orbs take 10 active magic shards to craft, but flux orbs take 50/10/0.05 = 100 active magic shards to craft
+* Some orbs use magic orbs to craft, but not others.
 * Remove oil from the map
 
 # Balancing
@@ -34,6 +36,7 @@
 
 * Maybe make a science with the divination research pack that lets you look
   further ahead in the research tree
+* make a mk2 conjuration machine
 * add more triggers to the rune altar
 * player movement speed upgrade
 * summoning wand doesn't remove trees (not sure if desired)
