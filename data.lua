@@ -6,4 +6,4 @@ require("entities")  -- Load entities before items so cloud entities exist when 
 require("item")
 require("recipe")
 require("technology")
---require("achievements")
+require("achievements")
