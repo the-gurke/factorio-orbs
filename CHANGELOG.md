@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.3.3] - 2025-10-25
+
+### Changed
+ - bug fix: mining a ragethrower now yields a ragethrower item
+
+
 ## [0.3.2] - 2025-10-22
 
 ### Changed
