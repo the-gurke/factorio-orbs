@@ -4,15 +4,14 @@
 
 ### Changed
  - bug fix: mining a ragethrower now yields a ragethrower item
-
+ - bug fix: entering an active portal did not trigger the win condition
 
 ## [0.3.2] - 2025-10-22
 
 ### Changed
 - Removed recipe transforming conjuration and speed orbs back into magic orbs
-- Rebalanced orb crafting statistics for consistency
-- Made bonus damage technology cheaper
-- All specialized orb recipes now consistently use a magic orb as catalyst
+- Made bonus damage technology cheaper: cost modifier reduced from 2x to 2^(1/4)x
+- All specialised orb recipes now consistently use a magic orb as catalyst
 - Improved rune research pack crafting instructions
 
 ### Added
