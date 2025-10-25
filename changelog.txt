@@ -1,0 +1,49 @@
+---------------------------------------------------------------------------------------------------
+Version: 0.3.3
+Date: 25. 10. 2025
+  Bugfixes:
+    - Mining a ragethrower now yields a ragethrower item.
+    - Entering an active portal now correctly triggers the win condition.
+---------------------------------------------------------------------------------------------------
+Version: 0.3.2
+Date: 22. 10. 2025
+  Changes:
+    - Removed recipe transforming conjuration and speed orbs back into magic orbs.
+    - Made bonus damage technology cheaper: cost modifier reduced from 2x to 2^(1/4)x.
+    - All specialised orb recipes now consistently use a magic orb as catalyst.
+    - Improved rune research pack crafting instructions.
+  Features:
+    - Bag of Holding technology tree for increased inventory capacity.
+    - Custom achievement.
+---------------------------------------------------------------------------------------------------
+Version: 0.3.1
+Date: 19. 10. 2025
+  Features:
+    - Ragethrower is now craftable.
+    - Two additional tiers of summoning speed research.
+    - Mod setting to control research tree visibility (was previously always hidden).
+    - Potions now have to be crafted in bulk.
+    - Burning coal and wood now glow at night.
+    - Custom teleportation sound effects.
+    - Technologies are retroactively displayed when added through mod updates.
+  Changes:
+    - BREAKING CHANGE: Distillery now stops working when overheated - as originally intended.
+    - Entities now drop their orb contents when destroyed, significantly reducing deadlock probability.
+    - Removed muzzle flash effects from death beam wand and teleportation.
+---------------------------------------------------------------------------------------------------
+Version: 0.3.0
+Date: 15. 10. 2025
+  Major Features:
+    - Initial public release of the Orbs mod.
+    - Complete magic system replacing electricity-based automation.
+    - Orb conjuration and spoilage mechanics.
+    - Rune transformation system with 9 rune words.
+    - Divination system with time-sensitive crafting.
+    - Magical machines: Conjuration Machine, Rune Transformer, Rune Altar, Resonance Spire.
+    - Custom research system with magical research packs.
+    - Quality of life through automatic summoning and long reach.
+    - Fuel system requiring wood/coal to be lit on fire.
+    - Magic wands and teleportation mechanics.
+    - Potion brewing system with distillery.
+    - Soul collection.
+---------------------------------------------------------------------------------------------------
