@@ -2,6 +2,30 @@
 -- Runtime script that handles events during gameplay
 
 --------------------------------------------------------
+--  Main Tick Handler                                 --
+--------------------------------------------------------
+
+-- Forward declarations for functions defined later
+local poll_summoning_players
+local check_win_condition
+
+-- Main on_tick handler that calls all tick-based functions
+local function orbs_on_tick(event)
+  -- Handle summoning essence functionality
+  if poll_summoning_players then
+    poll_summoning_players(event)
+  end
+
+  -- Check win condition
+  if check_win_condition then
+    check_win_condition(event)
+  end
+end
+
+-- Register the main tick handler
+script.on_event(defines.events.on_tick, orbs_on_tick)
+
+--------------------------------------------------------
 --  Defense Ward Management                           --
 --------------------------------------------------------
 
@@ -900,7 +924,7 @@ end)
 
 
 -- Win condition check - every tick for immediate response
-script.on_event(defines.events.on_tick, function(event)
+function check_win_condition(event)
   -- Only check if there are active portals to improve performance
   for _, surface in pairs(game.surfaces) do
     local active_portals = surface.find_entities_filtered{name = "active-portal"}
@@ -930,7 +954,7 @@ script.on_event(defines.events.on_tick, function(event)
       end
     end
   end
-end)
+end
 
 --------------------------------------------------------
 --  Summoning Essence Functionality (Nanobots-style)  --
@@ -1209,7 +1233,7 @@ local function get_summoning_range(player)
 end
 
 -- Main polling function (like nanobots poll_players)
-local function poll_summoning_players(event)
+function poll_summoning_players(event)
   -- Dynamic polling rate based on any player's research
   local min_poll_rate = 30  -- Default slowest rate
   for _, player in pairs(game.connected_players) do
@@ -1296,8 +1320,6 @@ local function poll_summoning_players(event)
     end
   end
 end
-
-script.on_event(defines.events.on_tick, poll_summoning_players)
 
 --------------------------------------------------------
 --  Orb Spillage on Entity Destruction                --
