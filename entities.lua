@@ -773,6 +773,7 @@ if data.raw["fluid-turret"]["flamethrower-turret"] then
   -- Convert to ammo turret
   ragethrower_turret.type = "ammo-turret"
   ragethrower_turret.name = "ragethrower-turret"
+  ragethrower_turret.minable = {mining_time = 1, result = "ragethrower-turret"}
   ragethrower_turret.ammo_category = "rage-orb"
   ragethrower_turret.inventory_size = 1
   ragethrower_turret.automated_ammo_count = 10
