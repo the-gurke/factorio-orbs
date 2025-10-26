@@ -1124,6 +1124,27 @@ inactive_portal.graphics_set = {
   }
 }
 
+-- Move circuit wire connection point to bottom-right
+-- Use util.by_pixel to convert tile coordinates to pixel coordinates (32 pixels per tile)
+local circuit_offset_tiles = {2.2, 2.5}
+local circuit_offset_pixels = util.by_pixel(circuit_offset_tiles[1] * 32, circuit_offset_tiles[2] * 32)
+
+-- Replace circuit connectors entirely using base game's circuit connector system
+-- This ensures both wires and visual sprites (yellow box) are positioned correctly
+-- The require sets global variables: circuit_connector_definitions and universal_connector_template
+require("circuit-connector-sprites")
+
+inactive_portal.circuit_connector = circuit_connector_definitions.create_vector(
+  universal_connector_template,
+  {
+    -- All 4 directions use the same offset (portal doesn't rotate)
+    { variation = 26, main_offset = circuit_offset_pixels, shadow_offset = circuit_offset_pixels, show_shadow = true },
+    { variation = 26, main_offset = circuit_offset_pixels, shadow_offset = circuit_offset_pixels, show_shadow = true },
+    { variation = 26, main_offset = circuit_offset_pixels, shadow_offset = circuit_offset_pixels, show_shadow = true },
+    { variation = 26, main_offset = circuit_offset_pixels, shadow_offset = circuit_offset_pixels, show_shadow = true }
+  }
+)
+
 -- Remove next_upgrade to avoid bounding box conflicts
 inactive_portal.next_upgrade = nil
 
