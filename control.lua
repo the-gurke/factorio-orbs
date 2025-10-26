@@ -722,6 +722,49 @@ end)
 --  Portal System                                    --
 --------------------------------------------------------
 
+-- Helper function to store wire connections from an entity
+local function store_wire_connections(entity)
+  local wire_connections = {}
+  local connectors = entity.get_wire_connectors(false)
+  if connectors then
+    for connector_id, connector in pairs(connectors) do
+      wire_connections[connector_id] = {}
+      if connector.connections then
+        for _, wire_connection in pairs(connector.connections) do
+          -- wire_connection.target is a LuaWireConnector, get the entity via .owner
+          if wire_connection.target and wire_connection.target.valid then
+            table.insert(wire_connections[connector_id], {
+              entity = wire_connection.target.owner,
+              target_connector_id = wire_connection.target.wire_connector_id
+            })
+          end
+        end
+      end
+    end
+  end
+  return wire_connections
+end
+
+-- Helper function to restore wire connections to an entity
+local function restore_wire_connections(entity, wire_connections)
+  local new_connectors = entity.get_wire_connectors(true)
+  if new_connectors and wire_connections then
+    for connector_id, targets in pairs(wire_connections) do
+      local source_connector = new_connectors[connector_id]
+      if source_connector then
+        for _, target_info in pairs(targets) do
+          if target_info.entity and target_info.entity.valid then
+            local target_connector = target_info.entity.get_wire_connector(target_info.target_connector_id, false)
+            if target_connector then
+              source_connector.connect_to(target_connector, false)
+            end
+          end
+        end
+      end
+    end
+  end
+end
+
 -- Combined portal and distillery management every 60 ticks
 script.on_nth_tick(60, function(event)
   for _, surface in pairs(game.surfaces) do
@@ -822,6 +865,9 @@ script.on_nth_tick(60, function(event)
           local force = portal.force
           local surface_ref = portal.surface
 
+          -- Store wire connections
+          local wire_connections = store_wire_connections(portal)
+
           -- Remove active portal
           portal.destroy()
 
@@ -835,6 +881,9 @@ script.on_nth_tick(60, function(event)
           -- Set the recipe to portal-home
           if new_inactive_portal then
             new_inactive_portal.set_recipe("portal-home")
+
+            -- Restore wire connections
+            restore_wire_connections(new_inactive_portal, wire_connections)
           end
         end
       end
@@ -885,6 +934,9 @@ script.on_nth_tick(10, function(event) -- Check every 10 ticks for responsivenes
               end
             end
 
+            -- Store wire connections
+            local wire_connections = store_wire_connections(portal)
+
             -- Remove inactive portal
             portal.destroy()
 
@@ -911,6 +963,9 @@ script.on_nth_tick(10, function(event) -- Check every 10 ticks for responsivenes
                   new_module_inventory.insert(module_item)
                 end
               end
+
+              -- Restore wire connections
+              restore_wire_connections(active_portal, wire_connections)
 
               -- Set the active portal to craft "sustain-portal-home"
               active_portal.set_recipe("sustain-portal-home")
