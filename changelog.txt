@@ -1,4 +1,15 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.3.4
+Date: 26. 10. 2025
+  Bugfixes:
+    - Circuit wire connections are now preserved when portal switches between active and inactive states.
+    - Moved connection position of the wire connection for the portal to fit better visually.
+  Changes:
+    - Modify the rune transformation recipes so that umbra/mortis are more likely and a dead end.
+      This should make the rune stage much harder BUT IT WILL SLOWLY DEADLOCK EXISTING BUILDS.
+  Features:
+    - Added a change log.
+---------------------------------------------------------------------------------------------------
 Version: 0.3.3
 Date: 25. 10. 2025
   Bugfixes:
