@@ -1,5 +1,7 @@
 -- item.lua
 
+local orb_stack_size = 5
+
 data:extend({
   -- Magic Orb
   {
@@ -9,7 +11,7 @@ data:extend({
     icon_size = 1024,
     subgroup = "orbs-manifest",
     order = "a[magic-orb]",
-    stack_size = 5
+    stack_size = orb_stack_size
   },
 
   -- Active Magic Shard (spoils in 30 seconds)
@@ -44,7 +46,7 @@ data:extend({
     icon_size = 1024,
     subgroup = "orbs-manifest",
     order = "d[conjuration-orb]",
-    stack_size = 5
+    stack_size = orb_stack_size
   },
 
   -- Conjuration Research Pack
@@ -85,7 +87,7 @@ data:extend({
     category = "orb-speed", -- Custom category for orb modules
     tier = 1,
     order = "f[haste-orb]",
-    stack_size = 5,
+    stack_size = orb_stack_size,
     effect = {
       speed = 0.2,
       pollution = 0.5
@@ -104,7 +106,7 @@ data:extend({
     category = "orb-productivity", -- Custom category for orb modules
     tier = 1,
     order = "f[productivity-orb]",
-    stack_size = 5,
+    stack_size = orb_stack_size,
     spoil_ticks = 2 * 60 * 60, -- 2 minutes * 60 seconds * 60 ticks per second
     spoil_result = "magic-orb",
     effect = {
@@ -125,7 +127,7 @@ data:extend({
     category = "orb-pollution", -- Custom category for orb modules
     tier = 1,
     order = "f[cleansing-orb]",
-    stack_size = 5,
+    stack_size = orb_stack_size,
     spoil_ticks = 7 * 60 * 60, -- 7 minutes * 60 seconds * 60 ticks per second
     spoil_result = "magic-orb",
     effect = {
@@ -143,7 +145,7 @@ data:extend({
     icon_size = 1024,
     subgroup = "orbs-manifest",
     order = "g[flux-orb-alpha]",
-    stack_size = 5,
+    stack_size = orb_stack_size,
     spoil_ticks = 30 * 60, -- 30 seconds * 60 ticks per second
     spoil_result = "flux-orb-beta"
   },
@@ -156,7 +158,7 @@ data:extend({
     icon_size = 1024,
     subgroup = "orbs-manifest",
     order = "h[flux-orb-beta]",
-    stack_size = 5,
+    stack_size = orb_stack_size,
     spoil_ticks = 1 * 60, -- 1 second * 60 ticks per second
     spoil_result = "flux-orb-gamma"
   },
@@ -169,7 +171,7 @@ data:extend({
     icon_size = 1024,
     subgroup = "orbs-manifest",
     order = "i[flux-orb-gamma]",
-    stack_size = 5,
+    stack_size = orb_stack_size,
     spoil_ticks = 1 * 60, -- 1 second * 60 ticks per second
     spoil_result = "flux-orb-alpha"
   },
@@ -305,7 +307,7 @@ data:extend({
     ammo_category = "rage-orb",
     subgroup = "orbs-manifest",
     order = "j[rage-orb]",
-    stack_size = 5,
+    stack_size = orb_stack_size,
     spoil_ticks = 10 * 60 * 60, -- 10 minutes * 60 seconds * 60 ticks per second
     spoil_result = "magic-orb",
     fuel_category = "chemical",
@@ -718,7 +720,7 @@ data:extend({
     ammo_category = "channeled-mana",
     subgroup = "orbs-manifest",
     order = "k[mana-orb]",
-    stack_size = 5,
+    stack_size = orb_stack_size,
     spoil_ticks = 4 * 60 * 60 * 60, -- 4 hours * 60 minutes * 60 seconds * 60 ticks per second
     spoil_result = "magic-orb",
     magazine_size = 200,
@@ -1201,7 +1203,7 @@ for i = 2, 6 do
       icons = letter_icons,
       subgroup = "orbs-manifest",
       order = "j[volatile-orb-" .. string.format("%02d", i) .. "]",
-      stack_size = 5,
+      stack_size = orb_stack_size,
       spoil_ticks = 40 * 60 + 1, -- 40 seconds * 60 ticks per second
       spoil_result = "volatile-orb-" .. letter_name, -- Spoils into itself, but will get removed if the explosion is triggered
       spoil_to_trigger_result = {
