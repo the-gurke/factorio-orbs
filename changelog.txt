@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.3.5
+Date: 07. 11. 2025
+  Performance:
+    - Optimized win condition check performance: only runs when portal technology is researched.
+  Bugfixes:
+    - Portal completion detection now checks every 8 ticks and tolerates up to 12 ticks before completion (accounts for speed orb effects).
+---------------------------------------------------------------------------------------------------
 Version: 0.3.4
 Date: 26. 10. 2025
   Bugfixes:
