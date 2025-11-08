@@ -15,15 +15,17 @@ local function orbs_on_tick(event)
   if poll_summoning_players then
     poll_summoning_players(event)
   end
-
-  -- Check win condition
-  if check_win_condition then
-    check_win_condition(event)
-  end
 end
 
 -- Register the main tick handler
 script.on_event(defines.events.on_tick, orbs_on_tick)
+
+-- Check win condition
+script.on_nth_tick(10, function(event)
+  if check_win_condition then
+    check_win_condition(event)
+  end
+end)
 
 --------------------------------------------------------
 --  Defense Ward Management                           --
@@ -892,7 +894,7 @@ script.on_nth_tick(60, function(event)
 end)
 
 -- Monitor portal crafting completion and entity replacement
-script.on_nth_tick(10, function(event) -- Check every 10 ticks for responsiveness
+script.on_nth_tick(8, function(event) -- Check every 8 ticks for responsiveness
   for _, surface in pairs(game.surfaces) do
     local inactive_portals = surface.find_entities_filtered{name = "inactive-portal"}
 
@@ -904,7 +906,7 @@ script.on_nth_tick(10, function(event) -- Check every 10 ticks for responsivenes
           -- Calculate remaining ticks (recipe energy is in seconds, convert to ticks)
           local recipe_time_ticks = recipe.energy * 60 -- 120s * 60 = 7200 ticks
           local remaining_ticks = recipe_time_ticks * (1 - portal.crafting_progress)
-          if remaining_ticks < 10 then
+          if remaining_ticks < 12 then
             -- Recipe completed! Replace with active portal
             local position = portal.position
             local force = portal.force
@@ -978,9 +980,22 @@ script.on_nth_tick(10, function(event) -- Check every 10 ticks for responsivenes
 end)
 
 
--- Win condition check - every tick for immediate response
+-- Win condition check - simple and efficient
 function check_win_condition(event)
-  -- Only check if there are active portals to improve performance
+  -- Only check if portal technology is researched by any force
+  local portal_researched = false
+  for _, force in pairs(game.forces) do
+    if force.technologies["portal"] and force.technologies["portal"].researched then
+      portal_researched = true
+      break
+    end
+  end
+
+  if not portal_researched then
+    return  -- No point checking if portal tech isn't researched
+  end
+
+  -- Simple search for active portals
   for _, surface in pairs(game.surfaces) do
     local active_portals = surface.find_entities_filtered{name = "active-portal"}
 
@@ -992,8 +1007,10 @@ function check_win_condition(event)
           -- Check if any player is within 2 tiles of portal center
           for _, player in pairs(game.connected_players) do
             if player.surface == surface and player.character then
-              local distance = math.sqrt((player.position.x - portal.position.x)^2 + (player.position.y - portal.position.y)^2)
-              if distance <= 2 then
+              local dx = player.position.x - portal.position.x
+              local dy = player.position.y - portal.position.y
+              local distance = math.sqrt(dx * dx + dy * dy)
+              if distance <= 3 then
                 -- Player is close enough - trigger win condition!
                 game.set_game_state{
                   game_finished = true,
