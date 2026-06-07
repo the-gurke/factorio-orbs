@@ -193,7 +193,7 @@ The divination system requires precise timing and coordination - you need to cap
 
 - Technologies-related code should be added to `technology.lua`, not `data-final-fixes.lua`.
 - Whenever you introduce new items, entities, technologies, etc., you need to add the corresponding locale strings for their names to `locale/en/strings.cfg`.
-- Don't try to run the lua code.
+- Don't try to run the lua code directly. Instead, after every change, run `./test.sh` to validate that prototypes load correctly. If a save file is relevant, run `./test.sh ~/.factorio/saves/ORBS.zip` to also test runtime.
 
 ## Where to find Examples and Documentation
 
