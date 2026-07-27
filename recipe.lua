@@ -8,7 +8,7 @@ local recipes = {}
 table.insert(recipes, {
   type = "recipe",
   name = "conjure-shards-0",
-  category = "hand-crafting-and-orbs",
+  categories = {"hand-crafting-and-orbs"},
   subgroup = "orbs-shards",
   energy_required = 1,
   hide_from_signal_gui = false,
@@ -19,7 +19,7 @@ table.insert(recipes, {
   },
   results = {
     {type = "item", name = "magic-orb", amount = 1, ignored_by_stats = 1, ignored_by_productivity = 1},
-    {type = "item", name = "active-magic-shard", amount = 1, probability = 0.05}
+    {type = "item", name = "active-magic-shard", amount = 1, independent_probability = 0.05}
   },
   enabled = false,
   allow_productivity = true,
@@ -33,7 +33,7 @@ for i, n in ipairs(conjure_inputs) do
   table.insert(recipes, {
     type = "recipe",
     name = "conjure-shards-" .. n,
-    category = "orbs",
+    categories = {"orbs"},
     subgroup = "orbs-shards",
     energy_required = n,
     icon = "__orbs__/graphics/conjure-shards.png",
@@ -57,7 +57,7 @@ end
 table.insert(recipes, {
   type = "recipe",
   name = "replicate-shards",
-  category = "hand-crafting-and-orbs",
+  categories = {"hand-crafting-and-orbs"},
   subgroup = "orbs-shards",
   energy_required = 1,
   hide_from_signal_gui = false,
@@ -70,7 +70,7 @@ table.insert(recipes, {
   results = {
     {type = "item", name = "magic-orb", amount = 1, ignored_by_stats = 1, ignored_by_productivity = 1},
     {type = "item", name = "active-magic-shard", amount = 1, ignored_by_stats = 1, ignored_by_productivity = 1},
-    {type = "item", name = "active-magic-shard", amount = 1, probability = 0.5}
+    {type = "item", name = "active-magic-shard", amount = 1, independent_probability = 0.5}
   },
   enabled = false,
   allow_productivity = true,
@@ -82,7 +82,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "replicate-shards-2",
-  category = "hand-crafting-and-orbs",
+  categories = {"hand-crafting-and-orbs"},
   subgroup = "orbs-shards",
   energy_required = 3,
   hide_from_signal_gui = false,
@@ -107,7 +107,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "banish-shards",
-  category = "hand-crafting-and-orbs",
+  categories = {"hand-crafting-and-orbs"},
   subgroup = "orbs-shards",
   energy_required = 2,
   icon = "__orbs__/graphics/inactive-magic-shard.png",
@@ -127,7 +127,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "manifest-orb",
-  category = "hand-crafting-and-orbs",
+  categories = {"hand-crafting-and-orbs"},
   subgroup = "orbs-manifest",
   energy_required = 5,
   hide_from_signal_gui = false,
@@ -148,7 +148,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "transfigure-conjuration-orb",
-  category = "hand-crafting-and-orbs",
+  categories = {"hand-crafting-and-orbs"},
   subgroup = "orbs-manifest",
   energy_required = 3,
   icon = "__orbs__/graphics/conjuration-orb.png",
@@ -168,7 +168,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "conjuration-research-pack",
-  category = "hand-crafting-and-orbs",
+  categories = {"hand-crafting-and-orbs"},
   subgroup = "intermediate-product",
   energy_required = 4,
   icon = "__orbs__/graphics/conjuration-research-pack.png",
@@ -189,7 +189,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "magic-research-pack",
-  category = "hand-crafting-and-orbs",
+  categories = {"hand-crafting-and-orbs"},
   subgroup = "intermediate-product",
   energy_required = 3,
   icon = "__orbs__/graphics/magic-research-pack.png",
@@ -210,7 +210,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "transfigure-haste-orb",
-  category = "hand-crafting-and-orbs",
+  categories = {"hand-crafting-and-orbs"},
   subgroup = "orbs-manifest",
   energy_required = 3,
   icon = "__orbs__/graphics/haste-orb.png",
@@ -230,7 +230,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "conjure-productivity-orb",
-  category = "orbs",
+  categories = {"orbs"},
   subgroup = "orbs-manifest",
   energy_required = 5,
   icon = "__orbs__/graphics/productivity-orb.png",
@@ -253,7 +253,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "conjure-cleansing-orb",
-  category = "orbs",
+  categories = {"orbs"},
   subgroup = "orbs-manifest",
   energy_required = 3,
   icon = "__orbs__/graphics/cleansing-orb.png",
@@ -275,7 +275,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "conjure-flux-orb",
-  category = "hand-crafting-and-orbs",
+  categories = {"hand-crafting-and-orbs"},
   subgroup = "orbs-manifest",
   energy_required = 10,
   icon = "__orbs__/graphics/flux-orb-alpha.png",
@@ -286,7 +286,7 @@ table.insert(recipes, {
   },
   results = {
     {type = "item", name = "magic-orb", amount = 1, ignored_by_stats = 1, ignored_by_productivity = 1},
-    {type = "item", name = "flux-orb-alpha", amount = 10, probability = 0.05}
+    {type = "item", name = "flux-orb-alpha", amount = 10, independent_probability = 0.05}
   },
   enabled = false,
   allow_productivity = true,
@@ -297,7 +297,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "align-flux-orb",
-  category = "hand-crafting-and-orbs",
+  categories = {"hand-crafting-and-orbs"},
   subgroup = "orbs-manifest",
   energy_required = 0.8,
   icon = "__orbs__/graphics/flux-orb-alpha.png",
@@ -306,9 +306,8 @@ table.insert(recipes, {
     {type = "item", name = "flux-orb-alpha", amount = 1, ignored_by_stats = 1}
   },
   results = {
-    {type = "item", name = "flux-orb-alpha", amount = 1, ignored_by_stats = 1}
+    {type = "item", name = "flux-orb-alpha", amount = 1, ignored_by_stats = 1, reset_freshness_on_craft = true}
   },
-  reset_freshness_on_craft = true,
   enabled = false,
   order = "g[align-flux-orb]"
 })
@@ -319,7 +318,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "conjure-divination-essence",
-  category = "hand-crafting-and-orbs",
+  categories = {"hand-crafting-and-orbs"},
   subgroup = "divination",
   energy_required = 1,
   icon = "__orbs__/graphics/divination-essence.png",
@@ -329,10 +328,9 @@ table.insert(recipes, {
     {type = "item", name = "flux-orb-gamma", amount = 1, ignored_by_stats = 1}
   },
   results = {
-    {type = "item", name = "flux-orb-alpha", amount = 2, ignored_by_stats = 2, ignored_by_productivity = 2},
-    {type = "item", name = "divination-essence", amount = 1}
+    {type = "item", name = "flux-orb-alpha", amount = 2, ignored_by_stats = 2, ignored_by_productivity = 2, reset_freshness_on_craft = true},
+    {type = "item", name = "divination-essence", amount = 1, reset_freshness_on_craft = true}
   },
-  reset_freshness_on_craft = true,
   allow_productivity = true,
   enabled = false,
   order = "a[conjure-divination-essence]"
@@ -342,7 +340,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "stabilize-divination-essence",
-  category = "hand-crafting-and-orbs",
+  categories = {"hand-crafting-and-orbs"},
   subgroup = "divination",
   energy_required = 0.5,
   icon = "__orbs__/graphics/divination-essence.png",
@@ -352,9 +350,8 @@ table.insert(recipes, {
     {type = "item", name = "coal", amount = 1}
   },
   results = {
-    {type = "item", name = "divination-essence", amount = 2, ignored_by_stats = 2},
+    {type = "item", name = "divination-essence", amount = 2, ignored_by_stats = 2, reset_freshness_on_craft = true},
   },
-  reset_freshness_on_craft = true,
   enabled = false,
   order = "b[stabilize-divination-essence]"
 })
@@ -364,7 +361,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "conjure-luck",
-  category = "hand-crafting-and-orbs",
+  categories = {"hand-crafting-and-orbs"},
   subgroup = "divination",
   energy_required = 0.25,
   icon = "__orbs__/graphics/spark-of-luck.png",
@@ -374,7 +371,7 @@ table.insert(recipes, {
   },
   results = {
     {type = "item", name = "magic-orb", amount = 1, ignored_by_stats = 1, ignored_by_productivity = 1},
-    {type = "item", name = "spark-of-luck", amount = 1, probability = 0.01}
+    {type = "item", name = "spark-of-luck", amount = 1, independent_probability = 0.01}
   },
   enabled = false,
   allow_productivity = true,
@@ -385,7 +382,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "conjure-serendipity",
-  category = "hand-crafting-and-orbs",
+  categories = {"hand-crafting-and-orbs"},
   subgroup = "divination",
   energy_required = 3,
   icon = "__orbs__/graphics/dust-of-serendipity.png",
@@ -396,9 +393,8 @@ table.insert(recipes, {
   },
   results = {
     {type = "item", name = "magic-orb", amount = 1, ignored_by_stats = 1},
-    {type = "item", name = "dust-of-serendipity", amount = 1}
+    {type = "item", name = "dust-of-serendipity", amount = 1, reset_freshness_on_craft = true}
   },
-  reset_freshness_on_craft = true,
   allow_productivity = false,
   enabled = false,
   order = "d[conjure-serendipity]"
@@ -408,7 +404,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "divination-research-pack",
-  category = "hand-crafting-and-orbs",
+  categories = {"hand-crafting-and-orbs"},
   subgroup = "intermediate-product",
   energy_required = 5,
   icon = "__orbs__/graphics/divination-research-pack.png",
@@ -430,7 +426,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "magic-grenade",
-  category = "hand-crafting-and-orbs",
+  categories = {"hand-crafting-and-orbs"},
   subgroup = "capsule",
   energy_required = 3,
   icon = "__orbs__/graphics/magic-grenade.png",
@@ -451,22 +447,21 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "extract-stability",
-  category = "orbs",
+  categories = {"orbs"},
   subgroup = "divination",
   energy_required = 40,
   icon = "__orbs__/graphics/stability-liquid.png",
   icon_size = 1024,
-  reset_freshness_on_craft = true,
   ingredients = {
     {type = "item", name = "magic-orb", amount = 1}
   },
   results = {
     {type = "fluid", name = "stability", amount = 225},
-    {type = "item", name = "volatile-orb-Q", amount = 1, probability = 1/5},
-    {type = "item", name = "volatile-orb-R", amount = 1, probability = 1/5},
-    {type = "item", name = "volatile-orb-S", amount = 1, probability = 1/5},
-    {type = "item", name = "volatile-orb-T", amount = 1, probability = 1/5},
-    {type = "item", name = "volatile-orb-U", amount = 1, probability = 1/5}
+    {type = "item", name = "volatile-orb-Q", amount = 1, independent_probability = 1/5, reset_freshness_on_craft = true},
+    {type = "item", name = "volatile-orb-R", amount = 1, independent_probability = 1/5, reset_freshness_on_craft = true},
+    {type = "item", name = "volatile-orb-S", amount = 1, independent_probability = 1/5, reset_freshness_on_craft = true},
+    {type = "item", name = "volatile-orb-T", amount = 1, independent_probability = 1/5, reset_freshness_on_craft = true},
+    {type = "item", name = "volatile-orb-U", amount = 1, independent_probability = 1/5, reset_freshness_on_craft = true}
   },
   enabled = false,
   order = "l[extract-stability]"
@@ -604,7 +599,7 @@ for i = 2, 6 do
       table.insert(recipes, {
         type = "recipe",
         name = "neutralize-volatile-orb-" .. volatile_orb_names[i] .. "-" .. volatile_orb_names[j],
-        category = "orbs",
+        categories = {"orbs"},
         subgroup = "orbs-volatile",
         hide_from_signal_gui = false,
         energy_required = 4.,
@@ -622,7 +617,7 @@ for i = 2, 6 do
       table.insert(recipes, {
         type = "recipe",
         name = "volatile-orb-manipulation-" .. volatile_orb_names[i] .. "-" .. volatile_orb_names[j],
-        category = "orbs",
+        categories = {"orbs"},
         subgroup = "orbs-volatile",
         hide_from_signal_gui = false,
         energy_required = 4.,
@@ -648,7 +643,7 @@ for i = 2, 6 do
     type = "recipe",
     name = "copy-volatile-orb-" .. letter_name,
     hide_from_signal_gui = false,
-    category = "orbs",
+    categories = {"orbs"},
     subgroup = "orbs-volatile",
     energy_required = 2,
     icons = create_copy_icon("__orbs__/graphics/volatile-orb.png", 1024, i),
@@ -669,7 +664,7 @@ end
 table.insert(recipes, {
   type = "recipe",
   name = "magical-experience",
-  category = "orbs",
+  categories = {"orbs"},
   subgroup = "souls",
   energy_required = 60,
   icon = "__orbs__/graphics/soul.png",
@@ -690,7 +685,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "rage-orb",
-  category = "orbs",
+  categories = {"orbs"},
   subgroup = "orbs-manifest",
   energy_required = 5,
   icon = "__orbs__/graphics/rage-orb.png",
@@ -711,7 +706,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "neutralize-rage-orb",
-  category = "orbs",
+  categories = {"orbs"},
   subgroup = "orbs-manifest",
   energy_required = 1,
   icon = "__orbs__/graphics/magic-orb.png",
@@ -744,7 +739,7 @@ table.insert(recipes, {
   },
   energy_required = 1,
   enabled = true,
-  category = "smelting"
+  categories = {"smelting"},
 })
 
 -- Light Coal on Fire in Furnace (1 second)
@@ -761,7 +756,7 @@ table.insert(recipes, {
   },
   energy_required = 1,
   enabled = true,
-  category = "smelting"
+  categories = {"smelting"},
 })
 
 -- Fire through Friction (hand-crafting only)
@@ -777,12 +772,12 @@ table.insert(recipes, {
     {type = "item", name = "wood", amount = 1}
   },
   results = {
-    {type = "item", name = "wood", amount = 1, probability=0.9},
-    {type = "item", name = "burning-wood", amount = 1, probability = 0.1}
+    {type = "item", name = "wood", amount = 1, independent_probability=0.9},
+    {type = "item", name = "burning-wood", amount = 1, independent_probability = 0.1}
   },
   energy_required = 5,
   enabled = true,
-  category = "hand-crafting-only"
+  categories = {"hand-crafting-only"}
 })
 
 -- Stick Recipe
@@ -808,7 +803,7 @@ table.insert(recipes, {
   energy_required = 0.5,
   enabled = true,
   allow_productivity = true,
-  category = "crafting"
+  categories = {"crafting"}
 })
 
 -- Override assembling-machine-1 recipe
@@ -872,7 +867,7 @@ end
 table.insert(recipes, {
   type = "recipe",
   name = "magic-inserter",
-  category = "crafting",
+  categories = {"crafting"},
   subgroup = "inserter",
   energy_required = 3,
   icons = {
@@ -898,7 +893,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "magic-long-handed-inserter",
-  category = "crafting",
+  categories = {"crafting"},
   subgroup = "inserter",
   energy_required = 3,
   icons = {
@@ -925,7 +920,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "conjure-rune-word-aqua",
-  category = "orbs",
+  categories = {"orbs"},
   subgroup = "orbs-runes",
   energy_required = 2,
   icon = "__orbs__/graphics/rune-word-aqua.png",
@@ -947,7 +942,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "conjure-rune-word-spiritus",
-  category = "orbs",
+  categories = {"orbs"},
   subgroup = "orbs-runes",
   energy_required = 2,
   icon = "__orbs__/graphics/rune-word-spiritus.png",
@@ -969,7 +964,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "rune-research-pack",
-  category = "runes",
+  categories = {"runes"},
   subgroup = "intermediate-product",
   energy_required = 20,
   icon = "__base__/graphics/icons/utility-science-pack.png",
@@ -1009,7 +1004,7 @@ for source_rune, target_chain in pairs(rune_transformation_chains) do
     table.insert(rune_recipes, {
       type = "recipe",
       name = recipe_name,
-      category = "rune-transformation",
+      categories = {"rune-transformation"},
       energy_required = 0.1,
       icon = recipe_icon,
       icon_size = recipe_icon_size,
@@ -1034,7 +1029,7 @@ end
 table.insert(recipes, {
   type = "recipe",
   name = "transmute-copper-to-iron",
-  category = "orbs",
+  categories = {"orbs"},
   subgroup = "orbs-transmutation",
   energy_required = 1,
   icon = "__base__/graphics/icons/iron-plate.png",
@@ -1053,7 +1048,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "transmute-iron-to-copper",
-  category = "orbs",
+  categories = {"orbs"},
   subgroup = "orbs-transmutation",
   energy_required = 1,
   icon = "__base__/graphics/icons/copper-plate.png",
@@ -1072,7 +1067,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "transmute-copper-to-gold",
-  category = "orbs",
+  categories = {"orbs"},
   subgroup = "orbs-transmutation",
   energy_required = 2,
   icon = "__orbs__/graphics/gold-plate.png",
@@ -1091,7 +1086,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "transmute-gold-to-copper",
-  category = "orbs",
+  categories = {"orbs"},
   subgroup = "orbs-transmutation",
   energy_required = 2,
   icon = "__base__/graphics/icons/copper-plate.png",
@@ -1111,7 +1106,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "stone-to-sand",
-  category = "crushing",
+  categories = {"crushing"},
   energy_required = 2,
   icon = "__orbs__/graphics/sand.png",
   icon_size = 1024,
@@ -1129,7 +1124,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "sand-to-glass",
-  category = "smelting",
+  categories = {"smelting"},
   energy_required = 3,
   icon = "__orbs__/graphics/glass.png",
   icon_size = 1024,
@@ -1146,7 +1141,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "channeled-mana",
-  category = "hand-crafting-only",
+  categories = {"hand-crafting-only"},
   subgroup = "ammo",
   energy_required = 4,
   ingredients = {
@@ -1170,7 +1165,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "portal-home",
-  category = "inactive-portal",
+  categories = {"inactive-portal"},
   subgroup = "orbs-machines",
   energy_required = 120,
   icon = "__space-age__/graphics/icons/gleba.png",
@@ -1190,7 +1185,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "sustain-portal-home",
-  category = "active-portal",
+  categories = {"active-portal"},
   subgroup = "orbs-machines",
   energy_required = 5,
   icon = "__space-age__/graphics/icons/gleba.png",
@@ -1211,7 +1206,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "craft-portal",
-  category = "hand-crafting-and-orbs",
+  categories = {"hand-crafting-and-orbs"},
   subgroup = "orbs-machines",
   energy_required = 20,
   icon = "__orbs__/graphics/portal.png",
@@ -1233,7 +1228,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "summon-water",
-  category = "orbs",
+  categories = {"orbs"},
   subgroup = "orbs-manifest",
   energy_required = 5,
   icon = "__base__/graphics/icons/fluid/water.png",
@@ -1243,8 +1238,8 @@ table.insert(recipes, {
     {type = "item", name = "rune-word-aqua", amount = 1, ignored_by_stats = 1}
   },
   results = {
-    {type = "item", name = "magic-orb", amount = 1, probability = 1.0, ignored_by_productivity = 1, ignored_by_stats = 1},
-    {type = "item", name = "rune-word-aqua", amount = 1, probability = 0.999, ignored_by_productivity = 1, ignored_by_stats = 1},
+    {type = "item", name = "magic-orb", amount = 1, independent_probability = 1.0, ignored_by_productivity = 1, ignored_by_stats = 1},
+    {type = "item", name = "rune-word-aqua", amount = 1, independent_probability = 0.999, ignored_by_productivity = 1, ignored_by_stats = 1},
     {type = "fluid", name = "water", amount = 1000}
   },
   enabled = false,
@@ -1257,7 +1252,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "summon-fire",
-  category = "hand-crafting-and-orbs",
+  categories = {"hand-crafting-and-orbs"},
   subgroup = "orbs-manifest",
   energy_required = 1,
   icon = "__orbs__/graphics/magical-fire.png",
@@ -1267,14 +1262,13 @@ table.insert(recipes, {
     {type = "item", name = "rune-word-ignis", amount = 1, ignored_by_stats = 1}
   },
   results = {
-    {type = "item", name = "magic-orb", amount = 1, probability = 1.0, ignored_by_productivity = 1, ignored_by_stats = 1},
-    {type = "item", name = "rune-word-ignis", amount = 1, probability = 0.999, ignored_by_productivity = 1, ignored_by_stats = 1},
-    {type = "item", name = "magical-fire", amount = 1}
+    {type = "item", name = "magic-orb", amount = 1, independent_probability = 1.0, ignored_by_productivity = 1, ignored_by_stats = 1},
+    {type = "item", name = "rune-word-ignis", amount = 1, independent_probability = 0.999, ignored_by_productivity = 1, ignored_by_stats = 1},
+    {type = "item", name = "magical-fire", amount = 1, reset_freshness_on_craft = true}
   },
   enabled = false,
   allow_productivity = true,
   main_product = "magical-fire",
-  reset_freshness_on_craft = true,
   order = "f[summon-fire]"
 })
 
@@ -1282,7 +1276,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "summon-death",
-  category = "hand-crafting-only",
+  categories = {"hand-crafting-only"},
   subgroup = "orbs-manifest",
   energy_required = 5,
   icon = "__orbs__/graphics/death.png",
@@ -1292,8 +1286,8 @@ table.insert(recipes, {
     {type = "item", name = "rune-word-mortis", amount = 1, ignored_by_stats = 1}
   },
   results = {
-    {type = "item", name = "magic-orb", amount = 1, probability = 1.0, ignored_by_productivity = 1, ignored_by_stats = 1},
-    {type = "item", name = "rune-word-mortis", amount = 1, probability = 0.999, ignored_by_productivity = 1, ignored_by_stats = 1},
+    {type = "item", name = "magic-orb", amount = 1, independent_probability = 1.0, ignored_by_productivity = 1, ignored_by_stats = 1},
+    {type = "item", name = "rune-word-mortis", amount = 1, independent_probability = 0.999, ignored_by_productivity = 1, ignored_by_stats = 1},
     {type = "item", name = "death", amount = 1}
   },
   enabled = false,
@@ -1306,7 +1300,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "summon-night",
-  category = "hand-crafting-only",
+  categories = {"hand-crafting-only"},
   subgroup = "orbs-manifest",
   energy_required = 5,
   icon = "__orbs__/graphics/night.png",
@@ -1316,8 +1310,8 @@ table.insert(recipes, {
     {type = "item", name = "rune-word-umbra", amount = 1, ignored_by_stats = 1}
   },
   results = {
-    {type = "item", name = "magic-orb", amount = 1, probability = 1.0, ignored_by_productivity = 1, ignored_by_stats = 1},
-    {type = "item", name = "rune-word-umbra", amount = 1, probability = 0.999, ignored_by_productivity = 1, ignored_by_stats = 1},
+    {type = "item", name = "magic-orb", amount = 1, independent_probability = 1.0, ignored_by_productivity = 1, ignored_by_stats = 1},
+    {type = "item", name = "rune-word-umbra", amount = 1, independent_probability = 0.999, ignored_by_productivity = 1, ignored_by_stats = 1},
     {type = "item", name = "night", amount = 1}
   },
   enabled = false,
@@ -1330,7 +1324,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "mana-orb",
-  category = "hand-crafting-and-orbs",
+  categories = {"hand-crafting-and-orbs"},
   subgroup = "orbs-manifest",
   energy_required = 3,
   icon = "__orbs__/graphics/mana-orb.png",
@@ -1353,7 +1347,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "death-beam-wand",
-  category = "hand-crafting-and-orbs",
+  categories = {"hand-crafting-and-orbs"},
   subgroup = "gun",
   energy_required = 10,
   icon = "__orbs__/graphics/attack-wand.png",
@@ -1373,7 +1367,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "summoning-wand",
-  category = "hand-crafting-and-orbs",
+  categories = {"hand-crafting-and-orbs"},
   subgroup = "gun",
   energy_required = 5,
   icon = "__orbs__/graphics/summoning-wand.png",
@@ -1393,7 +1387,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "teleportation-charge",
-  category = "hand-crafting-and-orbs",
+  categories = {"hand-crafting-and-orbs"},
   subgroup = "ammo",
   energy_required = 2,
   icon = "__orbs__/graphics/teleportation-charge.png",
@@ -1413,7 +1407,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "teleportation-wand",
-  category = "hand-crafting-and-orbs",
+  categories = {"hand-crafting-and-orbs"},
   subgroup = "gun",
   energy_required = 10,
   icon = "__orbs__/graphics/teleportation-wand.png",
@@ -1435,7 +1429,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "summoning-essence",
-  category = "hand-crafting-and-orbs",
+  categories = {"hand-crafting-and-orbs"},
   subgroup = "ammo",
   energy_required = 2,
   icon = "__orbs__/graphics/summoning-essence.png",
@@ -1455,7 +1449,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "arrows",
-  category = "crafting",
+  categories = {"crafting"},
   subgroup = "ammo",
   energy_required = 1,
   icon = "__orbs__/graphics/arrows.png",
@@ -1475,7 +1469,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "crossbow",
-  category = "crafting",
+  categories = {"crafting"},
   subgroup = "gun",
   energy_required = 3,
   icon = "__orbs__/graphics/crossbow.png",
@@ -1496,7 +1490,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "mash-apple",
-  category = "crafting",
+  categories = {"crafting"},
   subgroup = "intermediate-product",
   energy_required = 2,
   icon = "__orbs__/graphics/apple-mashed.png",
@@ -1516,7 +1510,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "burn-spoilage",
-  category = "smelting",
+  categories = {"smelting"},
   subgroup = "intermediate-product",
   energy_required = 0.5,
   icon = "__orbs__/graphics/smoldering-remains.png",
@@ -1535,7 +1529,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "glass-vial",
-  category = "crafting",
+  categories = {"crafting"},
   subgroup = "intermediate-product",
   energy_required = 1,
   icon = "__orbs__/graphics/empty-vial.png",
@@ -1555,7 +1549,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "base-potion",
-  category = "distilling",
+  categories = {"distilling"},
   subgroup = "intermediate-product",
   energy_required = 20,
   icon = "__orbs__/graphics/base-potion.png",
@@ -1576,7 +1570,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "health-potion",
-  category = "distilling",
+  categories = {"distilling"},
   subgroup = "capsule",
   energy_required = 3,
   icon = "__orbs__/graphics/health-potion.png",
@@ -1598,7 +1592,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "sticky-potion",
-  category = "orbs",
+  categories = {"orbs"},
   subgroup = "capsule",
   energy_required = 5,
   icon = "__orbs__/graphics/sticky-potion.png",
@@ -1620,7 +1614,7 @@ table.insert(recipes, {
 table.insert(recipes, {
   type = "recipe",
   name = "poison-potion",
-  category = "distilling",
+  categories = {"distilling"},
   subgroup = "capsule",
   energy_required = 5,
   icon = "__orbs__/graphics/poison-potion.png",

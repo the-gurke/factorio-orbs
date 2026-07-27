@@ -352,7 +352,7 @@ data:extend({
   {
     type = "recipe",
     name = "craft-conjuration-machine",
-    category = "crafting",
+    categories = {"crafting"},
     energy_required = 5,
     icon = "__orbs__/graphics/conjuration-machine.png",
     icon_size = 64,
@@ -371,7 +371,7 @@ data:extend({
   {
     type = "recipe",
     name = "craft-soul-collector",
-    category = "hand-crafting-and-orbs",
+    categories = {"hand-crafting-and-orbs"},
     energy_required = 5,
     icon = "__orbs__/graphics/soul-collector.png",
     icon_size = 1024,
@@ -389,7 +389,7 @@ data:extend({
   {
     type = "recipe",
     name = "distillery",
-    category = "crafting",
+    categories = {"crafting"},
     energy_required = 5,
     icon = "__orbs__/graphics/distillery.png",
     icon_size = 1024,
@@ -406,7 +406,7 @@ data:extend({
   {
     type = "recipe",
     name = "crusher",
-    category = "crafting",
+    categories = {"crafting"},
     subgroup = "production-machine",
     energy_required = 5,
     icon = "__space-age__/graphics/icons/crusher.png",
@@ -692,7 +692,7 @@ local defense_ward_item = {
 local defense_ward_recipe = {
   type = "recipe",
   name = "defense-ward",
-  category = "hand-crafting-and-orbs",
+  categories = {"hand-crafting-and-orbs"},
   energy_required = 3,
   icon = "__orbs__/graphics/defense-ward.png",
   icon_size = 1024,
@@ -805,7 +805,7 @@ if data.raw["fluid-turret"]["flamethrower-turret"] then
     {
       type = "recipe",
       name = "ragethrower-turret",
-      category = "hand-crafting-and-orbs",
+      categories = {"hand-crafting-and-orbs"},
       subgroup = "orbs-machines",
       energy_required = 10,
       icon = "__base__/graphics/icons/flamethrower-turret.png",
@@ -996,7 +996,7 @@ data:extend({
   {
     type = "recipe",
     name = "water-cooler",
-    category = "crafting",
+    categories = {"crafting"},
     energy_required = 5,
     icon = "__base__/graphics/icons/heat-boiler.png",
     icon_size = 64,
@@ -1036,7 +1036,7 @@ local rune_transformer_item = {
 local rune_transformer_recipe = {
   type = "recipe",
   name = "rune-transformer",
-  category = "orbs",
+  categories = {"orbs"},
   energy_required = 5,
   icon = "__base__/graphics/icons/steel-furnace.png",
   icon_size = 64,
@@ -1243,7 +1243,7 @@ local rune_altar_item = {
 local rune_altar_recipe = {
   type = "recipe",
   name = "rune-altar",
-  category = "hand-crafting-and-orbs",
+  categories = {"hand-crafting-and-orbs"},
   energy_required = 3,
   icon = "__orbs__/graphics/rune-altar.png",
   icon_size = 1024,
@@ -1320,7 +1320,7 @@ if data.raw["mining-drill"]["electric-mining-drill"] then
   local steam_miner_recipe = {
     type = "recipe",
     name = "steam-powered-miner",
-    category = "crafting",
+    categories = {"crafting"},
     energy_required = 2,
     icon = "__base__/graphics/icons/electric-mining-drill.png",
     icon_size = 64,
@@ -1366,7 +1366,7 @@ gold_plate_tile.variants.main = {
     count = 1,
     picture = "__orbs__/graphics/gold-floor.png",
     size = 2,
-    scale = 0.125
+    scale = 0.25
   }
 }
 gold_plate_tile.variants.material_background = {
@@ -1440,7 +1440,7 @@ data:extend({
   {
     type = "recipe",
     name = "craft-sentry-ward",
-    category = "hand-crafting-and-orbs",
+    categories = {"hand-crafting-and-orbs"},
     energy_required = 2,
     icon = "__orbs__/graphics/sentry-ward.png",
     icon_size = 1024,
@@ -1531,7 +1531,7 @@ data:extend({
   {
     type = "recipe",
     name = "craft-resonance-spire",
-    category = "hand-crafting-and-orbs",
+    categories = {"hand-crafting-and-orbs"},
     energy_required = 15,
     icon = "__orbs__/graphics/resonance-spire.png",
     icon_size = 1024,

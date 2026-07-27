@@ -2,11 +2,12 @@
 -- Define research technologies
 
 -- Update automation science pack to contraption research pack
-data.raw.tool["automation-science-pack"].localised_name = {"item-name.contraption-research-pack"}
-data.raw.tool["automation-science-pack"].icon = "__orbs__/graphics/contraption-research-pack.png"
-data.raw.tool["automation-science-pack"].icon_size = 1024
-data.raw.tool["automation-science-pack"].icon_mipmaps = nil
-data.raw.tool["automation-science-pack"].icons = nil
+-- (science packs are plain items since Factorio 2.1, no longer tools)
+data.raw.item["automation-science-pack"].localised_name = {"item-name.contraption-research-pack"}
+data.raw.item["automation-science-pack"].icon = "__orbs__/graphics/contraption-research-pack.png"
+data.raw.item["automation-science-pack"].icon_size = 1024
+data.raw.item["automation-science-pack"].icon_mipmaps = nil
+data.raw.item["automation-science-pack"].icons = nil
 
 -- Update automation science pack recipe
 data.raw.recipe["automation-science-pack"].localised_name = {"recipe-name.contraption-research-pack"}
@@ -67,8 +68,7 @@ data:extend({
     icon_size = 1024,
     research_trigger = {
       type = "mine-entity",
-      entity = "magic-satchel",
-      count = 1
+      entities = {"magic-satchel"}
     },
     effects = {
       {

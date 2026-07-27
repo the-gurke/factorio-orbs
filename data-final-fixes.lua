@@ -3,7 +3,7 @@
 
 -- Modify red transport belt recipes to require stability
 if data.raw.recipe["fast-transport-belt"] then
-  data.raw.recipe["fast-transport-belt"].category = "crafting-with-fluid"
+  data.raw.recipe["fast-transport-belt"].categories = {"crafting-with-fluid"}
   data.raw.recipe["fast-transport-belt"].ingredients = {
     {type = "item", name = "transport-belt", amount = 1},
     {type = "fluid", name = "stability", amount = 5}
@@ -11,7 +11,7 @@ if data.raw.recipe["fast-transport-belt"] then
 end
 
 if data.raw.recipe["fast-splitter"] then
-  data.raw.recipe["fast-splitter"].category = "crafting-with-fluid"
+  data.raw.recipe["fast-splitter"].categories = {"crafting-with-fluid"}
   data.raw.recipe["fast-splitter"].ingredients = {
     {type = "item", name = "splitter", amount = 1},
     {type = "fluid", name = "stability", amount = 20}
@@ -19,7 +19,7 @@ if data.raw.recipe["fast-splitter"] then
 end
 
 if data.raw.recipe["fast-underground-belt"] then
-  data.raw.recipe["fast-underground-belt"].category = "crafting-with-fluid"
+  data.raw.recipe["fast-underground-belt"].categories = {"crafting-with-fluid"}
   data.raw.recipe["fast-underground-belt"].ingredients = {
     {type = "item", name = "underground-belt", amount = 1},
     {type = "fluid", name = "stability", amount = 20}
@@ -612,7 +612,7 @@ end
 
 -- Update bulk inserter recipe
 if data.raw.recipe["bulk-inserter"] then
-  data.raw.recipe["bulk-inserter"].category = "orbs"
+  data.raw.recipe["bulk-inserter"].categories = {"orbs"}
   data.raw.recipe["bulk-inserter"].ingredients = {
     {type = "item", name = "magic-inserter", amount = 1},
     {type = "item", name = "iron-gear-wheel", amount = 10},
@@ -812,7 +812,7 @@ if data.raw.recipe["pistol"] then
   }
   recipe.enabled = true
   recipe.hidden = false
-  recipe.category = "hand-crafting-and-orbs"
+  recipe.categories = {"hand-crafting-and-orbs"}
 end
 
 -- Replace firearm magazine with channeled-mana
@@ -998,7 +998,7 @@ for _, tree in pairs(data.raw["tree"]) do
       type = "item",
       name = "apple",
       amount = 1,
-      probability = 0.1  -- 10% chance
+      independent_probability = 0.1  -- 10% chance
     })
 
     -- Clear the old result field if it exists

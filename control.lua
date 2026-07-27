@@ -510,7 +510,7 @@ script.on_nth_tick(0.2*60-1, function(event)
       if transformer.valid then
         -- Check if the transformer is currently crafting
         local recipe = transformer.get_recipe()
-        if recipe and recipe.category == "rune-transformation" then
+        if recipe and recipe.categories[1] == "rune-transformation" then
           -- Check if the recipe is about to complete (progress > 0.95)
           local progress = transformer.crafting_progress
           if progress > 0 then
