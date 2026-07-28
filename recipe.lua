@@ -457,11 +457,11 @@ table.insert(recipes, {
   },
   results = {
     {type = "fluid", name = "stability", amount = 225},
-    {type = "item", name = "volatile-orb-Q", amount = 1, independent_probability = 1/5, reset_freshness_on_craft = true},
-    {type = "item", name = "volatile-orb-R", amount = 1, independent_probability = 1/5, reset_freshness_on_craft = true},
-    {type = "item", name = "volatile-orb-S", amount = 1, independent_probability = 1/5, reset_freshness_on_craft = true},
-    {type = "item", name = "volatile-orb-T", amount = 1, independent_probability = 1/5, reset_freshness_on_craft = true},
-    {type = "item", name = "volatile-orb-U", amount = 1, independent_probability = 1/5, reset_freshness_on_craft = true}
+    {type = "item", name = "volatile-orb-Q", amount = 1, shared_probability = {min = 0/5, max = 1/5}, reset_freshness_on_craft = true},
+    {type = "item", name = "volatile-orb-R", amount = 1, shared_probability = {min = 1/5, max = 2/5}, reset_freshness_on_craft = true},
+    {type = "item", name = "volatile-orb-S", amount = 1, shared_probability = {min = 2/5, max = 3/5}, reset_freshness_on_craft = true},
+    {type = "item", name = "volatile-orb-T", amount = 1, shared_probability = {min = 3/5, max = 4/5}, reset_freshness_on_craft = true},
+    {type = "item", name = "volatile-orb-U", amount = 1, shared_probability = {min = 4/5, max = 5/5}, reset_freshness_on_craft = true}
   },
   enabled = false,
   order = "l[extract-stability]"
@@ -772,8 +772,8 @@ table.insert(recipes, {
     {type = "item", name = "wood", amount = 1}
   },
   results = {
-    {type = "item", name = "wood", amount = 1, independent_probability=0.9},
-    {type = "item", name = "burning-wood", amount = 1, independent_probability = 0.1}
+    {type = "item", name = "wood", amount = 1, shared_probability = {min = 0.1, max = 1}},
+    {type = "item", name = "burning-wood", amount = 1, shared_probability = {min = 0, max = 0.1}}
   },
   energy_required = 5,
   enabled = true,
