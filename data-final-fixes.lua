@@ -75,17 +75,17 @@ end
 -- Remove fuel values from wood and coal
 if data.raw.item.wood then
   data.raw.item.wood.fuel_value = nil
-  data.raw.item.wood.fuel_category = nil
+  data.raw.item.wood.fuel_categories = nil
 end
 if data.raw.item.coal then
   data.raw.item.coal.fuel_value = nil
-  data.raw.item.coal.fuel_category = nil
+  data.raw.item.coal.fuel_categories = nil
 end
 
 -- Remove fuel value from spoilage
 if data.raw.item.spoilage then
   data.raw.item.spoilage.fuel_value = nil
-  data.raw.item.spoilage.fuel_category = nil
+  data.raw.item.spoilage.fuel_categories = nil
   data.raw.item.spoilage.fuel_acceleration_multiplier = nil
   data.raw.item.spoilage.fuel_top_speed_multiplier = nil
   data.raw.item.spoilage.fuel_emissions_multiplier = nil
