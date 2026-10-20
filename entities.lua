@@ -717,11 +717,14 @@ defense_ward.attack_parameters.ammo_type.target_filter = {
 defense_ward.collision_box = {{-0.35, -0.35}, {0.35, 0.35}}
 defense_ward.selection_box = {{-0.5, -0.5}, {0.5, 0.5}}
 
--- Lotus-bud ward: folded = closed bud, preparing/folding = petals roll open
--- and the crystal floats up, prepared = hovering idle loop, attacking =
--- charged crystal throwing arcs, ending = spinning down to the idle pose.
--- Rendered by blender/defense_ward.py. The ward is rotationally symmetric,
--- so every state has a single direction.
+-- Active magic shard on a staff: folded = shard seated in the claws, dim;
+-- preparing/folding = claws open and the shard lifts out; prepared = hovering,
+-- slowly turning loop; starting_attack = charge-up (stops turning, shudders,
+-- glows up, arcs gather); attacking = held at peak charge; ending = back to
+-- the prepared pose. The ward fires once and is destroyed (control.lua), so
+-- the charge-up is what players see right before the shot. Rendered by
+-- blender/defense_ward.py; it looks the same from every side, so every state
+-- has a single direction.
 local function defense_ward_animation(state, frames, extra)
   local function layer(suffix, width, height, shift, flags)
     local l = {
@@ -741,25 +744,27 @@ local function defense_ward_animation(state, frames, extra)
   end
   return {
     layers = {
-      layer("", 80, 112, {0, -0.24}),
-      layer("-glow", 80, 112, {0, -0.24}, {draw_as_light = true}),
-      layer("-shadow", 192, 96, {0.9, 0.385}, {draw_as_shadow = true})
+      layer("", 64, 152, {0, -0.78}),
+      layer("-glow", 64, 152, {0, -0.78}, {draw_as_light = true}),
+      layer("-shadow", 272, 112, {1.62, 0.42}, {draw_as_shadow = true})
     }
   }
 end
 
 defense_ward.folded_animation = defense_ward_animation("preparing", 1)
 defense_ward.preparing_animation = defense_ward_animation("preparing", 16)
-defense_ward.prepared_animation = defense_ward_animation("prepared", 32)
-defense_ward.attacking_animation = defense_ward_animation("attacking", 16)
-defense_ward.ending_attack_animation = defense_ward_animation("ending", 8)
+defense_ward.prepared_animation = defense_ward_animation("prepared", 48)
+defense_ward.starting_attack_animation = defense_ward_animation("starting", 12)
+defense_ward.attacking_animation = defense_ward_animation("attacking", 8)
+defense_ward.ending_attack_animation = defense_ward_animation("ending", 12)
 defense_ward.folding_animation = defense_ward_animation("preparing", 16, {run_mode = "backward"})
 -- turret state speeds default to 1 (a whole clip per tick); 1 / speed = ticks per pass
 defense_ward.preparing_speed = 0.04          -- 16 frames in 25 ticks
 defense_ward.folding_speed = 0.04
-defense_ward.prepared_speed = 1 / 96         -- 32-frame hover loop, 1.6 s
-defense_ward.attacking_speed = 1 / 32        -- 16-frame charged loop, 0.53 s
-defense_ward.ending_attack_speed = 1 / 16    -- 8 frames spin-down
+defense_ward.prepared_speed = 1 / 144        -- 48-frame hover loop, one turn in 2.4 s
+defense_ward.starting_attack_speed = 1 / 30  -- 12-frame charge-up, 0.5 s before the shot
+defense_ward.attacking_speed = 1 / 16        -- 8-frame loop at peak charge
+defense_ward.ending_attack_speed = 1 / 30    -- 12 frames back to the hover pose
 -- the laser turret's 64-direction barrel glow, base and 2x2 connector don't belong here
 defense_ward.energy_glow_animation = nil
 defense_ward.glow_light_intensity = 0
@@ -767,10 +772,10 @@ defense_ward.graphics_set = {}
 defense_ward.integration = nil
 defense_ward.water_reflection = nil
 defense_ward.circuit_connector = nil
--- the beam leaves the hovering crystal, which sits on the turret's axis
+-- the beam leaves the hovering shard, which sits on the turret's axis
 defense_ward.attack_parameters.source_direction_count = 0
 defense_ward.attack_parameters.source_offset = {0, 0}
-defense_ward.attack_parameters.ammo_type.action.action_delivery.source_offset = {0, -0.84}
+defense_ward.attack_parameters.ammo_type.action.action_delivery.source_offset = {0, -1.43}
 
 
 -- Create defense ward item

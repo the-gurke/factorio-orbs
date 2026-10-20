@@ -1,14 +1,15 @@
 """
 Procedural Blender model + Factorio render of the defense ward (1x1 turret).
 
-The ward is a purple-and-gold obelisk crowned by a closed lotus bud of six
-hinged petals with a focusing crystal sleeping inside. When biters come near
-the bud opens (a lift carriage inside the capital pushes the petals' tail
-levers up, rolling them open), the crystal floats up out of its cradle with
-its two gimbal rings swinging out, and it hovers, gathering motes from the
-petal tips, until it fires its one beam.
+The ward is an active magic shard on a staff: a turned wooden staff with
+riveted iron bands, planted in a small stone footing braced with bronze, and
+topped by a riveted collar cup whose four gold claws hold the shard. When
+biters come near the claws open and the shard lifts out of the cup and hovers,
+turning slowly. Just before it fires it stops turning, shudders and glows up
+while arcs gather into it from the claws; it fires exactly once (control.lua
+destroys the ward when its beam hits), so the beam itself is the engine's.
 
-Renders every turret state as its own seamless clip:
+Renders every turret state as its own clip:
 
     blender -b --factory-startup -P blender/defense_ward.py -- \
         --out graphics/generated/defense-ward [--preview --frame 0,15,30]
@@ -29,12 +30,13 @@ import zlib
 from pathlib import Path
 
 # (state, frame count). Order = timeline order for --frame.
-SEGMENTS = (("preparing", 16), ("prepared", 32), ("attacking", 16), ("ending", 8))
-# Frame boxes in tiles of the render (main/glow, and the longer shadow that
-# falls to the south-east). cx/cy: screen position of the box centre relative
-# to the entity origin (+y up).
-MAIN_BOX = dict(w=1.25, h=1.75, cx=0.0, cy=0.375)
-SHADOW_BOX = dict(w=3.0, h=1.5, cx=0.9, cy=-0.25)
+SEGMENTS = (("preparing", 16), ("prepared", 48), ("starting", 12), ("attacking", 8),
+            ("ending", 12))
+# Frame boxes in render tiles. cx/cy: screen position of the box centre
+# relative to the entity origin (+y up). The shadow box reaches far to the
+# south-east because the staff is tall.
+MAIN_BOX = dict(w=1.0, h=2.375, cx=0.0, cy=0.78)
+SHADOW_BOX = dict(w=4.25, h=1.75, cx=1.62, cy=-0.42)
 
 
 def stitch(src, dest="graphics", name="defense-ward", render_ppt=128, ppt=64, cols=8):
@@ -82,37 +84,96 @@ from fblend import *  # noqa: E402,F401,F403
 
 OUT = fblend.OUT
 
-CRYSTAL, CRYSTAL_EM = emitter("crystal", (0.85, 0.2, 1.0), 1.0, base=(0.35, 0.05, 0.5),
-                              glass=True)
-ARC, ARC_EM = emitter("arc", (0.95, 0.35, 1.0), 5.0)
-MOTE, MOTE_EM = emitter("mote", (0.9, 0.25, 1.0), 1.6)
-SOCKET, SOCKET_EM = emitter("socket", (0.7, 0.15, 0.9), 0.5, base=(0.05, 0.01, 0.06))
-
 
 def smooth(x):
     x = max(0.0, min(1.0, x))
     return x * x * (3 - 2 * x)
 
 
+# ----------------------------------------------------------------------------
+# Materials
+# ----------------------------------------------------------------------------
+
+def wood(name):
+    """Turned oak: long grain streaks along the staff (wave bands stretched
+    along z, distorted), darker in the grain, with a fine fibre bump."""
+    m, nt, bsdf = node_mat(name)
+    L = nt.links.new
+    tc = nt.nodes.new("ShaderNodeTexCoord")
+    mp = nt.nodes.new("ShaderNodeMapping")
+    mp.inputs["Scale"].default_value = (1.0, 1.0, 0.08)   # grain runs along z
+    L(tc.outputs["Object"], mp.inputs["Vector"])
+    wave = nt.nodes.new("ShaderNodeTexWave")
+    wave.wave_type = "RINGS"
+    wave.inputs["Scale"].default_value = 9.0
+    wave.inputs["Distortion"].default_value = 6.0
+    wave.inputs["Detail"].default_value = 3.0
+    L(mp.outputs["Vector"], wave.inputs["Vector"])
+    noise = nt.nodes.new("ShaderNodeTexNoise")
+    noise.inputs["Scale"].default_value = 30.0
+    noise.inputs["Detail"].default_value = 8.0
+    L(mp.outputs["Vector"], noise.inputs["Vector"])
+    mix = nt.nodes.new("ShaderNodeMath")
+    mix.operation = "MULTIPLY"
+    L(wave.outputs["Fac"], mix.inputs[0])
+    L(noise.outputs["Fac"], mix.inputs[1])
+    ramp = nt.nodes.new("ShaderNodeValToRGB")
+    els = ramp.color_ramp.elements
+    els[0].position, els[0].color = 0.05, (0.07, 0.035, 0.015, 1)
+    els[1].position, els[1].color = 0.45, (0.48, 0.27, 0.12, 1)
+    e = els.new(0.25)
+    e.color = (0.27, 0.14, 0.06, 1)
+    L(mix.outputs[0], ramp.inputs["Fac"])
+    ao = nt.nodes.new("ShaderNodeAmbientOcclusion")
+    ao.inputs["Distance"].default_value = 0.08
+    L(ramp.outputs["Color"], ao.inputs["Color"])
+    L(ao.outputs["Color"], bsdf.inputs["Base Color"])
+    bsdf.inputs["Roughness"].default_value = 0.62
+    b = nt.nodes.new("ShaderNodeBump")
+    b.inputs["Strength"].default_value = 0.35
+    b.inputs["Distance"].default_value = 0.01
+    L(mix.outputs[0], b.inputs["Height"])
+    L(b.outputs["Normal"], bsdf.inputs["Normal"])
+    return m
+
+
+WOOD = wood("wood")
+IRON = metal("iron", (0.30, 0.29, 0.28), (0.03, 0.03, 0.03), rough=(0.35, 0.6), hammered=True,
+             bump=0.4, bump_scale=40.0)
+STONE = paint("stone", (0.16, 0.145, 0.13), (0.035, 0.03, 0.028), noise_scale=12.0, bump=0.8,
+              bump_scale=30.0, dirt=0.35)
+
+# The shard: a translucent magenta body, its edges glowing hot and cracked
+# veins inside, like the item icon. Emission strengths are animated by glow.
+SHARD, SHARD_EM = emitter("shard_body", (0.55, 0.06, 0.95), 0.6, base=(0.3, 0.03, 0.6),
+                          glass=True)
+_sb = SHARD.node_tree.nodes["Principled BSDF"]
+_sb.inputs["Transmission Weight"].default_value = 0.4
+_sb.inputs["Roughness"].default_value = 0.18
+EDGE, EDGE_EM = emitter("shard_edge", (1.0, 0.22, 0.85), 2.0)
+VEIN, VEIN_EM = emitter("shard_vein", (0.95, 0.28, 1.0), 2.4)
+ARC, ARC_EM = emitter("arc", (0.9, 0.3, 1.0), 2.5)
+SOCKET, SOCKET_EM = emitter("socket", (0.7, 0.12, 0.95), 0.5, base=(0.05, 0.01, 0.06))
+
 root = bpy.data.objects.new("defense_ward", None)
 link(root)
+# The model is laid out at 1/1.35 size and scaled up as a whole: at true
+# size the shard is a few pixels at zoom 1. Scaled, the staff stands like a
+# lamp post (about half a medium pole) on a footing still inside its tile.
+WARD_SCALE = 1.35
+root.scale = (WARD_SCALE,) * 3
 
 # ----------------------------------------------------------------------------
-# Body
+# Footing and staff
 # ----------------------------------------------------------------------------
 #
-# A 1x1 building should fill its tile like the vanilla small lamp does, so the
-# plinth spans almost the whole footprint. The obelisk tapers strongly so its
-# side faces read as wings in the 45 degree view, and the tall crown sits in
-# the middle where it cannot hide anything behind it.
+# Tall and thin like a lamp post: the footing stays small so the staff and the
+# shard are the subject. The stone slab carries a bronze collar that the
+# staff is planted in, held by four riveted bronze braces.
 
-PL_B, PL_T, PL_H, PL_CH = 0.46, 0.41, 0.12, 0.1   # plinth half widths, height, chamfer
-OB_B, OB_T = 0.30, 0.19                          # obelisk half widths (bottom, top)
-OB_Z1 = 0.70                                     # obelisk top
-NECK_Z1 = 0.76
-Z_H = 0.82                                       # hinge plane on the capital
-CAP_R, BORE_R = 0.27, 0.195                      # capital ring outer / bore radius
-R_H = 0.205                                      # petal hinge radius
+SLAB_H, SLAB_HALF = 0.07, 0.29
+STAFF_R0, STAFF_R1 = 0.06, 0.05   # staff radius at foot and head
+STAFF_Z0, STAFF_Z1 = SLAB_H, 1.2
 
 
 def octagon(h, ch):
@@ -134,404 +195,307 @@ def frustum(name, bot, top, z0, z1, mat, parent=root, bevel=0.008):
     return o
 
 
-# --- plinth: sloped bronze skirt, thick gold rail, rivets and rubies ----------
-pb, pt = octagon(PL_B, PL_CH), octagon(PL_T, PL_CH * 0.9)
-frustum("plinth", pb, pt, 0.0, PL_H, BRONZE)
-curve_obj("plinth_rail", [(x, y, PL_H) for x, y in pt], GOLD, 0.03, root, closed=True)
-curve_obj("plinth_foot", [(x, y, 0.015) for x, y in pb], GOLD, 0.018, root, closed=True)
-for k, (x, y) in enumerate(((-0.24, -0.43), (-0.08, -0.43), (0.08, -0.43), (0.24, -0.43))):
-    sphere(f"plinth_rivet{k}", 0.018, (x, y + 0.012, PL_H * 0.5), GOLD, root)
-for sx in (-1, 1):   # rubies on the front chamfers
-    a = Vector((sx * (PL_B - PL_CH / 2), -PL_B + PL_CH / 2, PL_H * 0.5))
-    sphere(f"plinth_ruby{sx}", 0.026, tuple(a + Vector((sx * 0.01, -0.01, 0))), RUBY, root)
+def ring_pts(r, n=48):
+    return [(r * math.cos(TAU * i / n), r * math.sin(TAU * i / n)) for i in range(n)]
 
-# --- obelisk: four hammered purple faces with gold ribs and frames -------------
-ob = [Vector(v) for v in ((-OB_B, -OB_B, PL_H), (OB_B, -OB_B, PL_H), (OB_B, OB_B, PL_H),
-                          (-OB_B, OB_B, PL_H))]
-ot = [Vector(v) for v in ((-OB_T, -OB_T, OB_Z1), (OB_T, -OB_T, OB_Z1), (OB_T, OB_T, OB_Z1),
-                          (-OB_T, OB_T, OB_Z1))]
-faces = []
-for i in range(4):
-    j = (i + 1) % 4
-    p = Panel(ob[i], ob[j], ot[j], ot[i])
-    p.build(f"ob_face{i}", PURPLE, parent=root)
-    faces.append(p)
-for i in range(4):       # heavy gold corner ribs
-    curve_obj(f"ob_rib{i}", [tuple(ob[i] + Vector((0, 0, 0.01))), tuple(ot[i])], GOLD, 0.032,
-              root)
-curve_obj("ob_cornice", [tuple(v + Vector((0, 0, 0.005))) for v in ot], GOLD, 0.03, root,
-          closed=True)
-curve_obj("ob_base_rail", [tuple(v + Vector((0, 0, 0.02))) for v in ob], GOLD, 0.026, root,
-          closed=True)
 
-front = faces[0]
-fp = sub_panel(front, 0.17, 0.83, 0.1, 0.9)
-gold_frame(fp, "front_frame", 0.022, parent=root)
-rp = sub_panel(fp, 0.12, 0.88, 0.3, 0.9)
-# the ward's sigil: a rune that wakes with the crystal
-for gi, stroke in enumerate(RUNES[1]):
-    glow(curve_obj(f"front_rune{gi}", [rp.at(0.1 + 0.8 * u, 0.05 + 0.9 * v, 0.008)
-                                       for u, v in stroke], RUNE, 0.019, root))
-fp.studs("front_ruby", [(0.5, 0.13)], r=0.03, mat=RUBY, parent=root)
-fp.filigree("front_fil", [fit(scroll_c(0, 0, 1), 0.06, 0.02, 0.44, 0.26),
-                          fit(scroll_c(0, 0, 1), 0.56, 0.02, 0.94, 0.26, flip_x=True)],
-            radius=0.014, parent=root)
-for i in (1, 3):         # east / west wings: framed scroll plates
-    sp = sub_panel(faces[i], 0.14, 0.86, 0.1, 0.9)
-    gold_frame(sp, f"side{i}_frame", 0.02, parent=root)
-    inner = sub_panel(sp, 0.1, 0.9, 0.08, 0.92)
-    inner.filigree(f"side{i}_fil", [fit(scroll_c(0, 0, 1), 0.0, 0.3, 1.0, 1.0, flip_x=(i == 3)),
-                                    fit(scroll_c(0, 0, 1, up=False), 0.0, 0.0, 0.8, 0.35,
-                                        flip_x=(i == 1))],
-                   radius=0.016, parent=root)
-    inner.studs(f"side{i}_ruby", [(0.5, 0.55)], r=0.024, mat=RUBY, parent=root)
-gold_frame(sub_panel(faces[2], 0.14, 0.86, 0.1, 0.9), "back_frame", 0.02, parent=root)
+def hoop(name, r, z, mat, rad):
+    return curve_obj(name, [(x, y, z) for x, y in ring_pts(r)], mat, rad, root, closed=True)
 
-# --- corner pylons: anchor stones that feed the ward, taller at the back -------
-PYLONS = []
-for sx in (-1, 1):
-    for sy in (-1, 1):
-        x, y = sx * 0.345, sy * 0.345
-        h = 0.56 if sy > 0 else 0.4
-        frustum(f"pylon{sx}{sy}", [(x + u * 0.055, y + v * 0.055) for u, v in
-                                   ((-1, -1), (1, -1), (1, 1), (-1, 1))],
-                [(x + u * 0.032, y + v * 0.032) for u, v in ((-1, -1), (1, -1), (1, 1), (-1, 1))],
-                PL_H, h, BRONZE, bevel=0.006)
-        for zz in (PL_H + 0.05, h - 0.03):
-            r = 0.05 - 0.02 * (zz - PL_H) / (h - PL_H)
-            box(f"pylon_band{sx}{sy}{zz:.2f}", (2 * r + 0.02, 2 * r + 0.02, 0.03), (x, y, zz), GOLD,
-                root, bevel=0.006)
-        cyl(f"pylon_cap{sx}{sy}", 0.03, 0.04, (x, y, h + 0.02), GOLD, root, verts=16)
-        sphere(f"pylon_ruby{sx}{sy}", 0.03, (x, y, h + 0.06), RUBY, root, segs=16)
-        PYLONS.append(Vector((x, y, h + 0.06)))
-        # gold scroll bracket bracing the pylon against the obelisk
-        bz = PL_H + 0.5 * (h - PL_H)
-        t = (bz - PL_H) / (OB_Z1 - PL_H)
-        half = OB_B + (OB_T - OB_B) * t
-        a = Vector((x - sx * 0.03, y - sy * 0.03, bz))
-        b = Vector((sx * half, sy * half, bz + 0.08))
-        mid = (a + b) / 2 + Vector((0, 0, 0.06))
-        curve_obj(f"pylon_brace{sx}{sy}", [tuple(a), tuple(mid), tuple(b)], GOLD, 0.014, root)
 
-# --- neck and capital ring: the bud's hinges stand on it ------------------------
-cyl("neck", 0.21, NECK_Z1 - OB_Z1 + 0.01, (0, 0, (OB_Z1 + NECK_Z1) / 2), BRONZE, root, verts=40)
-ring_pts = lambda r: [(r * math.cos(TAU * i / 64), r * math.sin(TAU * i / 64)) for i in range(64)]
-cap = mesh_obj("capital", ring_mesh(ring_pts(CAP_R), ring_pts(BORE_R), NECK_Z1, Z_H), GOLD, root,
-               smooth=True, bevel=0.008)
-curve_obj("capital_lip", [(CAP_R * math.cos(TAU * i / 64), CAP_R * math.sin(TAU * i / 64),
-                           Z_H - 0.005) for i in range(64)], GOLD, 0.02, root, closed=True)
-curve_obj("capital_skirt", [(0.235 * math.cos(TAU * i / 64), 0.235 * math.sin(TAU * i / 64),
-                             NECK_Z1 - 0.005) for i in range(64)], GOLD, 0.022, root, closed=True)
-BORE_FLOOR = 0.77
-cyl("bore_floor", BORE_R, 0.01, (0, 0, BORE_FLOOR), BRONZE, root, verts=40)
-for k in range(6):       # rubies between the hinges
-    a = TAU * k / 6
-    sphere(f"capital_ruby{k}", 0.022, (0.245 * math.cos(a), 0.245 * math.sin(a), Z_H + 0.005),
-           RUBY, root)
+def rivets(name, r, z, n, mat=BRONZE, size=0.012, a0=0.0):
+    for k in range(n):
+        a = a0 + TAU * k / n
+        sphere(f"{name}{k}", size, (r * math.cos(a), r * math.sin(a), z), mat, root, segs=10)
+
+
+# --- footing ---------------------------------------------------------------------
+frustum("slab", octagon(SLAB_HALF, 0.09), octagon(SLAB_HALF - 0.025, 0.08), 0, SLAB_H, STONE)
+curve_obj("slab_rail", [(x, y, SLAB_H) for x, y in octagon(SLAB_HALF - 0.025, 0.08)], GOLD,
+          0.014, root, closed=True)
+COLLAR_Z1 = 0.2
+cyl("foot_collar", 0.11, COLLAR_Z1 - SLAB_H, (0, 0, (SLAB_H + COLLAR_Z1) / 2), BRONZE, root,
+    verts=32, r2=0.075)
+hoop("foot_collar_rim", 0.112, SLAB_H + 0.012, GOLD, 0.016)
+hoop("foot_collar_top", 0.078, COLLAR_Z1, BRONZE, 0.014)
+rivets("foot_collar_rivet", 0.1, SLAB_H + 0.05, 8, mat=GOLD, size=0.011)
+BRACE_Z = 0.42
+for k in range(4):       # diagonal braces from the slab corners up to an iron band
+    a = TAU * (k + 0.5) / 4
+    foot = Vector((0.23 * math.cos(a), 0.23 * math.sin(a), SLAB_H + 0.005))
+    head = Vector((0.072 * math.cos(a), 0.072 * math.sin(a), BRACE_Z))
+    d = head - foot
+    o = bpy.data.objects.new(f"brace{k}", None)
+    link(o, root)
+    o.location = foot
+    o.rotation_euler = d.to_track_quat("X", "Z").to_euler()
+    box(f"brace{k}_bar", (d.length, 0.032, 0.014), (d.length / 2, 0, 0), BRONZE, o, bevel=0.004)
+    box(f"brace{k}_shoe", (0.06, 0.04, 0.018), (0, 0, -0.004), BRONZE, o, bevel=0.004)
+    for t in (0.0, 0.92):
+        sphere(f"brace{k}_rivet{t}", 0.011, tuple(foot + d * t + Vector((0, 0, 0.012))), GOLD,
+               root, segs=10)
+
+# --- staff: turned wood, riveted iron bands ---------------------------------------
+staff_h = STAFF_Z1 - STAFF_Z0
+cyl("staff", STAFF_R0, staff_h, (0, 0, (STAFF_Z0 + STAFF_Z1) / 2), WOOD, root, verts=24,
+    r2=STAFF_R1, bevel=0.0)
+
+
+def staff_r(z):
+    return STAFF_R0 + (STAFF_R1 - STAFF_R0) * (z - STAFF_Z0) / staff_h
+
+
+for k, z in enumerate((BRACE_Z, 0.82)):
+    r = staff_r(z) + 0.012
+    cyl(f"band{k}", r, 0.06, (0, 0, z), IRON, root, verts=32, bevel=0.005)
+    rivets(f"band{k}_rivet", r, z, 6, size=0.012, a0=0.3 * k)
+for k, z in enumerate((1.06, 1.1)):   # turned beads under the head
+    cyl(f"bead{k}", staff_r(z) + 0.012, 0.022, (0, 0, z), WOOD, root, verts=24, bevel=0.008)
+
+# --- collar cup on the head ------------------------------------------------------
+CUP_Z0, CUP_Z1 = 1.14, 1.27
+CUP_R = 0.105
+cyl("cup_neck", 0.07, 0.07, (0, 0, CUP_Z0 + 0.0), IRON, root, verts=32, r2=CUP_R)
+cup = mesh_obj("cup", ring_mesh(ring_pts(CUP_R + 0.008), ring_pts(CUP_R - 0.022), CUP_Z0 + 0.03,
+                                CUP_Z1), IRON, root, smooth=True, bevel=0.006)
+hoop("cup_lip", CUP_R - 0.006, CUP_Z1, GOLD, 0.014)
+hoop("cup_foot", CUP_R + 0.008, CUP_Z0 + 0.035, BRONZE, 0.011)
+rivets("cup_rivet", CUP_R + 0.012, (CUP_Z0 + CUP_Z1) / 2 + 0.01, 8, size=0.014)
+cyl("cup_floor", CUP_R - 0.022, 0.01, (0, 0, CUP_Z1 - 0.05), IRON, root, verts=32)
+glow(cyl("cup_socket", 0.05, 0.006, (0, 0, CUP_Z1 - 0.044), SOCKET, root, verts=24))
+
+# --- four gold claws on the cup rim, hinged so they can open ----------------------
+CLAW_R = CUP_R - 0.004
+CLAW_OPEN = math.radians(32)
+CLAWS = []
+for k in range(4):
+    a = TAU * (k + 0.5) / 4               # on the diagonals: none hides the shard
+    h = bpy.data.objects.new(f"claw{k}", None)
+    link(h, root)
+    h.location = (CLAW_R * math.cos(a), CLAW_R * math.sin(a), CUP_Z1)
+    h.rotation_mode = "XYZ"
+    # in the hinge frame x points radially out, z up; the claw curls inwards
+    pts = [(0.0, 0, 0.0), (0.006, 0, 0.05), (-0.004, 0, 0.1), (-0.03, 0, 0.14), (-0.045, 0, 0.15)]
+    curve_obj(f"claw{k}_arm", pts, GOLD, 0.014, h, taper=lambda t: 1.0 - 0.45 * t)
+    sphere(f"claw{k}_tip", 0.013, (-0.047, 0, 0.15), GOLD, h, segs=12)
+    sphere(f"claw{k}_ruby", 0.016, (0.012, 0, 0.012), RUBY, h, segs=12)
+    cyl(f"claw{k}_knuckle", 0.012, 0.035, (0, 0, 0), BRASS, h, rot=(math.radians(90), 0, 0),
+        verts=12)
+    CLAWS.append((h, a))
+CLAW_TIP = Vector((-0.047, 0, 0.15))
 
 # ----------------------------------------------------------------------------
-# Crown mechanism
+# The shard
 # ----------------------------------------------------------------------------
 #
-# Six petals are hinged on the capital (axis tangent to the hinge circle).
-# Each has a short tail lever pointing inwards under the hinge with a roller on
-# its tip; the lift carriage in the bore rises under the rollers and rolls the
-# petals open. The carriage height is solved from the petal angle so roller
-# and carriage always touch. The crystal rests in the carriage's claws while
-# folded and levitates out once the bud is open; its gimbal rings swing out
-# from flat (stowed inside the bud) to their working tilts.
+# An irregular blade-like shard (flattened cross section, offset apex) built
+# from jittered rings, so it reads as a broken shard, not a gem. Its edges are
+# traced with glowing curves and cracked veins run inside the translucent body.
 
-N_PET = 6
-PET_L = 0.36                 # petal length (closed: height of the bud above the hinge)
-PHI = math.radians(31)       # half the petal's arc; > 30 so closed petals overlap
-TAIL, ROLL_R = 0.075, 0.016  # tail lever length, roller radius
-THETA_MAX = math.radians(70)
-
-
-def bud_r(s):
-    """Radius of the closed bud at fraction s of the petal length: an onion
-    dome bulging out of the hinge circle and closing to a point."""
-    return R_H * (1 + 0.35 * math.sin(math.pi * s * 0.8)) * (1 - s ** 1.8)
-
-
-S_TIP = 0.95
-
-
-def petal_mesh():
-    """Petal surface in its hinge frame (x radial out, y along the hinge, z up):
-    a slice of the bud's surface of revolution."""
-    ns, nt = 14, 8
-    bm = bmesh.new()
-    grid = []
-    for i in range(ns + 1):
-        s = S_TIP * i / ns
-        row = []
-        for j in range(nt + 1):
-            ph = PHI * (2 * j / nt - 1)
-            r = bud_r(s)
-            row.append(bm.verts.new((r * math.cos(ph) - R_H, r * math.sin(ph), s * PET_L)))
-        grid.append(row)
-    for i in range(ns):
-        for j in range(nt):
-            bm.faces.new((grid[i][j], grid[i][j + 1], grid[i + 1][j + 1], grid[i + 1][j]))
-    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
-    # make normals face outward (+x side of the bud)
-    if bm.faces[len(bm.faces) // 2].normal.x < 0:
-        bmesh.ops.reverse_faces(bm, faces=bm.faces)
-    return bm
-
-
-def petal_point(s, ph, lift=0.0):
-    r = bud_r(s) + lift
-    return (r * math.cos(ph) - R_H, r * math.sin(ph), s * PET_L)
-
-
-HINGES = []
-TIP_LOCAL = Vector(petal_point(S_TIP - 0.04, 0.0, 0.02))
-for k in range(N_PET):
-    a = math.radians(-90) + TAU * k / N_PET      # one petal faces the camera
-    h = bpy.data.objects.new(f"hinge{k}", None)
-    link(h, root)
-    h.location = (R_H * math.cos(a), R_H * math.sin(a), Z_H)
-    h.rotation_mode = "XYZ"
-    pet = mesh_obj(f"petal{k}", petal_mesh(), PURPLE, h, smooth=True)
-    pet.data.materials.append(GOLD)              # gilded edges
-    sol = pet.modifiers.new("solid", "SOLIDIFY")
-    sol.thickness = 0.014
-    sol.offset = -1
-    sol.material_offset_rim = 1
-    # inside: a glowing vein down the middle (it feeds the crystal - the motes
-    # run along it) between raised gold scrolls, so the open flower is not
-    # bare gold
-    IN = -0.02
-    glow(curve_obj(f"petal{k}_vein", [petal_point(S_TIP * i / 12, 0.0, IN) for i in range(1, 11)],
-                   RUNE, 0.012, h))
-    for sgn in (-1, 1):
-        curl = fit(scroll_c(0, 0, 1), 0.1, 0.12, 0.62, 0.8, flip_x=(sgn > 0))
-        curve_obj(f"petal{k}_iscroll{sgn}", [petal_point(v * S_TIP, sgn * PHI * (0.18 + 0.72 * u),
-                                                         IN) for u, v in curl], GOLD, 0.012, h)
-    # heavy gold edging and midrib on the outside, ruby at the tip
-    edge = ([petal_point(S_TIP * i / 12, -PHI, 0.006) for i in range(13)]
-            + [petal_point(S_TIP * (12 - i) / 12, PHI, 0.006) for i in range(13)])
-    curve_obj(f"petal{k}_edge", edge, GOLD, 0.016, h)
-    curve_obj(f"petal{k}_rib", [petal_point(S_TIP * i / 12, 0.0, 0.012) for i in range(1, 12)],
-              GOLD, 0.017, h)
-    for sgn in (-1, 1):  # a scroll on each half of the petal
-        curl = fit(scroll_c(0, 0, 1), 0.12, 0.25, 0.6, 0.85, flip_x=(sgn > 0))
-        curve_obj(f"petal{k}_scroll{sgn}", [petal_point(v * S_TIP, sgn * PHI * (0.15 + 0.7 * u),
-                                                        0.01) for u, v in curl], GOLD, 0.011, h)
-    sphere(f"petal{k}_ruby", 0.026, tuple(TIP_LOCAL), RUBY, h, segs=16)
-    # hinge knuckle and the tail lever with its roller
-    cyl(f"petal{k}_knuckle", 0.02, 0.07, (0, 0, 0), BRASS, h, rot=(math.radians(90), 0, 0),
-        verts=16)
-    box(f"petal{k}_tail", (TAIL, 0.03, 0.018), (-TAIL / 2, 0, 0), BRASS, h, bevel=0.004)
-    cyl(f"petal{k}_roller", ROLL_R, 0.034, (-TAIL, 0, 0), STEEL, h,
-        rot=(math.radians(90), 0, 0), verts=16)
-    HINGES.append((h, a))
-
-# lift carriage: gold table with six claws holding the crystal, on a screw
-CARR_T = 0.025
-CRY_R, CRY_PRISM, CRY_TOP, CRY_BOT = 0.078, 0.1, 0.11, 0.08
-carriage = bpy.data.objects.new("carriage", None)
-link(carriage, root)
-cyl("carriage_table", 0.17, CARR_T, (0, 0, -CARR_T / 2), GOLD, carriage, verts=36)
-glow(cyl("carriage_socket", 0.06, 0.012, (0, 0, 0.004), SOCKET, carriage, verts=24))
-for k in range(6):
-    a = TAU * (k + 0.5) / 6
-    claw = [(0.11 * math.cos(a), 0.11 * math.sin(a), 0.0),
-            (0.1 * math.cos(a), 0.1 * math.sin(a), 0.05),
-            (0.086 * math.cos(a), 0.086 * math.sin(a), 0.09)]
-    curve_obj(f"claw{k}", claw, GOLD, 0.011, carriage)
-SCREW_L = 0.25
-screw = cyl("lift_screw", 0.035, SCREW_L, (0, 0, -SCREW_L / 2 - CARR_T), STEEL, carriage,
-            verts=20)
-for k in range(5):       # thread crests so the screw reads as a screw
-    cyl(f"lift_thread{k}", 0.042, 0.012, (0, 0, -CARR_T - 0.03 - 0.045 * k), STEEL, carriage,
-        verts=20)
-
-
-def carriage_top(theta):
-    """Carriage height that keeps the rollers resting on it (roller tip at
-    (-TAIL cos t, TAIL sin t) in the hinge frame)."""
-    return Z_H + TAIL * math.sin(theta) - ROLL_R
-
-
-CRY_REST = CRY_BOT + 0.008 + CRY_PRISM / 2   # crystal centre above the carriage table
-
-
-# --- the focusing crystal and its gimbal rings ---------------------------------
-crystal = bpy.data.objects.new("crystal", None)
-link(crystal, root)
+rng = random.Random(7)
+shard = bpy.data.objects.new("shard", None)
+link(shard, root)
+NS = 6
+LEVELS = ((-0.15, 0.0), (-0.05, 0.62), (0.08, 1.0), (0.24, 0.72), (0.4, 0.3))   # (z, radius scale)
+SH_R, SH_FLAT = 0.12, 0.7
+APEX = Vector((0.03, -0.01, 0.5))
+angles = [TAU * i / NS + rng.uniform(-0.25, 0.25) for i in range(NS)]
+radii = [rng.uniform(0.75, 1.0) for _ in range(NS)]
 bm = bmesh.new()
-mid_lo = [bm.verts.new((CRY_R * math.cos(TAU * i / 6), CRY_R * math.sin(TAU * i / 6),
-                        -CRY_PRISM / 2)) for i in range(6)]
-mid_hi = [bm.verts.new((CRY_R * math.cos(TAU * i / 6), CRY_R * math.sin(TAU * i / 6),
-                        CRY_PRISM / 2)) for i in range(6)]
-top = bm.verts.new((0, 0, CRY_PRISM / 2 + CRY_TOP))
-bot = bm.verts.new((0, 0, -CRY_PRISM / 2 - CRY_BOT))
-for i in range(6):
-    j = (i + 1) % 6
-    bm.faces.new((mid_lo[i], mid_lo[j], mid_hi[j], mid_hi[i]))
-    bm.faces.new((mid_hi[i], mid_hi[j], top))
-    bm.faces.new((mid_lo[j], mid_lo[i], bot))
+rings = []
+for li, (z, s) in enumerate(LEVELS):
+    if s == 0.0:
+        rings.append([bm.verts.new((0.0, 0.0, z))])
+        continue
+    ring = []
+    for i in range(NS):
+        r = SH_R * s * radii[i] * rng.uniform(0.9, 1.08)
+        a = angles[i] + 0.12 * li                    # a slight twist up the shard
+        ring.append(bm.verts.new((r * math.cos(a), SH_FLAT * r * math.sin(a),
+                                  z + rng.uniform(-0.015, 0.015))))
+    rings.append(ring)
+apex = bm.verts.new(tuple(APEX))
+rings.append([apex])
+for lo, hi in zip(rings, rings[1:]):
+    for i in range(NS):
+        j = (i + 1) % NS
+        if len(lo) == 1:
+            bm.faces.new((lo[0], hi[j], hi[i]))
+        elif len(hi) == 1:
+            bm.faces.new((lo[i], lo[j], hi[0]))
+        else:
+            bm.faces.new((lo[i], lo[j], hi[j], hi[i]))
 bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
-cry_o = mesh_obj("crystal_body", bm, CRYSTAL, crystal)
-cry_o.data.shade_flat()
-glow(cry_o)
-cry_light_d = bpy.data.lights.new("crystal_light", "POINT")
-cry_light_d.color = (1.0, 0.35, 0.95)
-cry_light_d.shadow_soft_size = 0.05
-link(bpy.data.objects.new("crystal_light", cry_light_d), crystal)
+EDGE_LINES = [[tuple(r[0 if len(r) == 1 else i].co) for r in rings] for i in range(NS)]
+GIRDLE = [tuple(v.co) for v in rings[2]]
+shard_body = mesh_obj("shard_body", bm, SHARD, shard)
+shard_body.data.shade_flat()
+glow(shard_body)
+for i, line in enumerate(EDGE_LINES):    # the ridges glow hot
+    glow(curve_obj(f"shard_edge{i}", line, EDGE, 0.0065, shard))
+glow(curve_obj("shard_girdle", GIRDLE, EDGE, 0.005, shard, closed=True))
 
-RING_TILTS = ((math.radians(68), 0.0), (math.radians(-40), math.radians(58)))
-RINGS = []
-for k, (rr, w) in enumerate(((0.155, 0.022), (0.128, 0.02))):
-    holder = bpy.data.objects.new(f"gimbal{k}", None)
-    link(holder, crystal)
-    holder.rotation_mode = "XYZ"
-    ring = mesh_obj(f"ring{k}", ring_mesh(ring_pts(rr), ring_pts(rr - w), -0.011, 0.011), GOLD,
-                    holder, smooth=True, bevel=0.004)
-    for g in range(4):
-        sphere(f"ring{k}_gem{g}", 0.017, ((rr - w / 2) * math.cos(TAU * g / 4),
-                                          (rr - w / 2) * math.sin(TAU * g / 4), 0), RUBY, ring)
-    RINGS.append((holder, ring))
-Z_HOVER = 1.38
+
+def shard_r(z):
+    """Smallest radius of the shard at height z (keeps the veins inside)."""
+    zs = [LEVELS[0][0]] + [lz for lz, _ in LEVELS[1:]] + [APEX.z]
+    ss = [0.0] + [ls for _, ls in LEVELS[1:]] + [0.0]
+    for (z0, s0), (z1, s1) in zip(zip(zs, ss), zip(zs[1:], ss[1:])):
+        if z0 <= z <= z1:
+            return SH_R * 0.75 * (s0 + (s1 - s0) * (z - z0) / (z1 - z0))
+    return 0.0
+
+
+for k in range(4):                       # cracked veins inside
+    z0, z1 = rng.uniform(-0.08, 0.02), rng.uniform(0.22, 0.38)
+    u = rng.uniform(-0.5, 0.5)
+    pts = []
+    for s in range(8):
+        z = z0 + (z1 - z0) * s / 7
+        u = max(-0.6, min(0.6, u + rng.uniform(-0.35, 0.35)))
+        pts.append((u * shard_r(z), 0.0, z))
+    glow(curve_obj(f"shard_vein{k}", pts, VEIN, 0.0045, shard))
+shard_light_d = bpy.data.lights.new("shard_light", "POINT")
+shard_light_d.color = (1.0, 0.3, 0.95)
+shard_light_d.shadow_soft_size = 0.05
+shard_light = bpy.data.objects.new("shard_light", shard_light_d)
+link(shard_light, shard)
+shard_light.location = (0, 0, 0.12)
+
+SEAT_Z = CUP_Z1 - 0.06       # shard origin when seated (bottom point inside the cup)
+LIFT = 0.17                  # hover height above the seat
+HOVER_C = 0.12               # shard centre above its origin (beam source)
 
 # ----------------------------------------------------------------------------
 # States
 # ----------------------------------------------------------------------------
 #
-# Every clip starts and ends on poses that the engine's state changes connect:
-# preparing ends in prepared frame 0; attacking frame 0 and the end of the
-# ending clip are prepared frame 0 again (crystal spin in whole sixths of a
-# turn, ring spin in whole quarters - the crystal is hexagonal, the rings carry
-# four gems). Loops close on themselves.
+# Clip boundaries meet: preparing ends on prepared frame 0; starting_attack
+# starts there and ends at peak charge, which attacking holds and ending_attack
+# leaves, returning to prepared frame 0. The shard is irregular, so the idle
+# loop turns it one whole revolution.
 
-SPIN6, SPIN4 = TAU / 6, TAU / 4
+IDLE_N = dict(SEGMENTS)["prepared"]
+IDLE_RATE = TAU / IDLE_N                 # radians per frame while hovering
+PEAK = 2.2                               # glow at full charge ("glows up a little")
 
 
 class Pose:
-    theta = 0.0          # petal opening
-    lift = 0.0           # 0 = crystal in the claws, 1 = hovering
+    open = 0.0           # claws, 0 closed .. 1 open
+    lift = 0.0           # 0 seated .. 1 hovering
     bob = 0.0
-    spin = 0.0           # crystal spin
-    ring_spin = 0.0
-    glow = 0.1           # 1 = awake
-    arcs = 0             # lightning arcs to the petal tips
-    motes = None         # phase of the motes (None = no motes)
+    spin = 0.0
+    shake = Vector((0, 0, 0))
+    glow = 0.12
+    arcs = ()            # (from, to) world points
     seed = 0
+
+
+def claw_tip_world(k, op):
+    h, a = CLAWS[k]
+    m = (Matrix.Translation(h.location) @ Matrix.Rotation(a, 4, "Z")
+         @ Matrix.Rotation(CLAW_OPEN * op, 4, "Y"))
+    return m @ CLAW_TIP
+
+
+def shard_centre(p):
+    return Vector((0, 0, SEAT_Z + LIFT * p.lift + p.bob + HOVER_C)) + p.shake
+
+
+def gather_sources(rng, n, op):
+    """Points arcs reach the shard from: claw tips, then cup rivets."""
+    src = []
+    for _ in range(n):
+        if rng.random() < 0.7:
+            src.append(claw_tip_world(rng.randrange(4), op))
+        else:
+            a = rng.uniform(0, TAU)
+            src.append(Vector(((CUP_R + 0.015) * math.cos(a), (CUP_R + 0.015) * math.sin(a),
+                               CUP_Z1 - 0.03)))
+    return src
 
 
 def state_pose(state, i, n):
     p = Pose()
     p.seed = zlib.crc32(f"{state}{i}".encode())
+    r = random.Random(p.seed)
     if state == "preparing":
         u = i / (n - 1)
-        p.theta = THETA_MAX * smooth(u / 0.55)
+        p.open = smooth(u / 0.55)
         p.lift = smooth((u - 0.3) / 0.7)
-        p.spin = SPIN6 * p.lift
-        p.ring_spin = SPIN4 * p.lift
-        p.glow = 0.1 + 0.9 * smooth(u)
-        if p.lift > 0.6:
-            p.motes = 0.0
+        p.glow = 0.12 + 0.88 * smooth(u)
     elif state == "prepared":
         q = i / n
-        p.theta, p.lift = THETA_MAX, 1.0
-        p.bob = 0.022 * math.sin(TAU * q)
-        p.spin = SPIN6 * q
-        p.ring_spin = SPIN4 * q
-        p.glow = 1.0 + 0.3 * math.sin(TAU * q)     # brightest at the top of the bob
-        p.motes = q
+        p.open, p.lift = 1.0, 1.0
+        p.bob = 0.014 * math.sin(TAU * q)
+        p.spin = TAU * q
+        p.glow = 1.0 + 0.12 * math.sin(TAU * q)
+        if i in (9, 10, 31):             # an occasional crackle to a claw
+            p.arcs = [(claw_tip_world(r.randrange(4), 1.0), None)]
+    elif state == "starting":
+        # charge-up: the turn slows to a stop (constant deceleration from the
+        # idle rate), the shard rises a hair and shudders, arcs gather in
+        t = i / n                        # frame 0 = prepared frame 0
+        p.open, p.lift = 1.0, 1.0 + 0.15 * smooth(t / 0.8)
+        p.spin = IDLE_RATE * n * (t - t * t / 2)
+        k = smooth(t / 0.9)
+        p.glow = 1.0 + (PEAK - 1.0) * k
+        if i:
+            p.shake = Vector((r.uniform(-1, 1), r.uniform(-1, 1), 0)) * 0.008 * k
+        p.arcs = [(s, None) for s in gather_sources(r, round(3 * k + 0.2), 1.0)]
     elif state == "attacking":
-        q = i / n
-        p.theta, p.lift = THETA_MAX, 1.0
-        p.bob = 0.006 * math.sin(TAU * q * 4)      # humming with charge
-        p.spin = 4 * SPIN6 * q                      # 15 deg per frame
-        p.ring_spin = 4 * SPIN4 * q                 # 22.5 deg per frame
-        p.glow = 3.2 + 0.6 * random.Random(p.seed).random()
-        p.arcs = 3
-        p.motes = (2 * q) % 1.0
+        # held at peak charge, humming
+        p.open, p.lift = 1.0, 1.15
+        p.spin = IDLE_RATE * dict(SEGMENTS)["starting"] / 2
+        p.glow = PEAK + 0.05 * math.sin(TAU * i / n)
+        if i:
+            p.shake = Vector((r.uniform(-1, 1), r.uniform(-1, 1), 0)) * 0.008
+        p.arcs = [(s, None) for s in gather_sources(r, 3, 1.0)]
     elif state == "ending":
-        # decelerate from attack speed with constant deceleration: 2t - t^2
-        # starts at the attack rate and stops after exactly 1/6 and 1/4 turn
-        t = (i + 1) / n
-        e = 2 * t - t * t
-        p.theta, p.lift = THETA_MAX, 1.0
-        p.spin = SPIN6 * e
-        p.ring_spin = SPIN4 * e
-        p.glow = 1.0 + 2.4 * (1 - e)
-        p.arcs = 2 if i < 2 else (1 if i < 4 else 0)
-        p.motes = 0.0
+        t = (i + 1) / n                  # last frame = prepared frame 0
+        p.open = 1.0
+        p.lift = 1.15 - 0.15 * smooth(t)
+        p.spin = IDLE_RATE * dict(SEGMENTS)["starting"] / 2 * (1 - smooth(t))
+        p.glow = PEAK - (PEAK - 1.0) * smooth(t)
+        if i < 3:
+            p.arcs = [(s, None) for s in gather_sources(r, 2 - i // 2, 1.0)]
     return p
 
 
-ARCS, MOTES = [], []
-
-
-def clear(lst):
-    for o in lst:
-        bpy.data.objects.remove(o, do_unlink=True)
-    lst.clear()
-
-
-def tip_world(k, theta):
-    h, a = HINGES[k]
-    m = Matrix.Translation(h.location) @ Matrix.Rotation(a, 4, "Z") @ Matrix.Rotation(theta, 4, "Y")
-    return m @ TIP_LOCAL
+ARCS = []
 
 
 def apply(p):
-    for h, a in HINGES:
-        h.rotation_euler = (0, p.theta, a)
-    ct = carriage_top(p.theta)
-    carriage.location = (0, 0, ct)
-    rest = ct + CRY_REST
-    cz = rest + p.lift * (Z_HOVER - rest) + p.bob
-    crystal.location = (0, 0, cz)
-    crystal.rotation_euler = (0, 0, p.spin)
-    for k, (holder, ring) in enumerate(RINGS):
-        tx, ty = RING_TILTS[k]
-        sw = smooth(p.lift)
-        holder.rotation_euler = (tx * sw, ty * sw, -p.spin)    # rings don't share the spin
-        ring.rotation_euler = (0, 0, (1 if k == 0 else -1) * p.ring_spin)
-
-    CRYSTAL_EM.default_value = 0.15 + 1.1 * p.glow
-    RUNE_EM.default_value = 0.08 + 0.55 * p.glow
-    SOCKET_EM.default_value = 0.2 + 0.8 * p.glow
-    cry_light_d.energy = 0.0 if p.glow < 0.2 else 0.25 * p.glow
-    ARC_EM.default_value = 5.0
-
-    clear(ARCS)
+    for h, a in CLAWS:
+        h.rotation_euler = (0, CLAW_OPEN * p.open, a)
+    c = shard_centre(p)
+    shard.location = c - Vector((0, 0, HOVER_C))
+    shard.rotation_euler = (0, 0, p.spin)
+    g = p.glow
+    SHARD_EM.default_value = 0.25 * g
+    EDGE_EM.default_value = 1.0 * g
+    VEIN_EM.default_value = 1.3 * g
+    SOCKET_EM.default_value = 0.15 + 0.6 * g
+    RUNE_EM.default_value = 0.1
+    shard_light_d.energy = 0.0 if g < 0.2 else 0.5 * g ** 2
+    for o in ARCS:
+        bpy.data.objects.remove(o, do_unlink=True)
+    ARCS.clear()
     rng = random.Random(p.seed)
-    centre = Vector((0, 0, cz))
-    for n in range(p.arcs):
-        k = rng.randrange(N_PET)
-        end = tip_world(k, p.theta)
-        d = end - centre
-        start = centre + d.normalized() * CRY_R
-        side = d.cross(Vector((0, 0, 1))).normalized()
+    for n, (a, _) in enumerate(p.arcs):
+        # jagged bolt from the source into the shard's surface
+        d = c - a
+        end = c - d.normalized() * 0.05
+        side = d.cross(Vector((0, 0, 1)))
+        side = side.normalized() if side.length > 1e-6 else Vector((1, 0, 0))
         pts = []
-        for s in range(9):
-            t = s / 8
-            q = start.lerp(end, t)
-            if 0 < s < 8:
-                q += side * rng.uniform(-0.04, 0.04) + Vector((0, 0, rng.uniform(-0.03, 0.03)))
+        for s in range(8):
+            t = s / 7
+            q = a.lerp(end, t)
+            if 0 < s < 7:
+                q += side * rng.uniform(-0.025, 0.025) + Vector((0, 0, rng.uniform(-0.02, 0.02)))
             pts.append(tuple(q))
-        ARCS.append(glow(curve_obj(f"arc{n}", pts, ARC, 0.0065, root)))
-
-    clear(MOTES)
-    if p.motes is not None:
-        # one mote per petal drifts from the tip ruby into the crystal; each
-        # starts a sixth of a lap after its neighbour, one lap per loop
-        for k in range(N_PET):
-            t = (p.motes + k / N_PET) % 1.0
-            a0 = tip_world(k, THETA_MAX)
-            b = centre
-            c = a0.lerp(b, 0.5) + Vector((0, 0, 0.12))
-            q = (1 - t) ** 2 * a0 + 2 * (1 - t) * t * c + t * t * b
-            r = 0.021 * math.sin(math.pi * t) ** 0.5
-            if r > 0.004:
-                MOTES.append(glow(sphere(f"mote{k}", r, tuple(q), MOTE, root, segs=8)))
+        ARCS.append(glow(curve_obj(f"arc{n}", pts, ARC, 0.005, root)))
 
 
 # ----------------------------------------------------------------------------
@@ -540,11 +504,11 @@ def apply(p):
 
 rig = setup_scene(MAIN_BOX["w"], MAIN_BOX["h"], MAIN_BOX["cy"])
 cam = bpy.context.scene.camera
+scene = bpy.context.scene
 
 
 def frame_box(b):
     """Point the Factorio camera at a box (tiles, screen coords from the origin)."""
-    scene = bpy.context.scene
     ppt = args.px_per_tile
     cam.data.ortho_scale = max(b["w"], b["h"])
     scene.render.resolution_x = round(b["w"] * ppt)
@@ -556,9 +520,7 @@ def frame_box(b):
 
 TIMELINE = [(s, i, n) for s, n in SEGMENTS for i in range(n)]
 frames = [int(f) for f in args.frame.split(",")] if args.preview else range(len(TIMELINE))
-scene = bpy.context.scene
-lights = (rig.sun_d, rig.fill_d, cry_light_d)
-meshes = [o for o in scene.objects if o.type in ("MESH", "CURVE")]
+lights = (rig.sun_d, rig.fill_d, shard_light_d)
 SUN_ROT = rig.sun.rotation_euler.copy()
 SHADOW_ROT = Vector((0, 0, -1)).rotation_difference(
     Vector((1.0, -0.35, -0.75)).normalized()).to_euler()
