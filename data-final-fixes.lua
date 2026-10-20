@@ -325,24 +325,42 @@ magic_inserter.energy_source = {
 }
 magic_inserter.energy_per_movement = "0kW"
 magic_inserter.energy_per_rotation = "0kW"
--- Add pink tint to make it distinct
-local pink_tint = {r = 1.0, g = 0.1, b = 0.3}
-magic_inserter.platform_picture.sheet.tint = pink_tint
-if magic_inserter.platform_picture.sheet.hr_version then
-  magic_inserter.platform_picture.sheet.hr_version.tint = pink_tint
+-- Rendered by blender/magic_inserter.py: a low gold-and-purple plate with a
+-- magic orb resting in a cradle (its prow points at the drop side), and a
+-- floating white glove instead of an arm. The glove does the work exactly
+-- like a vanilla hand; it keeps the vanilla hand canvas (72x164, grip where
+-- the vanilla tines grip) so the engine places and stretches it the same way.
+local function mi_plat(suffix, extra)
+  local s = {filename = "__orbs__/graphics/magic-inserter-platform" .. suffix .. ".png",
+    priority = "extra-high", width = 64, height = 48, shift = {0.0625, 0}, scale = 0.5}
+  for k, v in pairs(extra or {}) do s[k] = v end
+  return s
 end
-magic_inserter.hand_base_picture.tint = pink_tint
-if magic_inserter.hand_base_picture.hr_version then
-  magic_inserter.hand_base_picture.hr_version.tint = pink_tint
+local function mi_hand(state, suffix, extra)
+  local s = {filename = "__orbs__/graphics/magic-inserter-hand-" .. state .. suffix .. ".png",
+    priority = "extra-high", width = 72, height = 164, scale = 0.25}
+  for k, v in pairs(extra or {}) do s[k] = v end
+  return s
 end
-magic_inserter.hand_open_picture.tint = pink_tint
-if magic_inserter.hand_open_picture.hr_version then
-  magic_inserter.hand_open_picture.hr_version.tint = pink_tint
-end
-magic_inserter.hand_closed_picture.tint = pink_tint
-if magic_inserter.hand_closed_picture.hr_version then
-  magic_inserter.hand_closed_picture.hr_version.tint = pink_tint
-end
+magic_inserter.platform_picture = {sheets = {
+  mi_plat(""),
+  mi_plat("-glow", {draw_as_light = true}),
+  mi_plat("-shadow", {draw_as_shadow = true})
+}}
+-- the glove floats: no arm
+magic_inserter.hand_base_picture = util.empty_sprite()
+magic_inserter.hand_base_shadow = util.empty_sprite()
+magic_inserter.hand_open_picture = {layers = {mi_hand("open", ""), mi_hand("open", "-light", {draw_as_light = true})}}
+magic_inserter.hand_closed_picture = {layers = {mi_hand("closed", ""), mi_hand("closed", "-light", {draw_as_light = true})}}
+magic_inserter.hand_open_shadow = mi_hand("open", "-shadow")
+magic_inserter.hand_closed_shadow = mi_hand("closed", "-shadow")
+-- drawing only: a straighter invisible arm keeps the glove's length steadier
+magic_inserter.hand_size = 0.6
+-- Space Age frozen overlays are shaped like the vanilla arm and platform
+magic_inserter.platform_frozen = nil
+magic_inserter.hand_base_frozen = nil
+magic_inserter.hand_open_frozen = nil
+magic_inserter.hand_closed_frozen = nil
 
 -- Create magic inserter item
 local magic_inserter_item = table.deepcopy(data.raw.item["fast-inserter"])
