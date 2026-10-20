@@ -45,11 +45,116 @@ assert N % FPI == 0 and (N // FPI) % 9 == 0, "loop must index the carousel a who
 # ----------------------------------------------------------------------------
 # Materials
 # ----------------------------------------------------------------------------
+#
+# A runesmith's forge, not another gold-and-purple pedestal: blackened wrought
+# iron and soot-stained firebrick, heat-scaled steel and dark bronze in the
+# mechanism, ember-orange fire. Gold survives only as a few accents (GILT:
+# hearth frame, glyph-plate frames, crucible lip, orb ring), purple only in
+# the orb. The shared names are rebound below - in this module and in fblend,
+# whose helpers (frames, filigree, studs) default to fblend.GOLD / RUBY - so
+# the model code keeps its structure.
+
+GILT, GEM = GOLD, RUBY
+
+
+def firebrick(name):
+    """Running-bond firebrick, soot-blackened towards the top and in patches.
+    Bricks are laid in (x + y, z) so front and side walls share one bond."""
+    m, nt, bsdf = node_mat(name)
+    L = nt.links.new
+    tc = nt.nodes.new("ShaderNodeTexCoord")
+    sep = nt.nodes.new("ShaderNodeSeparateXYZ")
+    L(tc.outputs["Object"], sep.inputs[0])
+    uadd = nt.nodes.new("ShaderNodeMath")
+    L(sep.outputs["X"], uadd.inputs[0])
+    L(sep.outputs["Y"], uadd.inputs[1])
+    comb = nt.nodes.new("ShaderNodeCombineXYZ")
+    L(uadd.outputs[0], comb.inputs["X"])
+    L(sep.outputs["Z"], comb.inputs["Y"])
+    br = nt.nodes.new("ShaderNodeTexBrick")
+    br.inputs["Scale"].default_value = 1.0
+    br.inputs["Brick Width"].default_value = 0.13
+    br.inputs["Row Height"].default_value = 0.055
+    br.inputs["Mortar Size"].default_value = 0.008
+    br.inputs["Color1"].default_value = (0.30, 0.12, 0.06, 1)
+    br.inputs["Color2"].default_value = (0.19, 0.075, 0.04, 1)
+    br.inputs["Mortar"].default_value = (0.05, 0.045, 0.04, 1)
+    br.offset = 0.5
+    L(comb.outputs[0], br.inputs["Vector"])
+    # soot: noise patches, heavier up the wall (smoke rises past the rim)
+    nz = nt.nodes.new("ShaderNodeTexNoise")
+    nz.inputs["Scale"].default_value = 6.0
+    nz.inputs["Detail"].default_value = 8.0
+    L(tc.outputs["Object"], nz.inputs["Vector"])
+    hz = nt.nodes.new("ShaderNodeMapRange")
+    hz.inputs["From Min"].default_value = 0.1
+    hz.inputs["From Max"].default_value = 0.55
+    hz.inputs["To Min"].default_value = 0.1
+    hz.inputs["To Max"].default_value = 0.6
+    L(sep.outputs["Z"], hz.inputs["Value"])
+    sm = nt.nodes.new("ShaderNodeMath")
+    sm.operation = "MULTIPLY_ADD"
+    L(nz.outputs["Fac"], sm.inputs[0])
+    sm.inputs[1].default_value = 0.9
+    L(hz.outputs["Result"], sm.inputs[2])
+    sc = nt.nodes.new("ShaderNodeMapRange")
+    sc.inputs["From Min"].default_value = 0.6
+    sc.inputs["From Max"].default_value = 1.1
+    L(sm.outputs[0], sc.inputs["Value"])
+    mix = nt.nodes.new("ShaderNodeMix")
+    mix.data_type = "RGBA"
+    mix.inputs["B"].default_value = (0.02, 0.018, 0.016, 1)
+    L(sc.outputs["Result"], mix.inputs["Factor"])
+    L(br.outputs["Color"], mix.inputs["A"])
+    ao = nt.nodes.new("ShaderNodeAmbientOcclusion")
+    ao.inputs["Distance"].default_value = 0.1
+    L(mix.outputs["Result"], ao.inputs["Color"])
+    L(ao.outputs["Color"], bsdf.inputs["Base Color"])
+    bsdf.inputs["Roughness"].default_value = 0.85
+    # recessed mortar joints plus pitted brick faces
+    pit = nt.nodes.new("ShaderNodeTexNoise")
+    pit.inputs["Scale"].default_value = 70.0
+    L(tc.outputs["Object"], pit.inputs["Vector"])
+    hsum = nt.nodes.new("ShaderNodeMath")
+    hsum.operation = "MULTIPLY_ADD"
+    L(pit.outputs["Fac"], hsum.inputs[0])
+    hsum.inputs[1].default_value = 0.25
+    L(br.outputs["Fac"], hsum.inputs[2])
+    b = nt.nodes.new("ShaderNodeBump")
+    b.inputs["Strength"].default_value = 0.7
+    b.inputs["Distance"].default_value = 0.01
+    b.invert = True
+    L(hsum.outputs[0], b.inputs["Height"])
+    L(b.outputs["Normal"], bsdf.inputs["Normal"])
+    return m
+
+
+BRICK = firebrick("firebrick")
+IRON = metal("wrought_iron", (0.13, 0.12, 0.11), (0.018, 0.016, 0.014), rough=(0.45, 0.75),
+             bump=0.35, bump_scale=45.0, dirt=0.35, wear=(0.2, 0.19, 0.18), hammered=True)
+# heat-scaled steel: dull grey with straw-to-blue temper bloom in the noise
+SCALED = metal("heat_scaled_steel", (0.30, 0.27, 0.26), (0.05, 0.045, 0.06), rough=(0.3, 0.6),
+               noise_scale=7.0, dirt=0.25, wear=(0.36, 0.25, 0.14))
+DARK_BRONZE = metal("dark_bronze", (0.26, 0.17, 0.09), (0.035, 0.022, 0.012), rough=(0.35, 0.65),
+                    dirt=0.3)
+STONE = paint("refractory", (0.25, 0.22, 0.19), (0.04, 0.035, 0.03), noise_scale=12.0,
+              bump=0.8, bump_scale=35.0, dirt=0.45)
+GOLD = fblend.GOLD = IRON          # frames, rails, scrollwork: wrought iron strapwork
+RUBY = fblend.RUBY = IRON          # stud heads: iron rivets
+BRASS = DARK_BRONZE
+STEEL = fblend.STEEL = SCALED
+BRONZE = IRON
+PURPLE = BRICK
+# the wing inlays and the rack tile glow like embers, not mana
+_rb = fblend.RUNE.node_tree.nodes["Principled BSDF"]
+_rb.inputs["Emission Color"].default_value = (1.0, 0.38, 0.08, 1)
+_rb.inputs["Base Color"].default_value = (0.06, 0.03, 0.02, 1)
+EMBER = (1.0, 0.36, 0.07)
 
 SLATE = paint("slate", (0.075, 0.055, 0.085), (0.012, 0.008, 0.014), noise_scale=14.0,
               bump=0.5, bump_scale=40.0, dirt=0.1, hammered=True)
-DECK = paint("deck", (0.22, 0.045, 0.17), (0.02, 0.004, 0.016), noise_scale=9.0,
-             bump=0.6, bump_scale=25.0, dirt=0.35, hammered=True)
+DECK = metal("deck", (0.10, 0.095, 0.09), (0.015, 0.013, 0.012), rough=(0.5, 0.8),
+             noise_scale=9.0, bump=0.6, bump_scale=25.0, dirt=0.5, hammered=True)
 
 # The nine rune words, in carousel order, coloured like their item icons.
 GLYPHS = (
@@ -129,9 +234,10 @@ def flowing(name, color, strength, scale=9.0):
 
 
 MELT, MELT_EM, MELT_COL, MELT_UV = flowing("melt", GLYPHS[0][1], 1.0, scale=14.0)
-HEARTH, HEARTH_EM, _, HEARTH_UV = flowing("hearth", (0.85, 0.12, 0.7), 1.0, scale=7.0)
+HEARTH, HEARTH_EM, _, HEARTH_UV = flowing("hearth", EMBER, 1.0, scale=7.0)
 ORB, ORB_EM = emitter("orb", (0.85, 0.12, 0.8), 1.0, base=(0.5, 0.03, 0.42), glass=True)
-VIAL, VIAL_EM = emitter("vial", (0.6, 0.1, 0.75), 0.6, base=(0.3, 0.03, 0.35))
+# the vial holds liquid fire feeding the crucible
+VIAL, VIAL_EM = emitter("vial", (1.0, 0.42, 0.08), 0.6, base=(0.2, 0.05, 0.01))
 
 
 def beam_mat():
@@ -216,7 +322,7 @@ def rail(name, pts3, r, closed=False, mat=None, parent=None):
 FIL_R = 0.022        # raised scrollwork (thinner than the 3x3's: smaller panels)
 
 # --- plinth: dark bronze band, gold top rail, rivets ---------------------------
-prism("plinth", bot2d, 0, PLINTH_H, BRONZE)
+prism("plinth", bot2d, 0, PLINTH_H, STONE)
 rail("plinth_rail", [(x, y, PLINTH_H) for x, y in bot2d], 0.04, closed=True)
 rail("plinth_foot", [(x * 1.006, y * 1.006, 0.015) for x, y in bot2d], 0.02, closed=True)
 for fi in (5, 0, 1, 2):
@@ -246,13 +352,13 @@ throat = sub_panel(front, WIN_U0 + 0.01, WIN_U1 - 0.01, WIN_V0 + 0.02, WIN_V1 - 
 fire_o = throat.build("hearth_fire", HEARTH, thick=0.005, parent=root)
 fire_o.location = tuple(front.n * 0.004)     # just proud of the wall, behind the grille
 glow(fire_o)
-gold_frame(win, "hearth_frame", r=0.034, parent=root)
+gold_frame(win, "hearth_frame", r=0.034, parent=root, mat=GILT)
 for k in range(5):   # grille bars, partly veiling the fire
     u = (k + 1) / 6
     rail(f"hearth_bar{k}", [win.at(u, 0.0, 0.03), win.at(u, 1.0, 0.03)], 0.012, mat=BRASS)
 rail("hearth_crossbar", [win.at(0.0, 0.5, 0.035), win.at(1.0, 0.5, 0.035)], 0.011, mat=BRASS)
 # lintel with ruby keystone, sill underneath
-win.studs("hearth_key", [(0.5, 1.12)], r=0.03, mat=RUBY, parent=root)
+win.studs("hearth_key", [(0.5, 1.12)], r=0.03, mat=GEM, parent=root)
 rail("hearth_sill", [win.at(-0.08, -0.1, 0.03), win.at(1.08, -0.1, 0.03)], 0.026)
 for k, (u0, u1, m) in enumerate(((0.03, WIN_U0 - 0.05, False), (WIN_U1 + 0.05, 0.97, True))):
     sp = sub_panel(front, u0, u1, 0.12, 0.88)
@@ -548,7 +654,7 @@ for i, (ch, col) in enumerate(GLYPHS):
     p = Panel(c00, c10, c11, c01)
     p.build(f"plate{i}", SLATE, thick=0.03, parent=carousel)
     face = sub_panel(p, 0.14, 0.86, 0.1, 0.9)
-    gold_frame(face, f"plate{i}_frame", r=0.011, parent=carousel)
+    gold_frame(face, f"plate{i}_frame", r=0.011, parent=carousel, mat=GILT)
     for si, stroke in enumerate(LETTERS[ch]):
         glow(curve_obj(f"plate{i}_glyph{si}",
                        [face.at(0.2 + 0.6 * u, 0.12 + 0.76 * v, 0.008) for u, v in stroke],
@@ -582,7 +688,7 @@ prism("car_lid", [(c.x * 1.02, c.y * 1.02) for c in corners_t], zt, zt + 0.03, G
 bm = bmesh.new()
 bmesh.ops.create_uvsphere(bm, u_segments=36, v_segments=18, radius=RT * 0.78)
 bmesh.ops.delete(bm, geom=[v for v in bm.verts if v.co.z < -1e-4], context="VERTS")
-dome = mesh_obj("car_dome", bm, PURPLE, carousel, smooth=True)
+dome = mesh_obj("car_dome", bm, SCALED, carousel, smooth=True)
 dome.location = (0, 0, zt + 0.03)
 dome.scale = (1, 1, 0.55)
 for i in range(NP):    # gold ribs over the dome
@@ -594,7 +700,7 @@ for i in range(NP):    # gold ribs over the dome
            carousel)
 DOME_TOP = zt + 0.03 + RT * 0.78 * 0.55
 cyl("car_spindle", 0.018, 0.12, (0, 0, DOME_TOP + 0.05), GOLD, carousel, verts=16)
-cyl("car_spindle_cup", 0.045, 0.02, (0, 0, DOME_TOP + 0.11), GOLD, carousel, verts=24, r2=0.06)
+cyl("car_spindle_cup", 0.045, 0.02, (0, 0, DOME_TOP + 0.11), GILT, carousel, verts=24, r2=0.06)
 
 # --- the crucible in front of the reading position -------------------------------
 CRU = Vector((0.0, -0.285, DECK_Z + 0.07))   # rim centre
@@ -602,7 +708,7 @@ CRU_R = 0.105
 o = mesh_obj("crucible_rim", ring_mesh(
     [(CRU_R * math.cos(TAU * i / 48), CRU_R * math.sin(TAU * i / 48)) for i in range(48)],
     [((CRU_R - 0.025) * math.cos(TAU * i / 48), (CRU_R - 0.025) * math.sin(TAU * i / 48))
-     for i in range(48)], -0.025, 0.0), GOLD, mech, smooth=True, bevel=0.008)
+     for i in range(48)], -0.025, 0.0), GILT, mech, smooth=True, bevel=0.008)
 o.location = CRU
 bm = bmesh.new()
 bmesh.ops.create_uvsphere(bm, u_segments=36, v_segments=18, radius=CRU_R)
@@ -707,7 +813,7 @@ CHIM = Vector((-0.36, 0.41, DECK_Z))
 CHIM_H = 0.62
 cyl("chimney_stack", 0.075, CHIM_H, (CHIM.x, CHIM.y, DECK_Z + CHIM_H / 2), BRONZE, mech,
     verts=32, r2=0.06)
-cyl("chimney_foot", 0.11, 0.08, (CHIM.x, CHIM.y, DECK_Z + 0.04), PURPLE, mech, verts=32,
+cyl("chimney_foot", 0.11, 0.08, (CHIM.x, CHIM.y, DECK_Z + 0.04), BRICK, mech, verts=32,
     r2=0.085)
 for k, zz in enumerate((0.09, 0.3, 0.5)):
     rr = 0.075 - 0.015 * zz / CHIM_H
@@ -740,11 +846,11 @@ glow(sphere("orb_core", 0.062, (0, 0, 0), ORB, orb, segs=32))
 ring = mesh_obj("orb_ring", ring_mesh(
     [(0.095 * math.cos(TAU * i / 48), 0.095 * math.sin(TAU * i / 48)) for i in range(48)],
     [(0.084 * math.cos(TAU * i / 48), 0.084 * math.sin(TAU * i / 48)) for i in range(48)],
-    -0.008, 0.008), GOLD, orb, smooth=True, bevel=0.003)
+    -0.008, 0.008), GILT, orb, smooth=True, bevel=0.003)
 ring.rotation_mode = "ZXY"
 for g in range(3):
     sphere(f"orb_ring_gem{g}", 0.014, (0.09 * math.cos(TAU * g / 3), 0.09 * math.sin(TAU * g / 3),
-                                       0), RUBY, ring)
+                                       0), GEM, ring)
 # ring precesses once per loop; orb bobs twice per loop
 animated.append((ring, lambda o, f: setattr(o, "rotation_euler",
                                             (math.radians(62), 0, TAU * f / N))))
@@ -768,7 +874,7 @@ def set_energy(light, e):
 
 
 melt_light = point("melt_light", (1, 1, 1), CRU + Vector((0, -0.02, 0.1)))
-hearth_light = point("hearth_light", (1.0, 0.3, 0.85), Vector(front.at(0.5, 0.5, 0.12)))
+hearth_light = point("hearth_light", (1.0, 0.45, 0.15), Vector(front.at(0.5, 0.5, 0.12)))
 orb_light = point("orb_light", (1.0, 0.3, 0.9), ORB_C + Vector((0, -0.03, 0)))
 MAGIC_LIGHTS = (melt_light, hearth_light, orb_light)
 
@@ -805,10 +911,12 @@ def pose_magic(f, working):
     t = s - math.floor(s)
     t = t * t * (3 - 2 * t)
     col = lerp3(GLYPHS[i0][1], GLYPHS[i1][1], t)
-    # the melt takes on the colour of the glyph being read, blending while moving
-    MELT_COL.default_value = (*col, 1)
+    # the melt is ember-orange, tinged with the glyph being read; the beam
+    # carries the glyph's own colour
+    melt = lerp3(EMBER, col, 0.3)
+    MELT_COL.default_value = (*melt, 1)
     BEAM_COL.default_value = (*col, 1)
-    melt_light.color = col
+    melt_light.color = melt
     _, mv = motion(f)
     age = lock_age(f)
     flare = math.exp(-age / 4.0) if age is not None else 0.0
@@ -825,12 +933,13 @@ def pose_magic(f, working):
     MELT_UV.default_value = (0.25 * math.cos(a), 0.25 * math.sin(a), 0.1 * math.sin(2 * a))
     HEARTH_UV.default_value = (0.4 * math.cos(-a), 0.15 * math.sin(2 * a), 0.4 * math.sin(-a))
     if working:
-        MELT_EM.default_value = 1.3 + 1.0 * flare
-        HEARTH_EM.default_value = 2.0 + 0.4 * math.sin(4 * TAU * f / N)
-        BEAM_EM.default_value = 3.0 * dwell + 2.0 * flare
+        # kept below clipping, so work - rest stays orange (not green-white)
+        MELT_EM.default_value = 0.8 + 0.6 * flare
+        HEARTH_EM.default_value = 0.85 + 0.15 * math.sin(4 * TAU * f / N)
+        BEAM_EM.default_value = 1.4 * dwell + 0.8 * flare   # unclipped: keeps its hue
         beam.hide_render = (dwell + flare) < 0.02
         ORB_EM.default_value = 1.2 + 3.0 * flare
-        VIAL_EM.default_value = 0.9
+        VIAL_EM.default_value = 0.6
         RUNE_EM.default_value = 0.6 + 1.0 * flare
         set_energy(melt_light, 0.8 + 1.0 * dwell + 1.2 * flare)
         set_energy(hearth_light, 0.5)
@@ -936,7 +1045,7 @@ def render_all():
     # ground is foreshortened by 1/sqrt(2) on screen
     r = np.sqrt(((xx - gw / 2) / (gw * 0.42)) ** 2 + ((yy - gh * 0.42) / (gh * 0.5)) ** 2)
     k = np.clip(1 - r, 0, 1) ** 1.6
-    col = np.array([0.85, 0.3, 0.95], dtype=np.float32)
+    col = np.array([1.0, 0.45, 0.12], dtype=np.float32)   # forge orange
     g = np.concatenate([k[..., None] * col, np.ones_like(k[..., None])], axis=-1)
     save_px(OUT / "ground-light.png", g[::-1].copy())   # Blender pixels are bottom-up
 
