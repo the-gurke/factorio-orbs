@@ -43,6 +43,109 @@ from fblend import *  # noqa: E402,F401,F403
 
 OUT = fblend.OUT
 
+# ----------------------------------------------------------------------------
+# Material identity: a necromantic soul trap
+# ----------------------------------------------------------------------------
+# The conjuration machine owns the gold-and-purple look; this building is the
+# cold one of the set: black basalt/obsidian body, black iron fittings, ivory
+# bone for ribs, cage bars and trims, and spectral teal ghost-light instead of
+# magenta. Real gold survives only on a couple of tiny fittings. The shared
+# names are rebound (here and in fblend, whose helpers default to its GOLD /
+# PURPLE) so the model code below stays unchanged.
+
+
+def obsidian(name):
+    """Volcanic glass: near-black, very glossy, with a deep green/purple sheen
+    in the highlights (tinted specular + coat), conchoidal chipped facets
+    (smooth voronoi cells + concentric ripple bump) and a faint glassy
+    green-grey on sharp, thin edges (pointiness), where real obsidian goes
+    translucent. Mottled so large faces don't read as flat black holes."""
+    m, nt, bsdf = node_mat(name)
+    L = nt.links.new
+    geo = nt.nodes.new("ShaderNodeNewGeometry")
+    tc = nt.nodes.new("ShaderNodeTexCoord")
+    # chipped facets: smooth F1 voronoi cells give scalloped flake scars
+    vor = nt.nodes.new("ShaderNodeTexVoronoi")
+    vor.feature = "SMOOTH_F1"
+    vor.inputs["Scale"].default_value = 11.0
+    vor.inputs["Smoothness"].default_value = 0.35
+    L(geo.outputs["Position"], vor.inputs["Vector"])
+    # conchoidal ripples inside each scar
+    wave = nt.nodes.new("ShaderNodeTexWave")
+    wave.wave_type = "RINGS"
+    wave.inputs["Scale"].default_value = 9.0
+    wave.inputs["Distortion"].default_value = 4.0
+    wave.inputs["Detail"].default_value = 2.0
+    L(geo.outputs["Position"], wave.inputs["Vector"])
+    b1 = nt.nodes.new("ShaderNodeBump")
+    b1.inputs["Strength"].default_value = 0.55
+    b1.inputs["Distance"].default_value = 0.03
+    L(vor.outputs["Distance"], b1.inputs["Height"])
+    b2 = nt.nodes.new("ShaderNodeBump")
+    b2.inputs["Strength"].default_value = 0.12
+    b2.inputs["Distance"].default_value = 0.01
+    L(wave.outputs["Fac"], b2.inputs["Height"])
+    L(b1.outputs["Normal"], b2.inputs["Normal"])
+    L(b2.outputs["Normal"], bsdf.inputs["Normal"])
+    L(b2.outputs["Normal"], bsdf.inputs["Coat Normal"])
+    # mottled near-black body, glassy green-grey on thin sharp edges
+    nz = nt.nodes.new("ShaderNodeTexNoise")
+    nz.inputs["Scale"].default_value = 6.0
+    nz.inputs["Detail"].default_value = 6.0
+    L(tc.outputs["Object"], nz.inputs["Vector"])
+    ramp = nt.nodes.new("ShaderNodeValToRGB")
+    ramp.color_ramp.elements[0].position = 0.3
+    ramp.color_ramp.elements[0].color = (0.004, 0.004, 0.006, 1)
+    ramp.color_ramp.elements[1].position = 0.75
+    ramp.color_ramp.elements[1].color = (0.018, 0.018, 0.024, 1)
+    L(nz.outputs["Fac"], ramp.inputs["Fac"])
+    edge = nt.nodes.new("ShaderNodeMapRange")
+    edge.inputs["From Min"].default_value = 0.56
+    edge.inputs["From Max"].default_value = 0.66
+    L(geo.outputs["Pointiness"], edge.inputs["Value"])
+    mix = nt.nodes.new("ShaderNodeMix")
+    mix.data_type = "RGBA"
+    mix.inputs["B"].default_value = (0.035, 0.055, 0.05, 1)
+    L(edge.outputs["Result"], mix.inputs["Factor"])
+    L(ramp.outputs["Color"], mix.inputs["A"])
+    L(mix.outputs["Result"], bsdf.inputs["Base Color"])
+    rr = nt.nodes.new("ShaderNodeMapRange")
+    rr.inputs["To Min"].default_value = 0.05
+    rr.inputs["To Max"].default_value = 0.22
+    L(nz.outputs["Fac"], rr.inputs["Value"])
+    L(rr.outputs["Result"], bsdf.inputs["Roughness"])
+    bsdf.inputs["Metallic"].default_value = 0.0
+    bsdf.inputs["Specular IOR Level"].default_value = 0.75
+    bsdf.inputs["Specular Tint"].default_value = (0.72, 0.9, 0.82, 1)   # green sheen
+    bsdf.inputs["Coat Weight"].default_value = 0.6
+    bsdf.inputs["Coat Roughness"].default_value = 0.04
+    bsdf.inputs["Coat Tint"].default_value = (0.9, 0.82, 1.0, 1)        # purple sheen
+    bsdf.inputs["Transmission Weight"].default_value = 0.08
+    return m
+
+
+REAL_GOLD = GOLD
+OBSIDIAN = obsidian("obsidian")
+# aged, yellowed bone with porous pitting - not clean ivory, which reads as plastic
+BONE = paint("bone", (0.53, 0.47, 0.35), (0.13, 0.1, 0.06), noise_scale=22.0, bump=0.6,
+             bump_scale=90.0, dirt=0.5)
+IRON = metal("black_iron", (0.17, 0.165, 0.16), (0.018, 0.017, 0.016), rough=(0.35, 0.62),
+             wear=(0.42, 0.4, 0.37), dirt=0.3)
+SOULSTONE = gem("soulstone", (0.1, 0.55, 0.52))
+# Obsidian dominates: body, base, frames, ribs and trims are all knapped
+# volcanic glass; black iron holds the vessel; bone only on the skull,
+# post finials and the funnel's rib vanes; teal runes are the body's light.
+GOLD = OBSIDIAN             # rails, ribs, studs drawn by this script
+PURPLE = BRONZE = OBSIDIAN  # panels, posts, plinth, deck, socket
+BRASS = COPPER = IRON
+RUBY = SOULSTONE
+fblend.GOLD = OBSIDIAN      # helper defaults: frames, studs
+fblend.PURPLE = OBSIDIAN
+# runes glow ghost-teal, not magenta
+_rn = RUNE.node_tree.nodes["Principled BSDF"]
+_rn.inputs["Emission Color"].default_value = (0.2, 0.95, 0.85, 1)
+_rn.inputs["Base Color"].default_value = (0.01, 0.05, 0.05, 1)
+
 # souls are pale teal (bound-soul, tormented-soul); the binding magic is purple
 SOUL_C = (0.42, 0.95, 0.88)
 SOUL_DEEP = (0.05, 0.45, 0.42)
@@ -108,8 +211,8 @@ def soul_material(name, strength, dens_lo, dens_hi, blend):
 # Layered like smoke: a faint, frayed outer veil, a denser core inside it and
 # loose wisps, each translucent, so the soul shades softly instead of
 # reading as a solid shape. Strengths stay low so overlaps do not clip.
-SOUL = soul_material("soul", 0.5, 0.0, 0.55, 0.65)
-SOUL_CORE = soul_material("soul_core", 0.65, 0.5, 1.2, 0.4)
+SOUL = soul_material("soul", 0.62, 0.0, 0.55, 0.65)
+SOUL_CORE = soul_material("soul_core", 0.8, 0.5, 1.2, 0.4)
 SOUL_WISP = soul_material("soul_wisp", 0.55, 0.2, 0.8, 0.5)
 
 
@@ -128,7 +231,7 @@ def glass_mat():
 CGLASS = glass_mat()
 FUNNEL_IN = paint("funnel_in", (0.1, 0.06, 0.035), (0.015, 0.01, 0.006), noise_scale=12.0,
                   bump=0.4, bump_scale=40.0, dirt=0.0)
-VELVET = paint("velvet", (0.12, 0.02, 0.1), (0.015, 0.0, 0.012), noise_scale=30.0, dirt=0.0,
+VELVET = paint("velvet", (0.03, 0.04, 0.045), (0.004, 0.005, 0.006), noise_scale=30.0, dirt=0.0,
                bump=0.3, bump_scale=80.0)
 
 root = bpy.data.objects.new("soul_collector", None)
@@ -172,7 +275,10 @@ def prism(name, poly, z0, z1, mat, bevel=0.01, parent=None):
 
 
 def rail(name, pts, r, closed=False, mat=None):
-    return curve_obj(name, [tuple(p) for p in pts], mat or GOLD, r, root, closed=closed)
+    mat = mat or GOLD
+    # obsidian trims get a diamond section: sharp knapped ridges, not tubes
+    return curve_obj(name, [tuple(p) for p in pts], mat, r, root, closed=closed,
+                     res=0 if mat is OBSIDIAN else 3)
 
 
 def lathe(name, profile, mat, loc, segs=48, parent=None, smooth=True, bevel=0.0):
@@ -198,15 +304,15 @@ T3 = [Vector((x, y, DECK_Z)) for x, y in top2d]
 
 # plinth: dark bronze band, thick gold top rail, rivets on the visible faces
 prism("plinth", bot2d, 0, PLINTH_H, BRONZE)
-rail("plinth_rail", [(x, y, PLINTH_H) for x, y in bot2d], 0.055, closed=True)
-rail("plinth_foot", [(x * 1.008, y * 1.008, 0.02) for x, y in bot2d], 0.028, closed=True)
+rail("plinth_rail", [(x, y, PLINTH_H) for x, y in bot2d], 0.055, closed=True, mat=IRON)
+rail("plinth_foot", [(x * 1.008, y * 1.008, 0.02) for x, y in bot2d], 0.028, closed=True, mat=IRON)
 for fi in (7, 0, 1, 2, 6):
     a, b = Vector((*bot2d[fi], 0)), Vector((*bot2d[(fi + 1) % 8], 0))
     nrm = Vector((b.y - a.y, -(b.x - a.x), 0)).normalized()
     count = max(2, round((b - a).length / 0.16))
     for k in range(count):
         p = a.lerp(b, (k + 0.5) / count) + nrm * 0.004
-        sphere(f"rivet{fi}_{k}", 0.024, (p.x, p.y, PLINTH_H * 0.5), GOLD, root)
+        sphere(f"rivet{fi}_{k}", 0.024, (p.x, p.y, PLINTH_H * 0.5), IRON, root)
 
 walls = {}
 for i in range(8):
@@ -214,8 +320,8 @@ for i in range(8):
     p = Panel(B3[i], B3[j], T3[j], T3[i])
     p.build(f"wall{i}", PURPLE, parent=root)
     walls[i] = p
-for i in range(8):     # thick gold ribs on the corner edges
-    rail(f"corner_rib{i}", [B3[i] + Vector((0, 0, 0.02)), T3[i] + Vector((0, 0, 0.01))], 0.06)
+for i in range(8):     # knapped obsidian ridges on the corner edges
+    rail(f"corner_rib{i}", [B3[i] + Vector((0, 0, 0.02)), T3[i] + Vector((0, 0, 0.01))], 0.055)
 
 FIL_R = 0.036        # raised scrollwork (heavy gold, still >2 px at 64 px/tile)
 
@@ -237,18 +343,15 @@ def lyre(cu=0.5, cv=0.5, w=1.0, h=1.0):
 front = walls[0]
 ribs_u = (0.33, 0.67)
 for k, u in enumerate(ribs_u):
-    rail(f"front_rib{k}", [Vector(front.at(u, 0, 0.03)), Vector(front.at(u, 1, 0.03))], 0.05)
+    rail(f"front_rib{k}", [Vector(front.at(u, 0, 0.03)), Vector(front.at(u, 1, 0.03))], 0.045)
 for k, (u0, u1) in enumerate(((0.0, ribs_u[0]), ribs_u, (ribs_u[1], 1.0))):
     sp = sub_panel(front, u0 + 0.04, u1 - 0.04, 0.1, 0.9)
     gold_frame(sp, f"fp{k}_frame", 0.028, parent=root)
     inner = sub_panel(sp, 0.1, 0.9, 0.1, 0.9)
+    # glowing runes carved into every bay: the body's light source
+    rune(inner, f"fp{k}_rune", (0, 1, 3)[k], radius=0.017, parent=root)
     if k == 1:
-        rune(inner, "fp_rune", 1, radius=0.016, parent=root)
         inner.studs("fp_gem", [(0.5, 1.0)], r=0.034, mat=RUBY, parent=root)
-    else:
-        inner.filigree(f"fp{k}_fil", [fit(scroll_c(0, 0, 1), 0.0, 0.0, 1.0, 1.0,
-                                          flip_x=(k == 2))], radius=FIL_R, parent=root)
-        inner.studs(f"fp{k}_dot", [(0.5 if k == 0 else 0.5, 0.92)], r=0.02, parent=root)
 
 # side wings: scroll pairs around a ruby, a rune plate in the middle
 for i in (2, 6):
@@ -257,19 +360,11 @@ for i in (2, 6):
         sp = sub_panel(w, u0 + 0.03, u1 - 0.03, 0.1, 0.9)
         gold_frame(sp, f"side{i}_{k}_frame", 0.026, parent=root)
         inner = sub_panel(sp, 0.1, 0.9, 0.1, 0.9)
-        if k == 1:
-            rune(inner, f"side{i}_rune", 2 if i == 2 else 3, radius=0.014, parent=root)
-        else:
-            inner.filigree(f"side{i}_{k}_fil", [fit(scroll_c(0, 0, 1), 0.0, 0.0, 1.0, 1.0,
-                                                    flip_x=(k == 2))],
-                           radius=FIL_R * 0.85, parent=root)
-            inner.studs(f"side{i}_{k}_gem", [(0.5, 0.5)], r=0.026, mat=RUBY, parent=root)
+        rune(inner, f"side{i}_{k}_rune", (i + k) % 4, radius=0.017, parent=root)
 # chamfers: a single big curl each, ruby at the eye
 for i in (1, 7, 3, 5):
     sp = sub_panel(walls[i], 0.12, 0.88, 0.12, 0.88)
-    sp.filigree(f"ch{i}_fil", [fit(scroll_c(0, 0, 1), 0.05, 0.05, 0.95, 0.95,
-                                   flip_x=(i in (1, 3)))], radius=FIL_R * 0.9, parent=root)
-    sp.studs(f"ch{i}_gem", [(0.5, 0.9)], r=0.024, mat=RUBY, parent=root)
+    rune(sp, f"ch{i}_rune", i, radius=0.017, parent=root)
 
 # deck: bronze plate, wide gold rim band studded with gold and rubies
 prism("deck", top2d, DECK_Z - 0.04, DECK_Z, BRONZE, bevel=0.008)
@@ -296,29 +391,31 @@ POSTS = [(-0.56, -0.52, 0.9), (0.56, -0.52, 0.9), (-0.56, 0.54, 1.75), (0.56, 0.
 for pi, (px, py, top) in enumerate(POSTS):
     h = top - DECK_Z
     box(f"post{pi}", (POST_W, POST_W, h), (px, py, DECK_Z + h / 2), PURPLE, root, bevel=0.015)
-    box(f"post{pi}_foot", (POST_W + 0.07, POST_W + 0.07, 0.08), (px, py, DECK_Z + 0.04), GOLD,
+    box(f"post{pi}_foot", (POST_W + 0.07, POST_W + 0.07, 0.08), (px, py, DECK_Z + 0.04), IRON,
         root, bevel=0.015)
-    box(f"post{pi}_cap", (POST_W + 0.06, POST_W + 0.06, 0.06), (px, py, top + 0.03), GOLD, root,
+    box(f"post{pi}_cap", (POST_W + 0.06, POST_W + 0.06, 0.06), (px, py, top + 0.03), IRON, root,
         bevel=0.015)
-    for sx in (-1, 1):       # gold corner strips
+    for sx in (-1, 1):       # sharp obsidian corner arrises
         for sy in (-1, 1):
             rail(f"post{pi}_edge{sx}{sy}", [(px + sx * POST_W / 2, py + sy * POST_W / 2, DECK_Z + 0.08),
-                                            (px + sx * POST_W / 2, py + sy * POST_W / 2, top)], 0.018)
-    # finial: gold bulb + ruby
-    lathe(f"post{pi}_finial", [(0.0, 0.0), (0.07, 0.02), (0.055, 0.07), (0.03, 0.1), (0.0, 0.13)],
-          GOLD, (px, py, top + 0.06), segs=24)
-    sphere(f"post{pi}_ruby", 0.04, (px, py, top + 0.21), RUBY, root, segs=16)
+                                            (px + sx * POST_W / 2, py + sy * POST_W / 2, top)], 0.02)
+    # finial: bone knob holding a knapped obsidian spike
+    lathe(f"post{pi}_finial", [(0.0, 0.0), (0.06, 0.02), (0.05, 0.06), (0.03, 0.08), (0.0, 0.09)],
+          BONE, (px, py, top + 0.06), segs=20)
+    cyl(f"post{pi}_spike", 0.045, 0.2, (px, py, top + 0.22), OBSIDIAN, root, verts=5, r2=0.0,
+        bevel=0.0).data.shade_flat()
     # rune on the south face
     face = Panel((px - POST_W / 2, py - POST_W / 2 - 0.002, DECK_Z + 0.12),
                  (px + POST_W / 2, py - POST_W / 2 - 0.002, DECK_Z + 0.12),
                  (px + POST_W / 2, py - POST_W / 2 - 0.002, top - 0.05),
                  (px - POST_W / 2, py - POST_W / 2 - 0.002, top - 0.05))
-    rune(sub_panel(face, 0.1, 0.9, 0.05 if top > 1 else 0.1, 0.45 if top > 1 else 0.9),
-         f"post{pi}_rune", pi, radius=0.012, parent=root)
-    if top > 1:
-        face_hi = sub_panel(face, 0.0, 1.0, 0.55, 0.95)
-        face_hi.filigree(f"post{pi}_fil", [fit(scroll_c(0, 0, 1), 0.1, 0.0, 0.9, 1.0,
-                                               flip_x=px > 0)], radius=0.016, parent=root)
+    if top > 1:      # tall pillars carry a column of runes
+        for ri, (v0, v1) in enumerate(((0.03, 0.33), (0.36, 0.66), (0.69, 0.99))):
+            rune(sub_panel(face, 0.05, 0.95, v0, v1), f"post{pi}_rune{ri}", pi + ri,
+                 radius=0.015, parent=root)
+    else:
+        rune(sub_panel(face, 0.05, 0.95, 0.05, 0.95), f"post{pi}_rune", pi, radius=0.015,
+             parent=root)
 
 # ----------------------------------------------------------------------------
 # Soul chamber
@@ -345,7 +442,7 @@ sock = lathe("socket", [(0.42, 0.0), (0.46, 0.02), (0.46, 0.04), (0.41, 0.05), (
                         (0.44, 0.12), (0.44, 0.14), (0.0, 0.14)],
              BRONZE, (CX, CY, SOCK_Z0), bevel=0.0)
 rail("socket_ring_lo", [(CX + 0.465 * math.cos(TAU * k / 48), CY + 0.465 * math.sin(TAU * k / 48),
-                         SOCK_Z0 + 0.03) for k in range(48)], 0.03, closed=True)
+                         SOCK_Z0 + 0.03) for k in range(48)], 0.03, closed=True, mat=IRON)
 rail("socket_ring_hi", [(CX + 0.45 * math.cos(TAU * k / 48), CY + 0.45 * math.sin(TAU * k / 48),
                          SOCK_Z1) for k in range(48)], 0.04, closed=True)
 # bolt ring fastening the socket to the deck
@@ -355,6 +452,8 @@ for k in range(16):
            GOLD, root, segs=10)
 # rune band round the socket: each glyph on a tangent plate facing out
 for k in range(9):
+    if k == 4:
+        continue        # the skull sits at the front
     a = math.radians(-90) + TAU * (k - 4) / 14            # front arc only (the back is hidden)
     n = Vector((math.cos(a), math.sin(a), 0))
     t = Vector((-math.sin(a), math.cos(a), 0))
@@ -377,21 +476,13 @@ bulb = lathe("glass_bulb", GL_PROFILE, CGLASS, (CX, CY, GL_Z0), segs=64)
 bulb.modifiers.new("solid", "SOLIDIFY").thickness = 0.012
 bulb["see_through"] = True
 
-# gold cage: 8 bulging ribs following the bulb, chunky bands top and bottom
-for k in range(8):
-    a = TAU * (k + 0.5) / 8
-    pts = [(CX + (glass_r(z) + 0.03) * math.cos(a), CY + (glass_r(z) + 0.03) * math.sin(a), z)
+# black iron cage: 6 slim ribs, none across the front, so the vessel and the
+# soul inside stay the clear focal point
+for k in range(6):
+    a = TAU * k / 6
+    pts = [(CX + (glass_r(z) + 0.022) * math.cos(a), CY + (glass_r(z) + 0.022) * math.sin(a), z)
            for z in [GL_Z0 + (GL_Z1 - GL_Z0) * i / 16 for i in range(17)]]
-    rail(f"cage_rib{k}", pts, 0.026)
-    # little ruby on each rib's widest point
-    z = GL_Z0 + 0.34
-    sphere(f"cage_gem{k}", 0.026, (CX + (glass_r(z) + 0.055) * math.cos(a),
-                                   CY + (glass_r(z) + 0.055) * math.sin(a), z), RUBY, root,
-           segs=12)
-for zi, z in enumerate((GL_Z0 + 0.34,)):
-    r = glass_r(z) + 0.025
-    rail(f"cage_band{zi}", [(CX + r * math.cos(TAU * k / 64), CY + r * math.sin(TAU * k / 64), z)
-                            for k in range(64)], 0.016, closed=True)
+    rail(f"cage_rib{k}", pts, 0.017, mat=IRON)
 
 # --- the soul: a wispy teal wraith, like a cold flame, twisting up from the
 # floor socket. No face - at 64 px per tile features read as an emoji; only a
@@ -455,7 +546,7 @@ for k in range(14):
 
 soul_light_d = bpy.data.lights.new("soul_light", "POINT")
 soul_light_d.color = SOUL_C
-soul_light_d.energy = 3.0
+soul_light_d.energy = 4.0
 soul_light_d.shadow_soft_size = 0.15
 o = bpy.data.objects.new("soul_light", soul_light_d)
 link(o, root)
@@ -476,7 +567,7 @@ def chain_link(name, p, d, w, k):
     L, W = 0.048, 0.03
     pts = [tuple(p + d * L * math.cos(TAU * i / 16) + side * W * math.sin(TAU * i / 16))
            for i in range(16)]
-    return curve_obj(name, pts, GOLD, 0.014, root, closed=True, res=2)
+    return curve_obj(name, pts, IRON, 0.014, root, closed=True, res=2)
 
 
 def chain(name, path, step=0.068):
@@ -517,9 +608,9 @@ rail("soul_shackle", [(CX + SHACKLE_R * math.cos(TAU * k / 32), SOUL_Y + SHACKLE
 
 LID_Z = GL_Z1
 lathe("lid", [(0.31, 0.0), (0.32, 0.03), (0.28, 0.06), (0.22, 0.11), (0.15, 0.15),
-              (0.12, 0.17), (0.0, 0.17)], GOLD, (CX, CY, LID_Z - 0.01), bevel=0.0)
+              (0.12, 0.17), (0.0, 0.17)], OBSIDIAN, (CX, CY, LID_Z - 0.01), bevel=0.0)
 rail("lid_ring", [(CX + 0.305 * math.cos(TAU * k / 48), CY + 0.305 * math.sin(TAU * k / 48), LID_Z)
-                  for k in range(48)], 0.04, closed=True)
+                  for k in range(48)], 0.04, closed=True, mat=IRON)
 for k in range(8):            # bolted clamp lugs holding the lid on the glass
     a = TAU * (k + 0.5) / 8
     c = Vector((CX + 0.31 * math.cos(a), CY + 0.31 * math.sin(a), LID_Z - 0.01))
@@ -530,7 +621,7 @@ for k in range(4):            # scroll ribs up the lid
     a = TAU * (k + 0.5) / 4 - math.pi / 2
     pts = [(CX + r * math.cos(a), CY + r * math.sin(a), LID_Z + zz) for r, zz in
            ((0.31, 0.04), (0.26, 0.08), (0.2, 0.12), (0.14, 0.17), (0.12, 0.22))]
-    rail(f"lid_rib{k}", pts, 0.022)
+    rail(f"lid_rib{k}", pts, 0.022, mat=IRON)
 
 NECK_Z0, NECK_Z1 = LID_Z + 0.15, LID_Z + 0.3
 neck = cyl("neck", 0.1, NECK_Z1 - NECK_Z0, (CX, CY, (NECK_Z0 + NECK_Z1) / 2), BRASS, root, verts=32)
@@ -544,8 +635,8 @@ cyl("valve_body", 0.055, 0.08, tuple(VALVE + Vector((0, 0.02, 0))), BRASS, root,
 cyl("valve_stem", 0.016, 0.12, tuple(VALVE - Vector((0, 0.06, 0))), STEEL, root, rot=rx)
 WHEEL = VALVE - Vector((0, 0.12, 0))
 WR = 0.1
-rail("valve_wheel", [(WHEEL.x + WR * math.cos(TAU * k / 32), WHEEL.y, WHEEL.z + WR * math.sin(TAU * k / 32))
-                     for k in range(32)], 0.018, closed=True)
+rail("valve_wheel", mat=REAL_GOLD, pts=[(WHEEL.x + WR * math.cos(TAU * k / 32), WHEEL.y, WHEEL.z + WR * math.sin(TAU * k / 32))
+                     for k in range(32)], r=0.018, closed=True)
 for k in range(5):
     a = TAU * k / 5 + 0.3
     rail(f"valve_spoke{k}", [tuple(WHEEL), (WHEEL.x + WR * math.cos(a), WHEEL.y, WHEEL.z + WR * math.sin(a))],
@@ -558,7 +649,7 @@ sphere("valve_hub", 0.026, tuple(WHEEL), RUBY, root, segs=12)
 FUN_Z = NECK_Z1 - 0.02
 FUN_PROFILE = [(0.09, 0.0), (0.12, 0.06), (0.17, 0.13), (0.25, 0.2), (0.35, 0.26),
                (0.4, 0.3), (0.43, 0.315)]
-outer_f = lathe("funnel_outer", FUN_PROFILE, GOLD, (CX, CY, FUN_Z), segs=64)
+outer_f = lathe("funnel_outer", FUN_PROFILE, OBSIDIAN, (CX, CY, FUN_Z), segs=64)
 sol = outer_f.modifiers.new("solid", "SOLIDIFY")
 sol.thickness = 0.02
 sol.offset = 1.0      # outwards: lathe normals face out, keep the bore clear
@@ -591,7 +682,7 @@ for k in range(6):
         a = TAU * k / 6 + 2.0 * s
         r = fun_r(t) - 0.03
         pts.append((CX + r * math.cos(a), CY + r * math.sin(a), FUN_Z + t + 0.015))
-    rail(f"vane{k}", pts, 0.017)
+    rail(f"vane{k}", pts, 0.017, mat=BONE)      # rib-bone vanes
 # the vortex: glowing teal streams spiralling down the throat
 for k in range(5):
     pts = []
@@ -605,6 +696,30 @@ for k in range(5):
                    taper=lambda t: 0.35 + 0.65 * math.sin(math.pi * min(1.0, t * 1.2))))
 throat = cyl("throat", 0.075, 0.01, (CX, CY, FUN_Z + 0.012), VORTEX, root, verts=24)
 glow(throat)
+
+# ring of runes carved into the obsidian lid under the funnel (front arc; the
+# funnel's own flank is edge-on to the 45 degree camera, the lid faces it).
+# The valve sits dead front, so that slot stays empty.
+LID_LO = Vector((0.0, 0.0, LID_Z - 0.01)), 0.3, 0.04     # (origin, r, z) on the lid slope
+LID_HI = 0.19, 0.125
+for k in range(7):
+    if k == 3:
+        continue
+    a = math.radians(-90) + math.radians(27) * (k - 3)
+    rad = Vector((math.cos(a), math.sin(a), 0))
+    tan = Vector((-math.sin(a), math.cos(a), 0))
+    lo = Vector((CX, CY, LID_Z - 0.01 + LID_LO[2])) + rad * LID_LO[1]
+    hi = Vector((CX, CY, LID_Z - 0.01 + LID_HI[1])) + rad * LID_HI[0]
+    wall_n = (hi - lo).cross(tan).normalized()
+    if wall_n.dot(rad) < 0:
+        wall_n = -wall_n
+    off = wall_n * 0.004
+    hw = 0.05
+    plate = Panel(lo - tan * hw + off, lo + tan * hw + off, hi + tan * hw * 0.75 + off,
+                  hi - tan * hw * 0.75 + off)
+    if plate.n.dot(wall_n) < 0:
+        plate = Panel(plate.c[1], plate.c[0], plate.c[3], plate.c[2])
+    rune(plate, f"lid_rune{k}", k, radius=0.012, parent=root)
 vlight_d = bpy.data.lights.new("vortex_light", "POINT")
 vlight_d.color = SOUL_C
 vlight_d.energy = 1.2
@@ -644,8 +759,8 @@ GA = Vector((CX + 0.27, CY - 0.43, DECK_Z + 0.12))
 rxg = (math.radians(90), 0, 0)
 cyl("gauge_case", 0.085, 0.05, tuple(GA), BRASS, root, rot=rxg, verts=32)
 cyl("gauge_face", 0.068, 0.01, tuple(GA - Vector((0, 0.027, 0))), GAUGE_FACE, root, rot=rxg, verts=32)
-rail("gauge_bezel", [(GA.x + 0.075 * math.cos(TAU * k / 32), GA.y - 0.03, GA.z + 0.075 * math.sin(TAU * k / 32))
-                     for k in range(32)], 0.014, closed=True)
+rail("gauge_bezel", mat=REAL_GOLD, pts=[(GA.x + 0.075 * math.cos(TAU * k / 32), GA.y - 0.03, GA.z + 0.075 * math.sin(TAU * k / 32))
+                     for k in range(32)], r=0.014, closed=True)
 for k in range(5):     # tick marks
     a = math.radians(210 - 60 * k)
     rail(f"gauge_tick{k}", [(GA.x + 0.045 * math.cos(a), GA.y - 0.034, GA.z + 0.045 * math.sin(a)),
@@ -668,6 +783,25 @@ for k in range(4):
                            (LP.x + 0.055 * math.cos(a), LP.y + 0.055 * math.sin(a), LP.z),
                            (LP.x, LP.y, LP.z + 0.065)], 0.009)
 sphere("lamp_top", 0.018, (LP.x, LP.y, LP.z + 0.065), GOLD, root, segs=10)
+
+# bone skull on the front of the socket, ghost-light in its eye sockets
+SK = Vector((CX, CY - 0.53, SOCK_Z0 + 0.085))
+sk = sphere("skull_cranium", 0.08, tuple(SK + Vector((0, 0.01, 0.015))), BONE, root, segs=20)
+sk.scale = (1.0, 0.95, 0.9)
+box("skull_jaw", (0.09, 0.06, 0.045), tuple(SK + Vector((0, -0.01, -0.06))), BONE, root, bevel=0.012)
+for sx in (-1, 1):
+    e = sphere(f"skull_socket{sx}", 0.025, tuple(SK + Vector((sx * 0.032, -0.066, 0.01))), SOOT, root,
+               segs=10)
+    glow(sphere(f"skull_eye{sx}", 0.012, tuple(SK + Vector((sx * 0.032, -0.08, 0.01))), VORTEX,
+                root, segs=8))
+sphere("skull_nose", 0.014, tuple(SK + Vector((0, -0.075, -0.022))), SOOT, root, segs=8)
+for sx in (-1, 1):       # crossed bones behind it
+    a = math.radians(35) * sx
+    d = Vector((math.cos(a), 0, math.sin(a))) * 0.15
+    c = SK + Vector((0, 0.02, -0.005))
+    rail(f"skull_bone{sx}", [c - d, c + d], 0.014, mat=BONE)
+    for e in (-1, 1):
+        sphere(f"skull_knob{sx}{e}", 0.02, tuple(c + d * e * 1.05), BONE, root, segs=10)
 
 # ----------------------------------------------------------------------------
 # Render

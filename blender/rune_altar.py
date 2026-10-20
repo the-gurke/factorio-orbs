@@ -94,13 +94,146 @@ def flagstones(name, base, mortar):
     return m
 
 
-STONE = stone("stone", (0.36, 0.31, 0.26), (0.05, 0.04, 0.035))
-DARK_STONE = stone("dark_stone", (0.16, 0.12, 0.13), (0.02, 0.015, 0.02))
-PAVING = flagstones("paving", (0.24, 0.17, 0.17), (0.03, 0.015, 0.02))
+def weathered(m, moss=0.6, cracks=True, soot=0.0):
+    """Age a stone material: moss/lichen creeping out of the crevices, hairline
+    cracks and chipped pale edges. Splices into the colour and normal that
+    grime() produced, so the base mottling and AO grime stay underneath."""
+    nt = m.node_tree
+    L = nt.links.new
+    bsdf = nt.nodes["Principled BSDF"]
+    color = bsdf.inputs["Base Color"].links[0].from_socket
+    normal = bsdf.inputs["Normal"].links[0].from_socket
+    geo = nt.nodes.new("ShaderNodeNewGeometry")
+    ao = nt.nodes.new("ShaderNodeAmbientOcclusion")
+    ao.inputs["Distance"].default_value = 0.08
+    # granite grain: fine light/dark speckle
+    grain = nt.nodes.new("ShaderNodeTexVoronoi")
+    grain.inputs["Scale"].default_value = 160.0
+    L(geo.outputs["Position"], grain.inputs["Vector"])
+    gm = nt.nodes.new("ShaderNodeMapRange")
+    gm.inputs["To Min"].default_value = 0.8
+    gm.inputs["To Max"].default_value = 1.15
+    L(grain.outputs["Distance"], gm.inputs["Value"])
+    sp = nt.nodes.new("ShaderNodeMix")
+    sp.data_type = "RGBA"
+    sp.blend_type = "MULTIPLY"
+    sp.inputs["Factor"].default_value = 1.0
+    L(color, sp.inputs["A"])
+    L(gm.outputs["Result"], sp.inputs["B"])
+    color = sp.outputs["Result"]
+    if cracks:
+        cv = nt.nodes.new("ShaderNodeTexVoronoi")
+        cv.feature = "DISTANCE_TO_EDGE"
+        cv.inputs["Scale"].default_value = 5.0
+        L(geo.outputs["Position"], cv.inputs["Vector"])
+        cn = nt.nodes.new("ShaderNodeTexNoise")       # only some cell edges crack
+        cn.inputs["Scale"].default_value = 3.0
+        L(geo.outputs["Position"], cn.inputs["Vector"])
+        cr = nt.nodes.new("ShaderNodeMapRange")
+        cr.inputs["From Min"].default_value = 0.012
+        cr.inputs["From Max"].default_value = 0.0
+        L(cv.outputs["Distance"], cr.inputs["Value"])
+        cm = nt.nodes.new("ShaderNodeMapRange")
+        cm.inputs["From Min"].default_value = 0.5
+        cm.inputs["From Max"].default_value = 0.58
+        L(cn.outputs["Fac"], cm.inputs["Value"])
+        crack = nt.nodes.new("ShaderNodeMath")
+        crack.operation = "MULTIPLY"
+        L(cr.outputs["Result"], crack.inputs[0])
+        L(cm.outputs["Result"], crack.inputs[1])
+        mx = nt.nodes.new("ShaderNodeMix")
+        mx.data_type = "RGBA"
+        mx.inputs["B"].default_value = (0.02, 0.018, 0.015, 1)
+        L(crack.outputs[0], mx.inputs["Factor"])
+        L(color, mx.inputs["A"])
+        color = mx.outputs["Result"]
+        cb = nt.nodes.new("ShaderNodeBump")
+        cb.invert = True
+        cb.inputs["Strength"].default_value = 0.8
+        cb.inputs["Distance"].default_value = 0.01
+        L(crack.outputs[0], cb.inputs["Height"])
+        L(normal, cb.inputs["Normal"])
+        normal = cb.outputs["Normal"]
+    if moss:
+        # moss grows in occluded crevices, patchily, and on upward faces
+        inv = nt.nodes.new("ShaderNodeMath")
+        inv.operation = "SUBTRACT"
+        inv.inputs[0].default_value = 1.0
+        L(ao.outputs["AO"], inv.inputs[1])
+        sep = nt.nodes.new("ShaderNodeSeparateXYZ")
+        L(geo.outputs["Normal"], sep.inputs[0])
+        up = nt.nodes.new("ShaderNodeMapRange")
+        up.inputs["From Min"].default_value = 0.6
+        up.inputs["To Max"].default_value = 0.5
+        L(sep.outputs["Z"], up.inputs["Value"])
+        both = nt.nodes.new("ShaderNodeMath")
+        both.operation = "ADD"
+        L(inv.outputs[0], both.inputs[0])
+        L(up.outputs["Result"], both.inputs[1])
+        pn = nt.nodes.new("ShaderNodeTexNoise")
+        pn.inputs["Scale"].default_value = 6.0
+        pn.inputs["Detail"].default_value = 8.0
+        L(geo.outputs["Position"], pn.inputs["Vector"])
+        pr = nt.nodes.new("ShaderNodeMapRange")
+        pr.inputs["From Min"].default_value = 0.52
+        pr.inputs["From Max"].default_value = 0.68
+        L(pn.outputs["Fac"], pr.inputs["Value"])
+        amt = nt.nodes.new("ShaderNodeMath")
+        amt.operation = "MULTIPLY"
+        amt.use_clamp = True
+        L(both.outputs[0], amt.inputs[0])
+        L(pr.outputs["Result"], amt.inputs[1])
+        amt2 = nt.nodes.new("ShaderNodeMath")
+        amt2.operation = "MULTIPLY"
+        amt2.use_clamp = True
+        amt2.inputs[1].default_value = moss * 2.0
+        L(amt.outputs[0], amt2.inputs[0])
+        mo = nt.nodes.new("ShaderNodeMix")
+        mo.data_type = "RGBA"
+        mo.inputs["B"].default_value = (0.08, 0.13, 0.03, 1)
+        L(amt2.outputs[0], mo.inputs["Factor"])
+        L(color, mo.inputs["A"])
+        color = mo.outputs["Result"]
+    if soot:
+        # soot blackening rising from the brazier fires (world-space height falloff)
+        sp2 = nt.nodes.new("ShaderNodeSeparateXYZ")
+        L(geo.outputs["Position"], sp2.inputs[0])
+        so = nt.nodes.new("ShaderNodeMix")
+        so.data_type = "RGBA"
+        so.inputs["B"].default_value = (0.015, 0.012, 0.012, 1)
+        so.inputs["Factor"].default_value = soot
+        L(color, so.inputs["A"])
+        color = so.outputs["Result"]
+    L(color, bsdf.inputs["Base Color"])
+    L(normal, bsdf.inputs["Normal"])
+    return m
+
+
+# Ancient carved granite everywhere; gold survives only as socket inlays and
+# on the candelabras, purple only in the glowing runes and the velvet cloth.
+STONE = weathered(stone("stone", (0.27, 0.25, 0.22), (0.04, 0.036, 0.03)), moss=1.0)
+GRANITE = weathered(stone("granite", (0.19, 0.185, 0.18), (0.028, 0.027, 0.026), bump=0.7),
+                    moss=1.2)
+CARVED = weathered(stone("carved", (0.31, 0.28, 0.23), (0.045, 0.04, 0.032), bump=0.4),
+                   moss=0.6, cracks=False)
+DARK_STONE = weathered(stone("dark_stone", (0.17, 0.16, 0.16), (0.02, 0.02, 0.02)), moss=0.3)
+PAVING = flagstones("paving", (0.22, 0.205, 0.185), (0.035, 0.04, 0.018))
+IRON = metal("iron", (0.22, 0.2, 0.18), (0.03, 0.025, 0.02), rough=(0.5, 0.8), dirt=0.5)
+VELVET, _, _ = node_mat("velvet")
+_vb = VELVET.node_tree.nodes["Principled BSDF"]
+grime(VELVET.node_tree, _vb, (0.24, 0.05, 0.17), (0.04, 0.01, 0.03), noise_scale=12.0,
+      rough=(0.75, 0.95), bump=0.3, bump_scale=90.0, dirt=0.45,
+      wear=(0.33, 0.2, 0.25))                     # threadbare, faded on the step edges
+_vb.inputs["Sheen Weight"].default_value = 0.8
+_vb.inputs["Sheen Tint"].default_value = (0.8, 0.5, 0.75, 1)
+SOOT, _, _ = node_mat("soot")
+_sb = SOOT.node_tree.nodes["Principled BSDF"]
+grime(SOOT.node_tree, _sb, (0.025, 0.022, 0.02), (0.005, 0.005, 0.005), noise_scale=30.0,
+      rough=(0.85, 1.0), bump=0.0, dirt=0.0)
 WAX = paint("wax", (0.8, 0.72, 0.55), (0.35, 0.28, 0.2), bump=0.1)
 FLAME, FLAME_EM = emitter("flame", (1.0, 0.5, 0.12), 2.5)
-PFIRE, PFIRE_EM = emitter("purple_fire", (0.8, 0.15, 1.0), 2.2)
-COALS, _ = emitter("coals", (0.9, 0.2, 0.6), 1.2, base=(0.1, 0.02, 0.06))
+PFIRE, PFIRE_EM = emitter("brazier_fire", (1.0, 0.38, 0.06), 2.2)
+COALS, _ = emitter("coals", (1.0, 0.25, 0.04), 1.2, base=(0.06, 0.03, 0.02))
 CRYSTAL, CRYSTAL_EM = emitter("crystal", (0.9, 0.15, 0.8), 0.9, base=(0.6, 0.1, 0.55), glass=True)
 CHALICE_LIQ, _ = emitter("chalice_liquid", (0.8, 0.1, 0.65), 0.35, base=(0.12, 0.01, 0.1))
 CHANNEL, _ = emitter("channel", (0.85, 0.3, 1.0), 0.9, base=(0.1, 0.02, 0.1))
@@ -147,7 +280,11 @@ def point_light(name, loc, color, energy, size=0.05):
 
 
 def rail(name, pts3, r, closed=False, mat=None):
-    return curve_obj(name, [tuple(p) for p in pts3], mat or GOLD, r, root, closed=closed)
+    """Moulding along a path. Stone mouldings get an octagonal, chisel-cut
+    section instead of the round one used for cast metal."""
+    mat = mat or CARVED
+    res = 3 if mat in (GOLD, WAX, IRON) else 1
+    return curve_obj(name, [tuple(p) for p in pts3], mat, r, root, closed=closed, res=res)
 
 
 def prism(name, poly, z0, z1, mat, bevel=0.01):
@@ -183,12 +320,13 @@ FIL_R = 0.03         # raised scrollwork (smaller than the 3x3 machine's, same l
 STEP_H, STEP_HALF, STEP_CH = 0.08, 0.99, 0.22
 WALL_B, WALL_T, WALL_CH = 0.95, 0.74, 0.2       # wall outline half sizes bottom / top
 DECK_Z = 0.44
+DAIS_R, DAIS_Z = 0.62, DECK_Z + 0.09   # round dais carrying the sockets
 
 foot = octagon(STEP_HALF, STEP_CH)
 prism("footing", foot, 0, STEP_H, STONE, bevel=0.015)
 rail("footing_rail", [(x * 0.995, y * 0.995, STEP_H) for x, y in foot], 0.03, closed=True)
 for k, (x, y) in enumerate(foot):   # gold corner shoes on the footing
-    sphere(f"foot_boss{k}", 0.035, (x * 0.99, y * 0.99, STEP_H * 0.55), GOLD, root)
+    sphere(f"foot_boss{k}", 0.035, (x * 0.99, y * 0.99, STEP_H * 0.55), CARVED, root)
 
 bot2d = octagon(WALL_B, WALL_CH + 0.02)
 top2d = octagon(WALL_T, WALL_CH)
@@ -198,7 +336,7 @@ walls = {}
 for i in range(8):
     j = (i + 1) % 8
     p = Panel(B3[i], B3[j], T3[j], T3[i])
-    p.build(f"wall{i}", PURPLE, parent=root)
+    p.build(f"wall{i}", GRANITE, parent=root)
     walls[i] = p
 for i in range(8):   # thick gold ribs on every corner
     rail(f"corner_rib{i}", [B3[i] + Vector((0, 0, 0.01)), T3[i]], 0.05)
@@ -210,13 +348,13 @@ front = walls[0]
 su0 = 0.5 - STAIR_W / (2 * (2 * (WALL_B - WALL_CH - 0.02)))
 for k, (u0, u1, mirror) in enumerate(((0.03, su0 - 0.03, False), (1 - su0 + 0.03, 0.97, True))):
     sp = sub_panel(front, u0, u1, 0.12, 0.9)
-    gold_frame(sp, f"front{k}_frame", 0.026, parent=root)
+    gold_frame(sp, f"front{k}_frame", 0.026, parent=root, mat=CARVED)
     inner = sub_panel(sp, 0.08, 0.92, 0.1, 0.9)
     inner.filigree(f"front{k}_fil", [fit(scroll_c(0, 0, 1), 0.0, 0.0, 0.62, 1.0, flip_x=mirror),
                                      fit(scroll_c(0, 0, 1, up=False), 0.55, 0.05, 1.0, 0.6,
                                          flip_x=not mirror)],
-                   radius=FIL_R, parent=root)
-    inner.studs(f"front{k}_gem", [(0.85 if not mirror else 0.15, 0.82)], r=0.03, mat=RUBY,
+                   radius=FIL_R, parent=root, mat=CARVED)
+    inner.studs(f"front{k}_gem", [(0.85 if not mirror else 0.15, 0.82)], r=0.03, mat=CARVED,
                 parent=root)
 # the stair: three stone steps climbing to the deck, gold nosings
 STAIR_Y0 = -STEP_HALF - 0.02
@@ -233,32 +371,51 @@ for sx in (-1, 1):   # stair cheeks with ruby-topped newel posts
         (sx * (STAIR_W / 2 + 0.03), (STAIR_Y0 - WALL_T) / 2 + 0.02, (DECK_Z + STEP_H) / 2 + 0.03),
         STONE, root, bevel=0.012)
     cyl(f"newel{sx}", 0.045, 0.12, (sx * (STAIR_W / 2 + 0.03), STAIR_Y0 + 0.06, DECK_Z + 0.08),
-        GOLD, root, verts=16)
+        STONE, root, verts=16)
     sphere(f"newel_gem{sx}", 0.04, (sx * (STAIR_W / 2 + 0.03), STAIR_Y0 + 0.06, DECK_Z + 0.16),
-           RUBY, root)
+           CARVED, root)
+
+# a worn velvet runner laid down the stair and over the deck to the dais:
+# a strip following the step profile (risers and treads), slightly frayed
+RUN_W, RUN_LIFT = 0.26, 0.006
+prof = [(STAIR_Y0 - 0.03, STEP_H + RUN_LIFT)]
+for k in range(3):
+    z1 = STEP_H + (k + 1) * (DECK_Z - STEP_H) / 3
+    y_front = STAIR_Y0 + k * 0.07 - RUN_LIFT
+    prof += [(y_front, prof[-1][1]), (y_front, z1 + RUN_LIFT)]
+prof += [(-DAIS_R - 0.02, DECK_Z + RUN_LIFT)]
+bm = bmesh.new()
+rows = [[bm.verts.new((sx * RUN_W / 2, y, z)) for sx in (-1, 1)] for y, z in prof]
+for a, b in zip(rows, rows[1:]):
+    bm.faces.new((a[0], a[1], b[1], b[0]))
+runner = mesh_obj("velvet_runner", bm, VELVET, root, bevel=0.0)
+runner.modifiers.new("solid", "SOLIDIFY").thickness = 0.01
+for sx in (-1, 1):   # faded braid along the edges
+    rail(f"runner_braid{sx}", [(sx * (RUN_W / 2 - 0.012), y, z + 0.006) for y, z in prof], 0.008,
+         mat=WAX)
 
 # front chamfers and the sloped side wings: framed panels, glowing rune glyphs
 for i in (7, 1):
     sp = sub_panel(walls[i], 0.12, 0.88, 0.12, 0.88)
     sp.filigree(f"ch{i}_fil", [fit(scroll_c(0, 0, 1), 0.05, 0.05, 0.95, 0.95, flip_x=(i == 1))],
-                radius=FIL_R, parent=root)
+                radius=FIL_R, parent=root, mat=CARVED)
 for i in (2, 6):
     w = walls[i]
     # u runs front->back on the east wall and back->front on the west one
     segs = ((0.0, 0.34), (0.34, 0.66), (0.66, 1.0))
     for k, (u0, u1) in enumerate(segs):
         sp = sub_panel(w, u0 + 0.03, u1 - 0.03, 0.12, 0.88)
-        gold_frame(sp, f"side{i}_{k}_frame", 0.026, parent=root)
+        gold_frame(sp, f"side{i}_{k}_frame", 0.026, parent=root, mat=CARVED)
         inner = sub_panel(sp, 0.1, 0.9, 0.1, 0.9)
         if k == 1:   # rune cartouche between two scroll panels
             rune(inner, f"side{i}_rune", glyph=i // 2, radius=0.014, parent=root)
-            inner.studs(f"side{i}_gem", [(0.5, -0.05), (0.5, 1.05)], r=0.022, mat=RUBY,
+            inner.studs(f"side{i}_gem", [(0.5, -0.05), (0.5, 1.05)], r=0.022, mat=CARVED,
                         parent=root)
         else:
             inner.filigree(f"side{i}_{k}_fil", [fit(scroll_c(0, 0, 1), 0.0, 0.0, 1.0, 1.0,
                                                     flip_x=(k == 2))],
-                           radius=FIL_R * 0.9, parent=root)
-            inner.studs(f"side{i}_{k}_gem", [(0.5, 0.5)], r=0.024, mat=RUBY, parent=root)
+                           radius=FIL_R * 0.9, parent=root, mat=CARVED)
+            inner.studs(f"side{i}_{k}_gem", [(0.5, 0.5)], r=0.024, mat=CARVED, parent=root)
     for k, u in enumerate((0.34, 0.66)):
         rail(f"side{i}_rib{k}", [Vector(w.at(u, 0, 0.02)), Vector(w.at(u, 1, 0.02))], 0.036)
 
@@ -273,9 +430,8 @@ for i in range(8):
     n = max(1, int((b - a).length / 0.2))
     for k in range(1, n):
         p = a.lerp(b, k / n) + Vector((0, 0, 0.035))
-        sphere(f"coping_stud{i}_{k}", 0.026, tuple(p), RUBY if k % 2 else GOLD, root)
+        sphere(f"coping_stud{i}_{k}", 0.026, tuple(p), CARVED, root)
 
-DAIS_R, DAIS_Z = 0.62, DECK_Z + 0.09
 d = cyl("dais", DAIS_R, DAIS_Z - DECK_Z, (0, 0, (DAIS_Z + DECK_Z) / 2), DARK_STONE, root,
         verts=96, bevel=0.01)
 rail("dais_rim", [(x, y, DAIS_Z) for x, y in circle(DAIS_R, 96)], 0.032, closed=True)
@@ -306,10 +462,10 @@ def tablet_height(a):
 for k, ((word, letter, tab_col, glow_col), a) in enumerate(zip(RUNE_WORDS, SOCKET_ANG)):
     cx, cy = SOCKET_R * math.cos(a), SOCKET_R * math.sin(a)
     # gold socket cup with a ruby on its front
-    cyl(f"socket{k}", 0.125, 0.05, (cx, cy, DAIS_Z + 0.025), GOLD, root, verts=32, r2=0.105)
+    cyl(f"socket{k}", 0.125, 0.05, (cx, cy, DAIS_Z + 0.025), CARVED, root, verts=32, r2=0.105)
     rail(f"socket{k}_lip", [(cx + x, cy + y, DAIS_Z + 0.05) for x, y in circle(0.108, 32)],
-         0.016, closed=True)
-    sphere(f"socket{k}_gem", 0.022, (cx, cy - 0.122, DAIS_Z + 0.028), RUBY, root)
+         0.016, closed=True, mat=GOLD)
+    sphere(f"socket{k}_gem", 0.02, (cx, cy - 0.122, DAIS_Z + 0.028), GOLD, root)
     # glowing channel from the socket into the chalice
     glow(rail(f"channel{k}", [(cx * 0.82, cy * 0.82, DAIS_Z + 0.004),
                               (cx * 0.36, cy * 0.36, DAIS_Z + 0.004)], 0.012, mat=CHANNEL))
@@ -321,8 +477,8 @@ for k, ((word, letter, tab_col, glow_col), a) in enumerate(zip(RUNE_WORDS, SOCKE
     box(f"tablet{k}", (TAB_W, TAB_D, h), M @ Vector((0, 0, h / 2)), tab_mat, root,
         rot=(tilt, 0, 0), bevel=0.012)
     box(f"tablet{k}_cap", (TAB_W + 0.03, TAB_D + 0.03, 0.03), M @ Vector((0, 0, h + 0.01)),
-        GOLD, root, rot=(tilt, 0, 0), bevel=0.008)
-    sphere(f"tablet{k}_finial", 0.026, tuple(M @ Vector((0, 0, h + 0.045))), GOLD, root)
+        CARVED, root, rot=(tilt, 0, 0), bevel=0.008)
+    sphere(f"tablet{k}_finial", 0.026, tuple(M @ Vector((0, 0, h + 0.045))), CARVED, root)
     face = Panel(M @ Vector((-TAB_W / 2, -TAB_D / 2, 0.0)), M @ Vector((TAB_W / 2, -TAB_D / 2, 0.0)),
                  M @ Vector((TAB_W / 2, -TAB_D / 2, h)), M @ Vector((-TAB_W / 2, -TAB_D / 2, h)))
     gold_frame(sub_panel(face, 0.06, 0.94, 0.05, 0.95), f"tablet{k}_frame", 0.012, parent=root)
@@ -338,21 +494,21 @@ for k, ((word, letter, tab_col, glow_col), a) in enumerate(zip(RUNE_WORDS, SOCKE
 # Chalice and the forming research pack (a hovering crystal)
 # ----------------------------------------------------------------------------
 CH_Z = DAIS_Z + 0.22                       # chalice rim height
-cyl("chalice_foot", 0.15, 0.04, (0, 0, DAIS_Z + 0.02), GOLD, root, verts=48, r2=0.1)
-cyl("chalice_stem", 0.045, CH_Z - DAIS_Z - 0.08, (0, 0, (CH_Z + DAIS_Z) / 2 - 0.03), GOLD, root,
+cyl("chalice_foot", 0.15, 0.04, (0, 0, DAIS_Z + 0.02), CARVED, root, verts=48, r2=0.1)
+cyl("chalice_stem", 0.045, CH_Z - DAIS_Z - 0.08, (0, 0, (CH_Z + DAIS_Z) / 2 - 0.03), STONE, root,
     verts=24)
-sphere("chalice_knop", 0.06, (0, 0, DAIS_Z + 0.1), GOLD, root, segs=24)
+sphere("chalice_knop", 0.06, (0, 0, DAIS_Z + 0.1), CARVED, root, segs=24)
 bm = bmesh.new()
 bmesh.ops.create_uvsphere(bm, u_segments=48, v_segments=24, radius=0.17)
 bmesh.ops.delete(bm, geom=[v for v in bm.verts if v.co.z > 0.001], context="VERTS")
-bowl = mesh_obj("chalice_bowl", bm, GOLD, root, smooth=True)
+bowl = mesh_obj("chalice_bowl", bm, CARVED, root, smooth=True)
 bowl.location = (0, 0, CH_Z)
 bowl.scale = (1, 1, 0.7)
 bowl.modifiers.new("solid", "SOLIDIFY").thickness = 0.02
 rail("chalice_lip", [(x, y, CH_Z) for x, y in circle(0.17, 48)], 0.022, closed=True)
 for k in range(6):    # rubies round the bowl, one per rune
     a = SOCKET_ANG[k]
-    sphere(f"chalice_gem{k}", 0.022, (0.15 * math.cos(a), 0.15 * math.sin(a), CH_Z - 0.06), RUBY,
+    sphere(f"chalice_gem{k}", 0.022, (0.15 * math.cos(a), 0.15 * math.sin(a), CH_Z - 0.06), CARVED,
            root)
 glow(cyl("chalice_liquid", 0.155, 0.01, (0, 0, CH_Z - 0.025), CHALICE_LIQ, root, verts=48))
 # dark brew with a bright swirl drawn into the crystal
@@ -384,8 +540,8 @@ for k in range(3):
         r = 0.17 - 0.07 * t + 0.03 * math.sin(math.pi * t)
         pts.append((r * math.cos(a), r * math.sin(a), CH_Z + 0.33 * t))
     curl = (0.085 * math.cos(a), 0.085 * math.sin(a), CH_Z + 0.36)
-    rail(f"claw{k}", pts + [curl], 0.017)
-    sphere(f"claw_tip{k}", 0.022, curl, RUBY, root)
+    rail(f"claw{k}", pts + [curl], 0.017, mat=IRON)
+    sphere(f"claw_tip{k}", 0.022, curl, IRON, root)
 # small shards orbiting the crystal: the pack is still condensing
 for k in range(3):
     a = TAU * k / 3 + 1.0
@@ -425,7 +581,7 @@ for i in range(len(outline)):
     j = (i + 1) % len(outline)
     bm.faces.new((fr[i], bk[i], bk[j], fr[j]))
 bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
-arch = mesh_obj("reredos", bm, PURPLE, root, bevel=0.012)
+arch = mesh_obj("reredos", bm, GRANITE, root, bevel=0.012)
 arch.data.shade_flat()
 FY = ARCH_Y - ARCH_T / 2 - 0.005           # front face
 rail("reredos_frame", [(x * 0.97, FY, ARCH_Z0 + (z - ARCH_Z0) * 0.985 + 0.01)
@@ -449,8 +605,8 @@ for k in range(6):
               (c.x - s_, c.y, c.z + s_))
     rune(p, f"wheel_rune{k}", glyph=k, radius=0.012, parent=root)
     b = WHEEL_C + Vector((WHEEL_R * math.cos(a + TAU / 12), -0.03, WHEEL_R * math.sin(a + TAU / 12)))
-    sphere(f"wheel_stud{k}", 0.026, tuple(b), RUBY if k % 2 else GOLD, root)
-sphere("wheel_boss", 0.06, tuple(WHEEL_C + Vector((0, -0.02, 0))), RUBY, root, segs=24)
+    sphere(f"wheel_stud{k}", 0.026, tuple(b), CARVED, root)
+sphere("wheel_boss", 0.06, tuple(WHEEL_C + Vector((0, -0.02, 0))), CARVED, root, segs=24)
 rail("wheel_boss_ring", [(WHEEL_C.x + 0.075 * math.cos(t), WHEEL_C.y - 0.01, WHEEL_C.z + 0.075 * math.sin(t))
                          for t in (TAU * i / 32 for i in range(32))], 0.016, closed=True)
 # scrollwork filling the lower panel under the wheel
@@ -458,9 +614,9 @@ low = Panel((-ARCH_W * 0.85, FY, ARCH_Z0 + 0.12), (ARCH_W * 0.85, FY, ARCH_Z0 + 
             (ARCH_W * 0.85, FY, 0.78), (-ARCH_W * 0.85, FY, 0.78))
 low.filigree("reredos_fil", [fit(scroll_c(0, 0, 1), 0.0, 0.0, 0.45, 1.0),
                               fit(scroll_c(0, 0, 1), 0.55, 0.0, 1.0, 1.0, flip_x=True)],
-             radius=FIL_R, lift=0.0, parent=root)
+             radius=FIL_R, lift=0.0, parent=root, mat=CARVED)
 # crest on the apex and pinnacles on the shoulders
-sphere("crest_gem", 0.05, (0, FY - 0.01, ARCH_TOP - 0.02), RUBY, root, segs=20)
+sphere("crest_gem", 0.05, (0, FY - 0.01, ARCH_TOP - 0.02), CARVED, root, segs=20)
 rail("crest_curl_l", [(x, FY, z) for x, z in fit(scroll_c(0, 0, 1), -0.24, ARCH_TOP - 0.16, -0.04,
                                                   ARCH_TOP + 0.06)], 0.03)
 rail("crest_curl_r", [(x, FY, z) for x, z in fit(scroll_c(0, 0, 1), 0.04, ARCH_TOP - 0.16, 0.24,
@@ -470,9 +626,9 @@ for sx in (-1, 1):
     box(f"pillar{sx}", (0.13, ARCH_T + 0.06, ARCH_SPRING - ARCH_Z0), (x, ARCH_Y, (ARCH_SPRING + ARCH_Z0) / 2),
         STONE, root, bevel=0.015)
     for zz in (ARCH_Z0 + 0.05, ARCH_SPRING - 0.02):
-        box(f"pillar{sx}_band{zz}", (0.16, ARCH_T + 0.09, 0.045), (x, ARCH_Y, zz), GOLD, root,
+        box(f"pillar{sx}_band{zz}", (0.16, ARCH_T + 0.09, 0.045), (x, ARCH_Y, zz), CARVED, root,
             bevel=0.01)
-    cyl(f"pinnacle{sx}", 0.06, 0.16, (x, ARCH_Y, ARCH_SPRING + 0.08), GOLD, root, verts=8, r2=0.0,
+    cyl(f"pinnacle{sx}", 0.06, 0.16, (x, ARCH_Y, ARCH_SPRING + 0.08), CARVED, root, verts=8, r2=0.0,
         bevel=0.004)
     rail(f"pillar{sx}_fil", [(x + sx * 0.0 + 0.4 * (u - 0.5) * 0.13, ARCH_Y - ARCH_T / 2 - 0.035, z)
                             for u, z in fit(scroll_c(0, 0, 1), 0.0, ARCH_Z0 + 0.12, 1.0,
@@ -503,7 +659,7 @@ for sx in (-1, 1):
         tip = base + Vector((a * 0.13, 0, (stem_top - DECK_Z) + (0.0 if a else 0.1)))
         if a:
             rail(f"candle_arm{sx}{a}", [base + Vector((0, 0, 0.3)),
-                                        base + Vector((a * 0.12, 0, 0.32)), tip], 0.016)
+                                        base + Vector((a * 0.12, 0, 0.32)), tip], 0.016, mat=GOLD)
         cup = tip + Vector((0, 0, 0.0))
         cyl(f"candle_cup{sx}{a}", 0.04, 0.025, cup, GOLD, root, verts=16)
         ch = 0.12 if a else 0.15
@@ -519,9 +675,9 @@ for sx in (-1, 1):
         rail(f"brazier{sx}_leg{k}", [c + Vector((0.1 * math.cos(a), 0.1 * math.sin(a), 0.0)),
                                      c + Vector((0.06 * math.cos(a), 0.06 * math.sin(a), BR_H * 0.6)),
                                      c + Vector((0.08 * math.cos(a), 0.08 * math.sin(a), BR_H))],
-             0.016)
+             0.016, mat=IRON)
         sphere(f"brazier{sx}_foot{k}", 0.022, tuple(c + Vector((0.1 * math.cos(a), 0.1 * math.sin(a),
-                                                                 0.015))), GOLD, root)
+                                                                 0.015))), IRON, root)
     bm = bmesh.new()
     bmesh.ops.create_uvsphere(bm, u_segments=32, v_segments=16, radius=0.11)
     bmesh.ops.delete(bm, geom=[v for v in bm.verts if v.co.z > 0.001], context="VERTS")
@@ -530,11 +686,11 @@ for sx in (-1, 1):
     bowl.scale = (1, 1, 0.75)
     bowl.modifiers.new("solid", "SOLIDIFY").thickness = 0.015
     rail(f"brazier{sx}_lip", [(c.x + x, c.y + y, BR_H + DECK_Z + 0.08) for x, y in circle(0.11, 32)],
-         0.02, closed=True)
+         0.02, closed=True, mat=IRON)
     for k in range(4):
         a = TAU * k / 4 + math.pi / 4
         sphere(f"brazier{sx}_gem{k}", 0.018, (c.x + 0.1 * math.cos(a), c.y + 0.1 * math.sin(a),
-                                              DECK_Z + BR_H + 0.03), RUBY, root)
+                                              DECK_Z + BR_H + 0.03), IRON, root)
     glow(cyl(f"brazier{sx}_coals", 0.1, 0.03, c + Vector((0, 0, BR_H + 0.07)), COALS, root,
              verts=24))
     # a cluster of purple tongues of fire
@@ -542,11 +698,21 @@ for sx in (-1, 1):
                                      (0.01, -0.045, 0.11))):
         flame(f"brazier{sx}_fire{k}", (c.x + dx, c.y + dy, DECK_Z + BR_H + 0.11), PFIRE, h=h,
               r=0.035 if k == 0 else 0.026)
-    point_light(f"brazier_light{sx}", c + Vector((0, -0.05, BR_H + 0.3)), (0.85, 0.3, 1.0), 5.0)
+    point_light(f"brazier_light{sx}", c + Vector((0, -0.05, BR_H + 0.3)), (1.0, 0.5, 0.2), 5.0)
+    # soot: a blackened patch on the paving around the tripod
+    soot = cyl(f"brazier{sx}_soot", 0.21, 0.004, c + Vector((0, 0, 0.003)), SOOT, root, verts=24,
+               bevel=0.0)
+    soot.scale = (1.0, 0.85, 1.0)
 
 # ----------------------------------------------------------------------------
 # Render (single static frame: containers only take a Sprite)
 # ----------------------------------------------------------------------------
+# every stone moulding (frames and scrollwork from fblend too) gets the
+# chisel-cut octagonal section; metal and glowing inlays stay round
+for cu in bpy.data.curves:
+    if cu.materials and cu.materials[0] in (STONE, GRANITE, CARVED, DARK_STONE):
+        cu.bevel_resolution = 1
+
 rig = setup_scene(frame_w=4.0, frame_h=3.0, frame_cy=0.35)
 
 
