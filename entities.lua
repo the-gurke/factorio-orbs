@@ -1529,7 +1529,6 @@ resonance_spire.energy_source = {type = "void"} -- No power required
 resonance_spire.energy_usage = "1W"
 resonance_spire.supply_area_distance = 7 -- 15x15 area (radius 7)
 resonance_spire.allowed_effects = {"productivity", "pollution", "speed"} -- Allow productivity, pollution, and speed effects
-resonance_spire.module_icons_suppressed = false
 resonance_spire.distribution_effectivity = 1.0
 resonance_spire.effect_receiver = {
   base_effect = {},
@@ -1537,43 +1536,112 @@ resonance_spire.effect_receiver = {
   uses_beacon_effects = false,
   uses_surface_effects = true
 }
-resonance_spire.module_specification = {
-  module_slots = 1,
-  module_info_icon_shift = {0, -0.5},
-  module_info_multi_row_initial_height_modifier = -0.3,
-  module_info_icon_scale = 1.0,
-  module_info_max_icons_per_row = 1,
-  module_info_max_icon_rows = 1
-}
 resonance_spire.allowed_module_categories = {"orb-productivity", "orb-pollution"} -- Only allow productivity and cleansing orbs
 resonance_spire.module_slots = 1
 
 -- Make it 1x1 size but keep reasonable bounding boxes for module display
 resonance_spire.collision_box = {{-0.4, -0.4}, {0.4, 0.4}}
 resonance_spire.selection_box = {{-0.5, -0.8}, {0.5, 0.5}}
-resonance_spire.drawing_box = {{-0.5, -1.0}, {0.5, 0.5}} -- Larger drawing box for better module visibility
+-- the inherited beacon positioning gives a 1x1 zero icon rows, hiding alt mode
+resonance_spire.drawing_box_vertical_extension = 2.2
+resonance_spire.icons_positioning = {
+  {inventory_index = defines.inventory.beacon_modules, shift = {0, -0.1},
+   max_icons_per_row = 1, max_icon_rows = 1, scale = 0.5}
+}
 
--- Update graphics to use custom resonance spire entity graphics
-resonance_spire.graphics_set = {
-  animation_list = {
-    {
-      render_layer = "floor-mechanics",
-      always_draw = true,
-      animation = {
-        layers = {
-          {
-            filename = "__orbs__/graphics/resonance-spire-entity.png",
-            priority = "high",
-            width = 1024,
-            height = 1024,
-            frame_count = 1,
-            line_length = 1,
-            scale = 0.06,
-            shift = {0, -0.5}
+-- Resonance spire graphics (blender/resonance_spire.py). The spire is split
+-- into a back sheet and a front sheet; the inserted orb is drawn between them
+-- by the module visualisation, so the gimbal ring passes in front of and
+-- behind it. All layers share one frame geometry.
+local spire_scale = 0.5
+local spire_shift = {0, -1.07}
+
+local function spire_sheet(file, extra)
+  local sheet = {
+    filename = "__orbs__/graphics/" .. file,
+    priority = "high",
+    width = 80,
+    height = 208,
+    frame_count = 64,
+    line_length = 8,
+    animation_speed = 0.5,
+    scale = spire_scale,
+    shift = spire_shift
+  }
+  for k, v in pairs(extra or {}) do sheet[k] = v end
+  return sheet
+end
+
+local function orb_visualisation(art_style, orb)
+  return {
+    art_style = art_style,
+    slots = {
+      {
+        {
+          render_layer = "object",
+          secondary_draw_order = 1, -- between the spire's back and front sheets
+          pictures = {
+            filename = "__orbs__/graphics/resonance-spire-orb-" .. orb .. ".png",
+            width = 80, height = 208, scale = spire_scale, shift = spire_shift
+          }
+        },
+        {
+          render_layer = "object",
+          pictures = {
+            filename = "__orbs__/graphics/resonance-spire-orb-" .. orb .. "-glow.png",
+            width = 80, height = 208, scale = spire_scale, shift = spire_shift,
+            draw_as_light = true
           }
         }
       }
     }
+  }
+end
+
+resonance_spire.graphics_set = {
+  module_icons_suppressed = false,
+  random_animation_offset = true,
+  animation_list = {
+    {
+      -- spire behind the orb, plus its long shadow towards the east
+      render_layer = "object",
+      secondary_draw_order = 0,
+      always_draw = true,
+      animation = {
+        layers = {
+          spire_sheet("resonance-spire-animation.png"),
+          {
+            filename = "__orbs__/graphics/resonance-spire-shadow.png",
+            priority = "high",
+            width = 368,
+            height = 96,
+            frame_count = 1,
+            repeat_count = 64,
+            animation_speed = 0.5,
+            draw_as_shadow = true,
+            scale = spire_scale,
+            shift = {2.25, -0.1}
+          }
+        }
+      }
+    },
+    {
+      -- gimbal ring, claws and tine tips in front of the orb
+      render_layer = "object",
+      secondary_draw_order = 2,
+      always_draw = true,
+      animation = spire_sheet("resonance-spire-front-animation.png")
+    },
+    {
+      -- runes, halo bands and tine slots pulse with the resonance wave
+      render_layer = "object",
+      always_draw = false,
+      animation = spire_sheet("resonance-spire-glow.png", {draw_as_light = true})
+    }
+  },
+  module_visualisations = {
+    orb_visualisation("orbs-productivity", "productivity"),
+    orb_visualisation("orbs-cleansing", "cleansing")
   }
 }
 

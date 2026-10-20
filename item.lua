@@ -101,6 +101,7 @@ data:extend({
     type = "module",
     name = "productivity-orb",
     icon = "__orbs__/graphics/productivity-orb.png",
+    art_style = "orbs-productivity", -- picks its look in the resonance spire's cradle
     icon_size = 1024,
     subgroup = "orbs-manifest",
     category = "orb-productivity", -- Custom category for orb modules
@@ -122,6 +123,7 @@ data:extend({
     type = "module",
     name = "cleansing-orb",
     icon = "__orbs__/graphics/cleansing-orb.png",
+    art_style = "orbs-cleansing", -- picks its look in the resonance spire's cradle
     icon_size = 1024,
     subgroup = "orbs-manifest",
     category = "orb-pollution", -- Custom category for orb modules
