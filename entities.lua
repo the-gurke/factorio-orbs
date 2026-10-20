@@ -1068,6 +1068,74 @@ rune_transformer.energy_usage = "1W"
 rune_transformer.result_inventory_size = 1
 rune_transformer.source_inventory_size = 1
 
+-- Rendered from blender/rune_transformer.py: a Geneva drive indexes a carousel
+-- of the nine rune glyphs over a crucible; while a glyph dwells, a beam rises
+-- into it and the melt takes its colour. The main sheet is the machine at
+-- rest (frozen while idle); the working overlay is the lit render minus the
+-- resting one, drawn additively like vanilla's steel-furnace-working.
+rune_transformer.graphics_set = {
+  animation = {
+    layers = {
+      {
+        filename = "__orbs__/graphics/rune-transformer-animation.png",
+        priority = "high",
+        width = 206,
+        height = 166,
+        frame_count = 144,
+        line_length = 12,
+        animation_speed = 0.5,
+        scale = 0.5,
+        shift = {0, -0.06}
+      },
+      {
+        filename = "__orbs__/graphics/rune-transformer-shadow.png",
+        priority = "high",
+        width = 294,
+        height = 166,
+        frame_count = 1,
+        repeat_count = 144,
+        draw_as_shadow = true,
+        scale = 0.5,
+        shift = {0.8, 0.28}
+      }
+    }
+  },
+  working_visualisations = {
+    {
+      -- lit glyphs, reading beam, melt, hearth fire, orb
+      fadeout = true,
+      animation = {
+        filename = "__orbs__/graphics/rune-transformer-glow.png",
+        priority = "high",
+        width = 206,
+        height = 166,
+        frame_count = 144,
+        line_length = 12,
+        animation_speed = 0.5,
+        draw_as_glow = true,
+        blend_mode = "additive",
+        scale = 0.5,
+        shift = {0, -0.06}
+      }
+    },
+    {
+      fadeout = true,
+      animation = {
+        filename = "__orbs__/graphics/rune-transformer-ground-light.png",
+        priority = "high",
+        width = 153,
+        height = 121,
+        repeat_count = 144,
+        draw_as_light = true,
+        blend_mode = "additive",
+        scale = 0.5,
+        shift = {0, 0.95}
+      }
+    }
+  }
+}
+rune_transformer.water_reflection = nil  -- the inherited one shows the steel furnace
+
 -- Create the rune transformer item
 local rune_transformer_item = {
   type = "item",
