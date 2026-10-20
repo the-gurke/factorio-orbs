@@ -189,6 +189,32 @@ The divination system requires precise timing and coordination - you need to cap
 - Integrates with Space Age to support item spoiling
 - Removes a lot of base game content that isn't magical enough
 
+### Sprite Generation
+
+Two scripts generate AI graphics; both run with `.venv/bin/python` (the venv
+in this repo; system python's openai package is broken):
+
+- `generate_sprite.py item|entity <name> -d "<description>"` - icons via
+  OpenAI gpt-image-1.5 (the only current model with native transparency;
+  gpt-image-2 does NOT support it). `--spritesheet --rows R --cols C` makes
+  animation grids, but per-frame resolution is poor - prefer the video route:
+- `generate_animation.py <entity-render.png>` - animates an approved entity
+  render with local LTX-Video 2B distilled (fits the 8GB GPU), recovers
+  transparency by green-screen difference keying, stitches a 15-frame sheet.
+  `--two-phase` gives the most dynamic seamless loop. The critical model
+  setup constraints are documented as comments at the relevant lines.
+
+Production-quality entities are instead modelled procedurally in Blender
+(`blender/<entity>.py`, run with `blender -b --factory-startup -P ... --`,
+`--preview` renders one frame). `blender/stitch.py` turns the renders into the
+sheet + shadow in `graphics/`. Factorio's projection is a plain orthographic
+camera looking down at 45 degrees (no vertical stretch); a 3x3 machine should
+fill its 3x3 box like vanilla assembling-machine-2.
+
+Intermediates land in `graphics/generated/` (gitignored); ship-ready sheets
+get copied to `graphics/`. Engine-side sprite layout (frame size vs PNG) is
+only validated by a real graphical game launch, not by `./test.sh`.
+
 ## To keep in mind for Claude
 
 - Technologies-related code should be added to `technology.lua`, not `data-final-fixes.lua`.

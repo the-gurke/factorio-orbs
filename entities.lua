@@ -44,39 +44,50 @@ conjuration_machine.icon = "__orbs__/graphics/conjuration-machine.png"
 conjuration_machine.icon_size = 64
 
 -- Set custom graphics for the conjuration machine entity
+-- Rendered from the Blender model in blender/conjuration_machine.py. Scale
+-- 0.44 (not 0.5) matches assembling-machine-2's on-screen size (174 px wide
+-- content), and the shift sits the plinth where AM2's sits.
 conjuration_machine.graphics_set = {
   animation = {
     layers = {
       {
-        filename = "__orbs__/graphics/conjuration-machine-sprite.png",
+        filename = "__orbs__/graphics/conjuration-machine-animation.png",
         priority = "high",
-        width = 512,
-        height = 512,
+        width = 256,
+        height = 256,
+        frame_count = 64,
+        line_length = 8,
+        animation_speed = 0.5,
+        scale = 0.44,
+        shift = {0, 0.134}
+      },
+      {
+        -- orb, potions, runes and forge sparks light up the night
+        filename = "__orbs__/graphics/conjuration-machine-glow.png",
+        priority = "high",
+        width = 256,
+        height = 256,
+        frame_count = 64,
+        line_length = 8,
+        animation_speed = 0.5,
+        draw_as_light = true,
+        scale = 0.44,
+        shift = {0, 0.134}
+      },
+      {
+        filename = "__orbs__/graphics/conjuration-machine-shadow.png",
+        priority = "high",
+        width = 256,
+        height = 256,
         frame_count = 1,
-        line_length = 7,
-        scale = 0.18,
-        shift = {0, 0}
+        repeat_count = 64,
+        draw_as_shadow = true,
+        scale = 0.44,
+        shift = {0, 0.134}
       }
     }
   },
   working_visualisations = {
-    {
-      north_position = {0, 0},
-      east_position = {0, 0},
-      south_position = {0, 0},
-      west_position = {0, 0},
-      animation = {
-        filename = "__orbs__/graphics/conjuration-machine-sprite.png",
-        priority = "high",
-        width = 512,
-        height = 512,
-        frame_count = 45,
-        line_length = 7,
-        animation_speed = 0.5,
-        scale = 0.18,
-        shift = {0, 0}
-      }
-    },
     {
       north_position = {0, -0.5},
       east_position = {0, -0.5},
