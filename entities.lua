@@ -1219,26 +1219,63 @@ inactive_portal.module_specification = {
 inactive_portal.module_slots = 2  -- Ensure module slots are set
 inactive_portal.allowed_effects = {"speed", "pollution"}
 inactive_portal.allowed_module_categories = {"orb-speed", "orb-pollution"} -- Only allow haste orbs and cleansing orbs
-inactive_portal.collision_box = {{-0.1, -0.1}, {2.9, 2.9}} -- 3x3 collision box containing [0,0]
-inactive_portal.selection_box = {{-3.5, -3.5}, {3.5, 3.5}} -- 7x7 selection box
+-- The 7x7 dais blocks buildings but not the player, who must be able to walk
+-- up the stair into the vortex: check_win_condition in control.lua needs the
+-- player within 2 tiles of the centre.
+inactive_portal.collision_box = {{-3.4, -3.4}, {3.4, 3.4}}
+inactive_portal.selection_box = {{-3.5, -3.5}, {3.5, 3.5}}
+inactive_portal.collision_mask = {layers = {item = true, meltable = true, object = true, water_tile = true,
+                                            is_object = true, is_lower_object = true}}
 inactive_portal.icon = "__orbs__/graphics/portal.png"
 inactive_portal.icon_size = 1024
 
--- Portal graphics
-inactive_portal.graphics_set = {
-  animation = {
-    layers = {
-      {
-        filename = "__orbs__/graphics/portal-inactive-entity.png",
-        priority = "high",
-        width = 1024,
-        height = 1024,
-        scale = 0.25, -- Scale to fit 7x7 tiles better
-        frame_count = 1
+-- Portal graphics, rendered by blender/portal.py (64 px/tile at scale 0.5).
+-- Inactive: the gate dials home - steam cylinders drive the rune ring a glyph
+-- at a time and the chevrons lock one by one. Active: the open vortex with
+-- orbiting orbs and arcs.
+local function portal_graphics_set(state, frame_count)
+  local function layer(suffix, extra)
+    local l = {
+      filename = "__orbs__/graphics/" .. state .. "-portal-" .. suffix .. ".png",
+      priority = "high", width = 480, height = 480,
+      frame_count = frame_count, line_length = 8, animation_speed = 0.25,
+      scale = 0.5, shift = {0, -1.1}
+    }
+    for k, v in pairs(extra or {}) do l[k] = v end
+    return l
+  end
+  local function smoke(x)
+    return {
+      -- essence smoke from the boiler stacks while it burns
+      north_position = {x, -0.75}, east_position = {x, -0.75},
+      south_position = {x, -0.75}, west_position = {x, -0.75},
+      animation = {
+        filename = "__base__/graphics/entity/smoke/smoke.png",
+        priority = "high", width = 152, height = 120, frame_count = 60, line_length = 5,
+        animation_speed = 0.4, scale = 0.6, tint = {r = 0.7, g = 0.45, b = 1.0, a = 0.6}
       }
     }
+  end
+  return {
+    animation = {
+      layers = {
+        layer("animation"),
+        -- vortex, chevrons, glyphs, runes, fire and lamps light up the night
+        layer("glow", {draw_as_light = true}),
+        {
+          -- the gate is 5 tiles tall: its shadow reaches far east
+          filename = "__orbs__/graphics/" .. state .. "-portal-shadow.png",
+          priority = "high", width = 960, height = 512,
+          frame_count = 1, repeat_count = frame_count, draw_as_shadow = true,
+          scale = 0.5, shift = {3.75, -0.75}
+        }
+      }
+    },
+    working_visualisations = {smoke(2.07), smoke(-2.07)}
   }
-}
+end
+
+inactive_portal.graphics_set = portal_graphics_set("inactive", 64)
 
 -- Move circuit wire connection point to bottom-right
 -- Use util.by_pixel to convert tile coordinates to pixel coordinates (32 pixels per tile)
@@ -1273,21 +1310,7 @@ active_portal.crafting_categories = {"active-portal"}
 active_portal.icon = "__orbs__/graphics/portal.png"
 -- Module slots are inherited from inactive_portal via deepcopy
 
--- Active portal graphics
-active_portal.graphics_set = {
-  animation = {
-    layers = {
-      {
-        filename = "__orbs__/graphics/portal-active-entity.png",
-        priority = "high",
-        width = 1024,
-        height = 1024,
-        scale = 0.25, -- Scale to fit 7x7 tiles better
-        frame_count = 1
-      }
-    }
-  }
-}
+active_portal.graphics_set = portal_graphics_set("active", 48)
 
 -- Remove next_upgrade to avoid bounding box conflicts
 active_portal.next_upgrade = nil
