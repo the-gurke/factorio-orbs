@@ -73,12 +73,12 @@ def iris_material():
     L(fib_v.outputs[0], fib.inputs["Vector"])
     ramp = nt.nodes.new("ShaderNodeValToRGB")
     els = ramp.color_ramp.elements
-    els[0].position, els[0].color = 0.3, (1.0, 0.55, 1.0, 1)
-    els[1].position, els[1].color = 1.0, (0.25, 0.0, 0.45, 1)
+    els[0].position, els[0].color = 0.3, (0.85, 0.95, 1.0, 1)
+    els[1].position, els[1].color = 1.0, (0.04, 0.1, 0.35, 1)
     e = els.new(0.55)
-    e.color = (0.9, 0.12, 0.95, 1)
+    e.color = (0.4, 0.7, 1.0, 1)
     e = els.new(0.92)
-    e.color = (0.45, 0.02, 0.7, 1)
+    e.color = (0.12, 0.3, 0.8, 1)
     L(norm.outputs["Result"], ramp.inputs["Fac"])
     mix = nt.nodes.new("ShaderNodeMix")
     mix.data_type = "RGBA"
@@ -100,7 +100,62 @@ def iris_material():
 
 IRIS, IRIS_EM = iris_material()
 PUPIL = gem("pupil", (0.01, 0.005, 0.012))
-HEART, HEART_EM = emitter("heart", (1.0, 0.3, 0.9), 3.0, base=(0.6, 0.1, 0.5), glass=True)
+HEART, HEART_EM = emitter("heart", (0.7, 0.88, 1.0), 3.0, base=(0.45, 0.6, 0.8), glass=True)
+ICE = (0.55, 0.78, 1.0)     # the ward's cold blue-white light (eye, runes, heart, gaze)
+
+# ----------------------------------------------------------------------------
+# Materials: a watchtower of silver and marble
+# ----------------------------------------------------------------------------
+# The ward has its own identity among the gold-and-purple machines: pale veined
+# marble base and pillar, tarnished silver castings, polished and blued steel
+# for the drive and the eye mount. Gold survives only on a few small fittings,
+# purple only in two amethysts.
+
+
+def marble(name, base, vein, scale=3.0):
+    """Veined stone: fblend's grime (AO, dirt, mottling) multiplied by distorted
+    wave-texture veins, so the white reads as stone at 64 px per tile."""
+    m, nt, bsdf = node_mat(name)
+    bsdf.inputs["Metallic"].default_value = 0.0
+    grime(nt, bsdf, base, (0.42, 0.41, 0.4), noise_scale=12.0, rough=(0.3, 0.5),
+          bump=0.08, bump_scale=40.0, dirt=0.25)
+    L = nt.links.new
+    old = bsdf.inputs["Base Color"].links[0].from_socket
+    tc = nt.nodes.new("ShaderNodeTexCoord")
+    wave = nt.nodes.new("ShaderNodeTexWave")
+    wave.inputs["Scale"].default_value = scale
+    wave.inputs["Distortion"].default_value = 9.0
+    wave.inputs["Detail"].default_value = 8.0
+    wave.inputs["Detail Roughness"].default_value = 0.7
+    L(tc.outputs["Object"], wave.inputs["Vector"])
+    ramp = nt.nodes.new("ShaderNodeValToRGB")
+    els = ramp.color_ramp.elements
+    els[0].position, els[0].color = 0.0, (*vein, 1)
+    els[1].position, els[1].color = 0.12, (1, 1, 1, 1)
+    e = els.new(0.55)
+    e.color = (0.93, 0.93, 0.95, 1)
+    L(wave.outputs["Fac"], ramp.inputs["Fac"])
+    mix = nt.nodes.new("ShaderNodeMix")
+    mix.data_type = "RGBA"
+    mix.blend_type = "MULTIPLY"
+    mix.inputs["Factor"].default_value = 1.0
+    L(old, mix.inputs["A"])
+    L(ramp.outputs["Color"], mix.inputs["B"])
+    L(mix.outputs["Result"], bsdf.inputs["Base Color"])
+    bsdf.inputs["Coat Weight"].default_value = 0.3     # honed, faintly polished
+    return m
+
+
+MARBLE = marble("marble", (0.93, 0.92, 0.89), (0.4, 0.42, 0.48))
+MARBLE_DARK = marble("marble_dark", (0.5, 0.5, 0.52), (0.12, 0.13, 0.16), scale=4.0)
+SILVER = metal("silver", (0.74, 0.74, 0.76), (0.08, 0.08, 0.09), rough=(0.3, 0.55), dirt=0.35)
+BLUED = metal("blued_steel", (0.36, 0.4, 0.47), (0.05, 0.055, 0.07), rough=(0.38, 0.6),
+              dirt=0.2)
+MOONSTONE = gem("moonstone", (0.55, 0.72, 0.95))
+AMETHYST = gem("amethyst", (0.45, 0.12, 0.6))
+GILT = fblend.GOLD           # the real gold, kept for a few small fittings
+fblend.GOLD = SILVER         # fblend's helpers (frames, filigree, studs) default to it
+GOLD, RUBY, BRONZE, PURPLE = SILVER, MOONSTONE, STEEL, MARBLE
 
 # ----------------------------------------------------------------------------
 # Dimensions
@@ -184,8 +239,8 @@ animated = []      # (obj, fn(obj, theta)) with theta = heading clockwise from n
 # Base: bronze plinth, sloped purple skirt with scrollwork
 # ----------------------------------------------------------------------------
 plinth = chamfered(PL, PL_CH)
-frustum("plinth", plinth, 0, [(x * 0.97, y * 0.97) for x, y in plinth], PLINTH_H, BRONZE)
-rail("plinth_rail", [(x, y, PLINTH_H) for x, y in plinth], 0.03, closed=True)
+frustum("plinth", plinth, 0, [(x * 0.97, y * 0.97) for x, y in plinth], PLINTH_H, MARBLE_DARK)
+rail("plinth_rail", [(x, y, PLINTH_H) for x, y in plinth], 0.02, closed=True)
 rail("plinth_foot", [(x * 1.01, y * 1.01, 0.012) for x, y in plinth], 0.016, closed=True)
 for i in (7, 0, 1, 2):      # rivets on the faces the camera sees
     a, b = Vector((*plinth[i], 0)), Vector((*plinth[(i + 1) % 8], 0))
@@ -197,18 +252,18 @@ for i in (7, 0, 1, 2):      # rivets on the faces the camera sees
 
 sk_bot, sk_top = chamfered(SK_B, SK_CH), chamfered(SK_T, SK_CH * 0.7)
 frustum("skirt", sk_bot, PLINTH_H, sk_top, SK_H, PURPLE)
-rail("skirt_top", [(x, y, SK_H) for x, y in sk_top], 0.028, closed=True)
-for k in range(8):          # thick gold ribs on the skirt's corner edges
-    rail(f"skirt_rib{k}", [(*sk_bot[k], PLINTH_H + 0.01), (*sk_top[k], SK_H)], 0.022)
+rail("skirt_top", [(x, y, SK_H) for x, y in sk_top], 0.018, closed=True)   # silver trim
+for k in range(8):          # carved marble mouldings on the skirt's corner edges
+    rail(f"skirt_rib{k}", [(*sk_bot[k], PLINTH_H + 0.01), (*sk_top[k], SK_H)], 0.024, mat=MARBLE)
 sk_walls = walls(sk_bot, PLINTH_H, sk_top, SK_H)
 for i in (0, 2, 6):         # big faces: a framed double scroll each (south, east, west)
     sp = sub_panel(sk_walls[i], 0.06, 0.94, 0.12, 0.9)
-    gold_frame(sp, f"skirt_frame{i}", r=0.016, parent=root)
+    gold_frame(sp, f"skirt_frame{i}", r=0.018, parent=root, mat=MARBLE)   # carved relief
     inner = sub_panel(sp, 0.08, 0.92, 0.12, 0.88)
     inner.filigree(f"skirt_fil{i}a", [fit(scroll_c(0, 0, 1), 0.0, 0.0, 0.42, 1.0)],
-                   radius=FIL_R, lift=0.01, parent=root)
+                   radius=FIL_R, lift=0.01, parent=root, mat=MARBLE)
     inner.filigree(f"skirt_fil{i}b", [fit(scroll_c(0, 0, 1), 0.58, 0.0, 1.0, 1.0, flip_x=True)],
-                   radius=FIL_R, lift=0.01, parent=root)
+                   radius=FIL_R, lift=0.01, parent=root, mat=MARBLE)
     inner.studs(f"skirt_gem{i}", [(0.5, 0.45)], r=0.026, mat=RUBY, parent=root)
 for i in (1, 7):            # front chamfer faces: a single ruby in a gold boss
     c = sk_walls[i].at(0.5, 0.5, 0.01)
@@ -216,13 +271,13 @@ for i in (1, 7):            # front chamfer faces: a single ruby in a gold boss
     sphere(f"skirt_boss_gem{i}", 0.02, sk_walls[i].at(0.5, 0.5, 0.035), RUBY, root)
 
 # ----------------------------------------------------------------------------
-# Column: octagonal purple shaft with gold edges and bands. Its three front
+# Column: octagonal marble shaft with carved edges and silver bands. Its three front
 # faces carry rune inlays that light up as the eye sweeps over their sector.
 # ----------------------------------------------------------------------------
 col_b, col_t = octagon(COL_R0), octagon(COL_R1)
 frustum("column", col_b, SK_H, col_t, COL_Z1, PURPLE)
 for k in range(8):
-    rail(f"col_rib{k}", [(*col_b[k], SK_H), (*col_t[k], COL_Z1)], 0.016)
+    rail(f"col_rib{k}", [(*col_b[k], SK_H), (*col_t[k], COL_Z1)], 0.016, mat=MARBLE)
 for z, r in ((SK_H + 0.025, COL_R0 + 0.025), (0.58, (COL_R0 + COL_R1) / 2 + 0.02),
              (COL_Z1 - 0.02, COL_R1 + 0.03)):
     rail(f"col_band{z}", [(x, y, z) for x, y in octagon(r)], 0.022, closed=True)
@@ -232,7 +287,7 @@ for k, glyph in ((4, 0), (5, 2), (6, 3)):      # SW, S, SE faces (edge k faces 4
     w = col_walls[k]
     face_n = Vector(w.n)
     compass = math.atan2(face_n.x, face_n.y)     # clockwise from north
-    mat, em = emitter(f"rune_face{k}", (0.8, 0.2, 1.0), 0.3, base=(0.08, 0.02, 0.08))
+    mat, em = emitter(f"rune_face{k}", ICE, 0.3, base=(0.05, 0.07, 0.1))
     for half, (v0, v1) in enumerate(((0.06, 0.48), (0.53, 0.95))):
         pnl = sub_panel(w, 0.12, 0.88, v0, v1)
         for gi, stroke in enumerate(RUNES[(glyph + half) % len(RUNES)]):
@@ -254,7 +309,8 @@ for a in (45, 135, 315):
             fit(scroll_c(0, 0, 1), 0.0, 0.0, 1.0, 1.0, flip_x=True)][::-1]
     for k, (rr, zz) in enumerate(((0.0, 0.0), (-0.045, -0.06))):
         pts = [(r + rr * (1 - t / 14), z + zz * (1 - t / 14)) for t, (r, z) in enumerate(sweep)]
-        rail(f"gusset{a}_{k}", [tuple(d * r + Vector((0, 0, z))) for r, z in pts], 0.02 - 0.006 * k)
+        rail(f"gusset{a}_{k}", [tuple(d * r + Vector((0, 0, z))) for r, z in pts], 0.026 - 0.008 * k,
+             mat=MARBLE)
     rail(f"gusset_curl{a}", [tuple(d * r + Vector((0, 0, z))) for r, z in curl], 0.014)
     sphere(f"gusset_gem{a}", 0.022, tuple(d * (r0 + 0.02) + Vector((0, 0, 0.6))), RUBY, root)
 
@@ -289,7 +345,7 @@ cyl("spindle_rod", 0.014, RG_Z - LAN_Z0 - 0.05, (0, 0, (RG_Z + LAN_Z0 + 0.05) / 
     verts=12)
 pinion = gear("pinion", PIN_T, PIN_R, 0.045, STEEL, spindle, spokes=0, inner=0.4)
 pinion.location = (0, 0, RG_Z)
-cyl("pinion_cap", 0.022, 0.03, (0, 0, RG_Z + 0.035), GOLD, spindle, verts=12)
+cyl("pinion_cap", 0.022, 0.03, (0, 0, RG_Z + 0.035), GILT, spindle, verts=12)
 HEART_Z = (LAN_Z0 + 0.09 + LAN_Z1 - 0.03) / 2
 bm = bmesh.new()            # hexagonal bipyramid crystal
 ring_v = [bm.verts.new((0.042 * math.cos(TAU * k / 6), 0.042 * math.sin(TAU * k / 6), 0))
@@ -303,7 +359,7 @@ heart.data.shade_flat()
 heart.location = (0, 0, HEART_Z)
 glow(heart)
 heart_light_d = bpy.data.lights.new("heart_light", "POINT")
-heart_light_d.color = (1.0, 0.35, 0.9)
+heart_light_d.color = ICE
 heart_light_d.shadow_soft_size = 0.03
 heart_light_d.energy = 1.2
 o = bpy.data.objects.new("heart_light", heart_light_d)
@@ -327,7 +383,7 @@ animated.append((head, lambda o, th: setattr(o, "rotation_euler", (0, 0, -th))))
 ring = gear("slewing_ring", RG_T, RG_R, 0.05, GOLD, head, spokes=6, inner=0.7)
 ring.location = (0, 0, RG_Z)
 ring.rotation_euler = (0, 0, th_ring)
-cyl("turntable", TT_R, TT_Z1 - TT_Z0, (0, 0, (TT_Z0 + TT_Z1) / 2), PURPLE, head, verts=48)
+cyl("turntable", TT_R, TT_Z1 - TT_Z0, (0, 0, (TT_Z0 + TT_Z1) / 2), BLUED, head, verts=48)
 rail("turntable_rim", ring_pts(TT_R + 0.005, TT_Z1), 0.02, closed=True, parent=head)
 for k in range(8):
     a = TAU * (k + 0.5) / 8
@@ -358,7 +414,7 @@ pupil = sphere("pupil", EYE_R * 0.42, (0, EYE_R * 0.82, 0), PUPIL, eye, segs=24)
 pupil.scale = (0.22, 0.5, 0.95)    # a vertical slit, like a dragon's eye
 limbal = [(EYE_R * 1.01 * math.sin(IRIS_A) * math.cos(TAU * i / 40), EYE_R * 1.01 * math.cos(IRIS_A),
            EYE_R * 1.01 * math.sin(IRIS_A) * math.sin(TAU * i / 40)) for i in range(40)]
-curve_obj("limbal_ring", limbal, GOLD, 0.008, eye, closed=True)
+curve_obj("limbal_ring", limbal, GILT, 0.008, eye, closed=True)
 
 # Purple shell with an almond slot: the eye is only seen through its lids.
 SLOT_W, SLOT_H = SHELL_R * 0.9, SHELL_R * 0.52
@@ -368,10 +424,7 @@ def slot_h(x):
     return SLOT_H * max(0.0, 1 - (x / SLOT_W) ** 2)
 
 
-SHELL_PAINT = PURPLE.copy()     # same paint, finer hammering for the small shell
-for nd in SHELL_PAINT.node_tree.nodes:
-    if nd.type == "TEX_VORONOI":
-        nd.inputs["Scale"].default_value = 70.0
+SHELL_PAINT = BLUED            # dark blued steel, so the silver ribs and lids read on it
 shell = cap("shell", SHELL_R, lambda c: not (c.y > 0 and abs(c.z) < slot_h(c.x) + 0.004),
             SHELL_PAINT, eye, segs=64)
 sol = shell.modifiers.new("solid", "SOLIDIFY")
@@ -408,9 +461,9 @@ for k, a in enumerate((0.0,)):
 rail("shell_band", [(SHELL_R * 1.01 * math.cos(t), SHELL_R * 1.01 * math.sin(t), 0)
                     for t in (math.radians(a) for a in range(200, 341, 10))], 0.016, parent=eye)
 # finial on the crown
-cyl("finial_base", 0.03, 0.04, (0, -0.02, SHELL_R + 0.02), GOLD, eye, verts=16, r2=0.018)
-cyl("finial_spike", 0.012, 0.09, (0, -0.02, SHELL_R + 0.08), GOLD, eye, verts=12, r2=0.002)
-sphere("finial_gem", 0.022, (0, -0.02, SHELL_R + 0.06), RUBY, eye)
+cyl("finial_base", 0.03, 0.04, (0, -0.02, SHELL_R + 0.02), GILT, eye, verts=16, r2=0.018)
+cyl("finial_spike", 0.012, 0.09, (0, -0.02, SHELL_R + 0.08), GILT, eye, verts=12, r2=0.002)
+sphere("finial_gem", 0.022, (0, -0.02, SHELL_R + 0.06), AMETHYST, eye)
 
 
 def on_shell(center, t1, t2, strokes, span, name, r=FIL_R, mat=None):
@@ -444,7 +497,7 @@ for i in range(25):
     y = math.sqrt(max(SHELL_R ** 2 - x * x - z * z, 0.0))
     brow.append((x * 1.06, y * 1.06, z * 1.04))
 curve_obj("brow", brow, GOLD, 0.017, eye)
-sphere("brow_gem", 0.022, brow[12], RUBY, eye)
+sphere("brow_gem", 0.022, brow[12], AMETHYST, eye)
 # counterweight slung under the back balances the eye on its pivots
 sphere("counterweight", 0.05, (0, -SHELL_R * 0.75, -SHELL_R * 0.78), BRONZE, eye, segs=20)
 cyl("counterweight_band", 0.052, 0.022, (0, -SHELL_R * 0.75, -SHELL_R * 0.78), GOLD, eye,
@@ -455,12 +508,12 @@ FORK_X = SHELL_R + 0.03
 for sx in (-1, 1):
     rail(f"fork{sx}", [(sx * 0.1, 0, TT_Z1), (sx * FORK_X, 0, TT_Z1 + 0.04), (sx * FORK_X, 0, EYE_C.z)],
          0.022, parent=head)
-    cyl(f"pivot{sx}", 0.035, 0.03, (sx * (FORK_X + 0.005), 0, EYE_C.z), GOLD, head,
+    cyl(f"pivot{sx}", 0.035, 0.03, (sx * (FORK_X + 0.005), 0, EYE_C.z), GILT, head,
         rot=(0, math.radians(90), 0), verts=20)
     sphere(f"pivot_gem{sx}", 0.016, (sx * (FORK_X + 0.025), 0, EYE_C.z), RUBY, head)
 
 eye_light_d = bpy.data.lights.new("eye_light", "POINT")
-eye_light_d.color = (0.9, 0.3, 1.0)
+eye_light_d.color = ICE
 eye_light_d.shadow_soft_size = 0.02
 eye_light_d.energy = 0.6
 o = bpy.data.objects.new("eye_light", eye_light_d)
@@ -489,7 +542,7 @@ def gaze_material():
     mix = nt.nodes.new("ShaderNodeMixShader")
     tr = nt.nodes.new("ShaderNodeBsdfTransparent")
     em = nt.nodes.new("ShaderNodeEmission")
-    em.inputs["Color"].default_value = (0.85, 0.3, 1.0, 1)
+    em.inputs["Color"].default_value = (0.6, 0.8, 1.0, 1)
     em.inputs["Strength"].default_value = 1.2
     tc = nt.nodes.new("ShaderNodeTexCoord")      # unit disc in object space
     ln = nt.nodes.new("ShaderNodeVectorMath")
