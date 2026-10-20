@@ -764,7 +764,16 @@ defense_ward.folding_speed = 0.04
 defense_ward.prepared_speed = 1 / 144        -- 48-frame hover loop, one turn in 2.4 s
 defense_ward.starting_attack_speed = 1 / 30  -- 12-frame charge-up, 0.5 s before the shot
 defense_ward.attacking_speed = 1 / 16        -- 8-frame loop at peak charge
-defense_ward.ending_attack_speed = 1 / 30    -- 12 frames back to the hover pose
+defense_ward.ending_attack_speed = 1 / 12    -- 12 frames back to the hover pose; quick, since a
+                                             -- ward whose target died plays it before charging at the next one
+-- The laser turret has to swing its barrel onto the target (rotation_speed 0.01,
+-- up to 50 ticks for a half turn) before it may start its attack, and a target
+-- moving during the charge-up made it turn and restart. The shard looks the same
+-- from every side, so it faces its target instantly and keeps charging; it wakes
+-- up a little before enemies are in range so only the charge-up delays the shot.
+defense_ward.rotation_speed = 1
+defense_ward.allow_turning_when_starting_attack = true
+defense_ward.prepare_range = 12
 -- the laser turret's 64-direction barrel glow, base and 2x2 connector don't belong here
 defense_ward.energy_glow_animation = nil
 defense_ward.glow_light_intensity = 0
