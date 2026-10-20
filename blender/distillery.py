@@ -41,10 +41,13 @@ OUT = fblend.OUT
 S2 = math.sqrt(2)
 
 # --- extra materials ----------------------------------------------------------
-POTION, POTION_EM = emitter("distillate", (0.95, 0.22, 0.78), 1.2)
-BREW, BREW_EM = emitter("brew", (0.85, 0.18, 0.7), 1.0, base=(0.35, 0.04, 0.3))
-BUBBLE, _ = emitter("bubble", (1.0, 0.6, 0.95), 2.5)
-VAPOUR, VAPOUR_EM = emitter("vapour", (1.0, 0.45, 0.9), 1.0, base=(0.3, 0.1, 0.3), glass=True)
+# THE ALCHEMIST'S GLASSWORKS: amber spirit, emerald brew, glass vessels,
+# verdigris copper/brass on dark oak; gold only as thin trims, purple only in
+# the heat runes (the tie-in with the rest of the mod)
+POTION, POTION_EM = emitter("distillate", (1.0, 0.5, 0.08), 1.2, base=(0.6, 0.25, 0.02))
+BREW, BREW_EM = emitter("brew", (0.12, 0.8, 0.25), 1.0, base=(0.03, 0.25, 0.06))
+BUBBLE, _ = emitter("bubble", (0.6, 1.0, 0.55), 2.5)
+VAPOUR, VAPOUR_EM = emitter("vapour", (0.95, 0.75, 0.3), 0.2, base=(0.04, 0.06, 0.03), glass=True)
 SOOT = metal("soot", (0.06, 0.045, 0.04), (0.01, 0.008, 0.006), rough=(0.5, 0.8), dirt=0.0)
 IVORY, _, _ = node_mat("ivory")
 IVORY.node_tree.nodes["Principled BSDF"].inputs["Base Color"].default_value = (0.8, 0.72, 0.55, 1)
@@ -98,6 +101,137 @@ def hot_copper():
 
 
 HOT, HOT_MIX = hot_copper()
+
+
+def patina(m, amount=0.55, scale=6.0):
+    """Verdigris on an fblend metal: blue-green crust in crevices and blotches,
+    mixed in front of the base colour."""
+    nt = m.node_tree
+    bsdf = nt.nodes["Principled BSDF"]
+    src = bsdf.inputs["Base Color"].links[0].from_socket
+    L = nt.links.new
+    geo = nt.nodes.new("ShaderNodeNewGeometry")
+    nz = nt.nodes.new("ShaderNodeTexNoise")
+    nz.inputs["Scale"].default_value = scale
+    nz.inputs["Detail"].default_value = 8.0
+    L(geo.outputs["Position"], nz.inputs["Vector"])
+    ao = nt.nodes.new("ShaderNodeAmbientOcclusion")
+    ao.inputs["Distance"].default_value = 0.06
+    cav = nt.nodes.new("ShaderNodeMath")
+    cav.operation = "SUBTRACT"
+    cav.inputs[0].default_value = 1.0
+    L(ao.outputs["AO"], cav.inputs[1])
+    blot = nt.nodes.new("ShaderNodeMapRange")
+    blot.inputs["From Min"].default_value = 0.52
+    blot.inputs["From Max"].default_value = 0.66
+    L(nz.outputs["Fac"], blot.inputs["Value"])
+    mx = nt.nodes.new("ShaderNodeMath")
+    mx.operation = "MAXIMUM"
+    L(blot.outputs["Result"], mx.inputs[0])
+    cm = nt.nodes.new("ShaderNodeMath")
+    cm.operation = "MULTIPLY"
+    cm.inputs[1].default_value = 2.5
+    L(cav.outputs[0], cm.inputs[0])
+    L(cm.outputs[0], mx.inputs[1])
+    amt = nt.nodes.new("ShaderNodeMath")
+    amt.operation = "MULTIPLY"
+    amt.use_clamp = True
+    amt.inputs[1].default_value = amount
+    L(mx.outputs[0], amt.inputs[0])
+    mix = nt.nodes.new("ShaderNodeMix")
+    mix.data_type = "RGBA"
+    mix.inputs["B"].default_value = (0.16, 0.36, 0.28, 1)
+    L(amt.outputs[0], mix.inputs["Factor"])
+    L(src, mix.inputs["A"])
+    L(mix.outputs["Result"], bsdf.inputs["Base Color"])
+    # the crust is matte
+    rr = nt.nodes.new("ShaderNodeMapRange")
+    rr.inputs["To Min"].default_value = 0.3
+    rr.inputs["To Max"].default_value = 0.85
+    L(amt.outputs[0], rr.inputs["Value"])
+    L(rr.outputs["Result"], bsdf.inputs["Roughness"])
+    return m
+
+
+def oak():
+    """Dark oak boards: horizontal grain (wave texture distorted by noise),
+    board seams, grime."""
+    m, nt, bsdf = node_mat("oak")
+    L = nt.links.new
+    tc = nt.nodes.new("ShaderNodeTexCoord")
+    wv = nt.nodes.new("ShaderNodeTexWave")
+    wv.wave_type = "BANDS"
+    wv.bands_direction = "Z"
+    wv.inputs["Scale"].default_value = 9.0
+    wv.inputs["Distortion"].default_value = 6.0
+    wv.inputs["Detail"].default_value = 4.0
+    L(tc.outputs["Object"], wv.inputs["Vector"])
+    ramp = nt.nodes.new("ShaderNodeValToRGB")
+    ramp.color_ramp.elements[0].color = (0.035, 0.018, 0.008, 1)
+    ramp.color_ramp.elements[1].color = (0.13, 0.07, 0.032, 1)
+    L(wv.outputs["Fac"], ramp.inputs["Fac"])
+    # board seams every 0.12 tiles
+    seam = nt.nodes.new("ShaderNodeTexWave")
+    seam.wave_type = "BANDS"
+    seam.bands_direction = "Z"
+    seam.wave_profile = "SAW"
+    seam.inputs["Scale"].default_value = 4.0
+    L(tc.outputs["Object"], seam.inputs["Vector"])
+    sr = nt.nodes.new("ShaderNodeMapRange")
+    sr.inputs["From Min"].default_value = 0.0
+    sr.inputs["From Max"].default_value = 0.06
+    sr.inputs["To Min"].default_value = 0.35
+    sr.inputs["To Max"].default_value = 1.0
+    L(seam.outputs["Fac"], sr.inputs["Value"])
+    mul = nt.nodes.new("ShaderNodeMix")
+    mul.data_type = "RGBA"
+    mul.blend_type = "MULTIPLY"
+    mul.inputs["Factor"].default_value = 1.0
+    L(ramp.outputs["Color"], mul.inputs["A"])
+    L(sr.outputs["Result"], mul.inputs["B"])
+    ao = nt.nodes.new("ShaderNodeAmbientOcclusion")
+    ao.inputs["Distance"].default_value = 0.15
+    L(mul.outputs["Result"], ao.inputs["Color"])
+    L(ao.outputs["Color"], bsdf.inputs["Base Color"])
+    bsdf.inputs["Roughness"].default_value = 0.6
+    b = nt.nodes.new("ShaderNodeBump")
+    b.inputs["Strength"].default_value = 0.5
+    b.inputs["Distance"].default_value = 0.01
+    L(wv.outputs["Fac"], b.inputs["Height"])
+    bb = nt.nodes.new("ShaderNodeBump")
+    bb.inputs["Strength"].default_value = 0.8
+    bb.inputs["Distance"].default_value = 0.02
+    L(sr.outputs["Result"], bb.inputs["Height"])
+    L(b.outputs["Normal"], bb.inputs["Normal"])
+    L(bb.outputs["Normal"], bsdf.inputs["Normal"])
+    return m
+
+
+def tinted_glass(name, color, rough=0.03):
+    m, nt, bsdf = node_mat(name)
+    bsdf.inputs["Base Color"].default_value = (*color, 1)
+    bsdf.inputs["Transmission Weight"].default_value = 1.0
+    bsdf.inputs["Roughness"].default_value = rough
+    bsdf.inputs["IOR"].default_value = 1.47
+    bsdf.inputs["Coat Weight"].default_value = 0.4
+    return m
+
+
+GOLD_TRIM = GOLD                  # real gold: thin trims only
+OAK = oak()
+COPPER_V = patina(metal("copper_v", (0.8, 0.38, 0.2), (0.16, 0.05, 0.025), rough=(0.22, 0.5),
+                        hammered=True, bump=0.4, bump_scale=30.0))
+BRASS_V = patina(metal("brass_v", (0.42, 0.3, 0.14), (0.08, 0.05, 0.02), rough=(0.3, 0.55)), 0.6)
+BRONZE_V = patina(metal("bronze_v", (0.3, 0.2, 0.1), (0.05, 0.03, 0.02), rough=(0.4, 0.7)), 0.35)
+AMBER = gem("amber", (0.9, 0.42, 0.05))
+GLASS_T = tinted_glass("vessel_glass", (0.82, 0.95, 0.88))
+COOLANT = tinted_glass("coolant", (0.45, 0.75, 0.72), rough=0.08)
+# rebind the shared palette so every helper (frames, filigree, studs) and every
+# castings call below picks up the glassworks materials
+GOLD, PURPLE, COPPER, BRASS, BRONZE, RUBY = BRASS_V, OAK, COPPER_V, BRASS_V, BRONZE_V, AMBER
+fblend.GOLD, fblend.PURPLE, fblend.COPPER, fblend.BRASS, fblend.BRONZE, fblend.RUBY = \
+    GOLD, PURPLE, COPPER, BRASS, BRONZE, RUBY
+FLASK_GLASS = GLASS_T
 
 
 def heat(obj):
@@ -212,7 +346,7 @@ def lyre(cu=0.5, cv=0.5, w=1.0, h=1.0):
     return S
 
 
-FIL_R = 0.04         # raised scrollwork thickness
+FIL_R = 0.03         # raised scrollwork thickness
 
 prism("plinth", bot2d, 0, PLINTH_H, BRONZE)
 rail("plinth_rail", [(x, y, PLINTH_H) for x, y in bot2d], 0.06, closed=True)
@@ -237,10 +371,10 @@ vi = [bm.verts.new(tuple(v)) for v in I3]
 for i in range(6):
     j = (i + 1) % 6
     bm.faces.new((vo[i], vo[j], vi[j], vi[i]))
-rim_o = mesh_obj("rim_band", bm, GOLD, root, bevel=0.01)
+rim_o = mesh_obj("rim_band", bm, COPPER, root, bevel=0.01)
 rim_o.modifiers.new("solid", "SOLIDIFY").thickness = 0.04
 rail("rim_outer", [t + Vector((0, 0, 0.015)) for t in T3], 0.07, closed=True)
-rail("rim_inner", [v + Vector((0, 0, 0.015)) for v in I3], 0.045, closed=True)
+rail("rim_inner", [v + Vector((0, 0, 0.015)) for v in I3], 0.022, closed=True, mat=GOLD_TRIM)
 for i in range(6):
     a = T3[i].lerp(I3[i], 0.5)
     b = T3[(i + 1) % 6].lerp(I3[(i + 1) % 6], 0.5)
@@ -523,8 +657,8 @@ POT_Z = FB_TOP
 pot_prof = [(0.44, POT_Z), (0.52, POT_Z + 0.08), (0.56, POT_Z + 0.2), (0.545, POT_Z + 0.32),
             (0.48, POT_Z + 0.44), (0.36, POT_Z + 0.53), (0.22, POT_Z + 0.59), (0.17, POT_Z + 0.64),
             (0.16, POT_Z + 0.7)]
-COPPER_POT = metal("pot_copper", (0.82, 0.4, 0.22), (0.16, 0.05, 0.025), rough=(0.18, 0.42),
-                   dirt=0.25, bump=0.5, bump_scale=30.0, hammered=True)
+COPPER_POT = patina(metal("pot_copper", (0.82, 0.4, 0.22), (0.16, 0.05, 0.025), rough=(0.18, 0.42),
+                          dirt=0.25, bump=0.5, bump_scale=30.0, hammered=True), 0.45)
 lathe("pot", pot_prof, COPPER_POT, app, loc=POT, segs=64)
 for z, r in ((POT_Z + 0.02, 0.47), (POT_Z + 0.26, 0.56)):
     ring(f"pot_band{z:.2f}", r + 0.025, r - 0.02, z - 0.03, z + 0.03, GOLD, app, loc=POT, segs=64)
@@ -552,7 +686,8 @@ porthole = bpy.data.objects.new("porthole", None)
 link(porthole, app)
 porthole.location = PH_C
 porthole.rotation_euler = Vector((0, 0, 1)).rotation_difference(PH_N).to_euler()
-ring("porthole_bezel", 0.115, 0.08, -0.01, 0.035, GOLD, porthole, segs=40, bevel=0.01)
+ring("porthole_bezel", 0.115, 0.08, -0.01, 0.035, BRASS, porthole, segs=40, bevel=0.01)
+ring("porthole_trim", 0.12, 0.108, 0.03, 0.04, GOLD_TRIM, porthole, segs=40)
 for k in range(8):
     a = TAU * k / 8
     sphere(f"porthole_bolt{k}", 0.014, (0.098 * math.cos(a), 0.098 * math.sin(a), 0.036), BRASS,
@@ -584,29 +719,40 @@ for b, k in BUBBLES:
 
 # helmet, gauge and rectifying column
 HEL_Z = POT_Z + 0.7
-lathe("helmet", [(0.16, HEL_Z), (0.22, HEL_Z + 0.04), (0.27, HEL_Z + 0.12), (0.265, HEL_Z + 0.2),
-                 (0.2, HEL_Z + 0.27), (0.14, HEL_Z + 0.3)], COPPER_POT, app, loc=POT, segs=48)
-ring("helmet_band", 0.285, 0.25, HEL_Z + 0.1, HEL_Z + 0.15, GOLD, app, loc=POT)
-ring("neck_collar", 0.2, 0.14, HEL_Z - 0.03, HEL_Z + 0.03, GOLD, app, loc=POT)
+# glass alembic head: the vapour gathering above the boil shows through it
+helmet = lathe("helmet", [(0.16, HEL_Z), (0.22, HEL_Z + 0.04), (0.27, HEL_Z + 0.12), (0.265, HEL_Z + 0.2),
+                          (0.2, HEL_Z + 0.27), (0.14, HEL_Z + 0.3)], GLASS_T, app, loc=POT, segs=48)
+glow(helmet)
+helm_vap = sphere("helmet_vapour", 0.12, (POT.x, POT.y, HEL_Z + 0.14), VAPOUR, app, segs=24)
+helm_vap.scale = (1, 1, 0.75)
+glow(helm_vap)
+ring("helmet_band", 0.275, 0.262, HEL_Z + 0.115, HEL_Z + 0.135, GOLD_TRIM, app, loc=POT)
+ring("neck_collar", 0.19, 0.14, HEL_Z - 0.025, HEL_Z + 0.025, COPPER, app, loc=POT)
+ring("neck_trim", 0.195, 0.18, HEL_Z + 0.02, HEL_Z + 0.032, GOLD_TRIM, app, loc=POT)
 COL_Z0, COL_Z1, COL_R = HEL_Z + 0.3, HEL_Z + 0.95, 0.13
-cyl("column", COL_R, COL_Z1 - COL_Z0, (POT.x, POT.y, (COL_Z0 + COL_Z1) / 2), BRASS, app, verts=40)
-for z in (COL_Z0 + 0.03, COL_Z0 + 0.33, COL_Z1 - 0.03):
-    ring(f"column_ring{z:.2f}", COL_R + 0.03, COL_R - 0.01, z - 0.03, z + 0.03, GOLD, app,
+# glass rectifying column: copper bubble-cap trays and the rising vapour
+# are visible inside
+col = cyl("column", COL_R, COL_Z1 - COL_Z0, (POT.x, POT.y, (COL_Z0 + COL_Z1) / 2), GLASS_T, app, verts=40)
+glow(col)
+col_vap = cyl("column_vapour", 0.045, COL_Z1 - COL_Z0 - 0.04, (POT.x, POT.y, (COL_Z0 + COL_Z1) / 2), VAPOUR,
+              app, verts=24)
+glow(col_vap)
+for k in range(4):
+    z = COL_Z0 + 0.1 + k * 0.15
+    cyl(f"column_tray{k}", COL_R - 0.02, 0.016, (POT.x, POT.y, z), COPPER, app, verts=32)
+    cyl(f"column_cap{k}", 0.035, 0.03, (POT.x + 0.05 * (-1) ** k, POT.y, z + 0.02), BRASS, app, verts=16)
+for k in range(4):     # brass tie rods holding the glass between the flanges
+    a = TAU * (k + 0.5) / 4
+    cyl(f"column_rod{k}", 0.009, COL_Z1 - COL_Z0, (POT.x + (COL_R + 0.02) * math.cos(a),
+                                                    POT.y + (COL_R + 0.02) * math.sin(a),
+                                                    (COL_Z0 + COL_Z1) / 2), BRASS, app, verts=8)
+for z in (COL_Z0 + 0.015, COL_Z1 - 0.015):
+    ring(f"column_flange{z:.2f}", COL_R + 0.035, COL_R - 0.01, z - 0.02, z + 0.02, COPPER, app,
          loc=POT, segs=40)
 VAP = []
-for k, z in enumerate((COL_Z0 + 0.18, COL_Z0 + 0.48)):
-    a = math.radians(-80)
-    c = POT + Vector((COL_R * math.cos(a), COL_R * math.sin(a), z))
-    holder = bpy.data.objects.new(f"col_glass{k}", None)
-    link(holder, app)
-    holder.location = c
-    holder.rotation_euler = Vector((0, 0, 1)).rotation_difference(
-        Vector((math.cos(a), math.sin(a), 0))).to_euler()
-    ring(f"col_glass_bezel{k}", 0.065, 0.045, -0.005, 0.025, GOLD, holder, segs=32)
-    v = cyl(f"col_glass_vapour{k}", 0.047, 0.012, (0, 0, 0.004), VAPOUR, holder, verts=24)
-    glow(v)
 lathe("column_dome", [(COL_R + 0.03, COL_Z1), (COL_R + 0.035, COL_Z1 + 0.03), (0.12, COL_Z1 + 0.1),
-                      (0.06, COL_Z1 + 0.15), (0.0, COL_Z1 + 0.16)], GOLD, app, loc=POT, segs=40)
+                      (0.06, COL_Z1 + 0.15), (0.0, COL_Z1 + 0.16)], COPPER, app, loc=POT, segs=40)
+ring("column_dome_trim", COL_R + 0.04, COL_R + 0.02, COL_Z1 + 0.025, COL_Z1 + 0.04, GOLD_TRIM, app, loc=POT)
 sphere("column_finial", 0.04, (POT.x, POT.y, COL_Z1 + 0.19), RUBY, app)
 # safety valve: weighted lever on the helmet, pops a little with every boil surge
 SV = POT + Vector((0.16, 0.12, HEL_Z + 0.28))
@@ -682,25 +828,25 @@ for k in range(4):
 sp_stand = Panel(tuple(TUB + Vector((-0.13, -0.3, Z_D + 0.06))), tuple(TUB + Vector((0.13, -0.3, Z_D + 0.06))),
                  tuple(TUB + Vector((0.13, -0.3, TUB_Z0 - 0.1))), tuple(TUB + Vector((-0.13, -0.3, TUB_Z0 - 0.1))))
 sp_stand.filigree("tub_stand_fil", lyre(0.5, 0.5, 1.0, 1.0), radius=0.022, lift=0.0, parent=app)
-# staved bronze tub with heavy gold hoops
-lathe("tub", [(TUB_R - 0.02, TUB_Z0), (TUB_R, TUB_Z0 + 0.02), (TUB_R + 0.02, (TUB_Z0 + TUB_Z1) / 2),
-              (TUB_R, TUB_Z1), (TUB_R - 0.04, TUB_Z1), (TUB_R - 0.04, TUB_Z1 - 0.1),
-              (0.0, TUB_Z1 - 0.1)], BRONZE, app, loc=TUB, segs=64)
-for k in range(24):
-    a = TAU * k / 24
-    box(f"tub_stave{k}", (0.012, 0.03, TUB_Z1 - TUB_Z0 - 0.04),
-        (TUB.x + (TUB_R + 0.013) * math.cos(a), TUB.y + (TUB_R + 0.013) * math.sin(a),
-         (TUB_Z0 + TUB_Z1) / 2), BRASS, app, rot=(0, 0, a), bevel=0.004)
-for k, z in enumerate((TUB_Z0 + 0.07, (TUB_Z0 + TUB_Z1) / 2, TUB_Z1 - 0.04)):
-    r = TUB_R + (0.02 if k == 1 else 0.005)
-    ring(f"tub_hoop{k}", r + 0.04, r - 0.01, z - 0.035, z + 0.035, GOLD, app, loc=TUB, segs=64)
-    for m in range(10):
-        a = TAU * (m + 0.5 * k) / 10
-        sphere(f"tub_hoop{k}_gem{m}", 0.022, (TUB.x + (r + 0.04) * math.cos(a),
-                                               TUB.y + (r + 0.04) * math.sin(a), z),
-               RUBY if m % 2 else GOLD, app)
+# glass worm tub: coil and coolant visible, copper base and rim, brass straps
 WATER_Z = TUB_Z1 - 0.07
-water = cyl("tub_water", TUB_R - 0.04, 0.01, (TUB.x, TUB.y, WATER_Z), WATER, app, verts=48)
+cyl("tub_base", TUB_R + 0.03, 0.06, (TUB.x, TUB.y, TUB_Z0 + 0.03), COPPER, app, verts=64)
+tub_glass = ring("tub_glass", TUB_R, TUB_R - 0.018, TUB_Z0 + 0.05, TUB_Z1 - 0.02, GLASS_T, app, loc=TUB,
+                 segs=64, bevel=0.0)
+cyl("tub_coolant", TUB_R - 0.02, WATER_Z - TUB_Z0 - 0.06, (TUB.x, TUB.y, (WATER_Z + TUB_Z0 + 0.06) / 2), COOLANT,
+    app, verts=64)
+for k, z in enumerate((TUB_Z0 + 0.06, TUB_Z1 - 0.02)):
+    ring(f"tub_hoop{k}", TUB_R + 0.035, TUB_R - 0.02, z - 0.03, z + 0.03, COPPER, app, loc=TUB, segs=64)
+ring("tub_trim", TUB_R + 0.04, TUB_R + 0.025, TUB_Z1 + 0.01, TUB_Z1 + 0.025, GOLD_TRIM, app, loc=TUB, segs=64)
+for k in range(6):
+    a = TAU * (k + 0.5) / 6
+    box(f"tub_strap{k}", (0.03, 0.022, TUB_Z1 - TUB_Z0), (TUB.x + (TUB_R + 0.012) * math.cos(a),
+                                                          TUB.y + (TUB_R + 0.012) * math.sin(a),
+                                                          (TUB_Z0 + TUB_Z1) / 2), BRASS, app,
+        rot=(0, 0, a), bevel=0.005)
+    for z in (TUB_Z0 + 0.06, TUB_Z1 - 0.02):
+        sphere(f"tub_rivet{k}{z:.2f}", 0.018, (TUB.x + (TUB_R + 0.04) * math.cos(a),
+                                               TUB.y + (TUB_R + 0.04) * math.sin(a), z), BRASS, app, segs=8)
 # coil: comes in over the rim, top turn arches out of the water, then spirals
 # down through the coolant and leaves the tub low at the front
 COIL_R = 0.29
@@ -729,15 +875,15 @@ for k, t in enumerate((0.12, 0.38, 0.62)):
 
 # spirit safe: locked gold-framed glass box where the distillate is checked
 SAFE = Vector((0.6, -0.1, 1.2))
-SAFE_SZ = Vector((0.26, 0.2, 0.18))
+SAFE_SZ = Vector((0.32, 0.24, 0.22))
 outlet = [(TUB.x - 0.2, TUB.y - TUB_R + 0.05, TUB_Z0 + 0.12), (TUB.x - 0.2, TUB.y - TUB_R - 0.06, TUB_Z0 + 0.11),
           (SAFE.x, SAFE.y + SAFE_SZ.y / 2 + 0.1, SAFE.z + 0.06), (SAFE.x, SAFE.y + SAFE_SZ.y / 2, SAFE.z + 0.04)]
 curve_obj("tub_outlet", outlet, COPPER, 0.032, app, res=3)
 cyl("safe_pedestal", 0.06, SAFE.z - SAFE_SZ.z / 2 - Z_D, (SAFE.x, SAFE.y, (SAFE.z - SAFE_SZ.z / 2 + Z_D) / 2),
     BRONZE, app, verts=24)
 cyl("safe_foot", 0.1, 0.05, (SAFE.x, SAFE.y, Z_D + 0.025), GOLD, app, verts=24)
-safe_liq = box("safe_liquid", (SAFE_SZ.x - 0.04, SAFE_SZ.y - 0.04, 0.05),
-               (SAFE.x, SAFE.y, SAFE.z - SAFE_SZ.z / 2 + 0.04), POTION, app, bevel=0.01)
+safe_liq = box("safe_liquid", (SAFE_SZ.x - 0.04, SAFE_SZ.y - 0.04, 0.09),
+               (SAFE.x, SAFE.y, SAFE.z - SAFE_SZ.z / 2 + 0.06), POTION, app, bevel=0.01)
 glow(safe_liq)
 safe_glass = box("safe_glass", tuple(SAFE_SZ - Vector((0.01, 0.01, 0.01))), tuple(SAFE), FLASK_GLASS, app,
                  bevel=0.004)
@@ -869,7 +1015,7 @@ for k in range(4):
                                   (0.025, BOT_H + 0.05), (0.025, BOT_H + 0.1), (0.0, BOT_H + 0.1)],
               FLASK_GLASS, fl, segs=24)
     n_ = g
-    cyl(f"flask{k}_lip", 0.033, 0.016, (0, 0, BOT_H + 0.095), GOLD, fl, verts=20)
+    cyl(f"flask{k}_lip", 0.033, 0.016, (0, 0, BOT_H + 0.095), GOLD_TRIM, fl, verts=20)
     ring(f"flask{k}_band", FL_R + 0.008, FL_R - 0.004, BOT_H * 0.55, BOT_H * 0.55 + 0.02, GOLD, fl, segs=24)
     glow(g)
     glow(n_)
@@ -1276,7 +1422,7 @@ def pose_magic(f):
     for b, _ in BUBBLES:
         b.hide_render = False
     BREW_EM.default_value = 0.8 + 0.6 * surge
-    VAPOUR_EM.default_value = 0.6 + 1.6 * surge
+    VAPOUR_EM.default_value = 0.06 + 0.18 * surge
     POTION_EM.default_value = 1.2
     RUNE_EM.default_value = 0.2 + 0.5 * surge
     # needle sits in the working band, kicked by each surge
@@ -1300,17 +1446,20 @@ def pose(f):
 FRAME_W, FRAME_H, FRAME_CY = 4.5, 4.125, 0.66
 SHADOW_W, SHADOW_SHIFT_X = 5.625, 0.5625    # shadow frame: wider, shifted east
 rig = setup_scene(frame_w=FRAME_W, frame_h=FRAME_H, frame_cy=FRAME_CY)
+# light passes through several glass walls (tub, coolant, column trays)
+bpy.context.scene.cycles.max_bounces = 12
+bpy.context.scene.cycles.transmission_bounces = 12
 scene = bpy.context.scene
 cam = scene.camera
 pt_d = bpy.data.lights.new("porthole_light", "POINT")
-pt_d.color = (1.0, 0.35, 0.85)
+pt_d.color = (0.35, 1.0, 0.45)
 pt_d.shadow_soft_size = 0.05
 pt_d.energy = 0.6
 o = bpy.data.objects.new("porthole_light", pt_d)
 link(o, app)
 o.location = PH_C + PH_N * 0.12
 fl_d = bpy.data.lights.new("flask_light", "POINT")
-fl_d.color = (1.0, 0.3, 0.85)
+fl_d.color = (1.0, 0.55, 0.15)
 fl_d.shadow_soft_size = 0.05
 fl_d.energy = 0.8
 o = bpy.data.objects.new("flask_light", fl_d)
