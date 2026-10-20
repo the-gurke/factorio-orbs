@@ -1459,32 +1459,58 @@ sentry_ward.max_distance_of_sector_revealed = 0 -- No scanning
 sentry_ward.max_distance_of_nearby_sector_revealed = 2 -- Reveal nearby chunks
 sentry_ward.energy_per_sector = "1J"
 sentry_ward.energy_per_nearby_scan = "1J"
-sentry_ward.rotation_speed = 0 -- Don't rotate
+sentry_ward.rotation_speed = 0.004 -- one sweep of the eye per 250 ticks (~4.2 s)
 sentry_ward.radar_range = 2
 
 -- Make it 1x1 size with small bounding boxes
 sentry_ward.collision_box = {{-0.25, -0.25}, {0.25, 0.25}}
 sentry_ward.selection_box = {{-0.35, -0.35}, {0.35, 0.35}}
 
--- Use custom sentry ward graphics
+-- Rendered from blender/sentry_ward.py: each of the 64 directions is one step
+-- of the eye's sweep (a pinion driven by the heart crystal turns its ring gear).
 sentry_ward.pictures = {
   layers = {
     {
-      filename = "__orbs__/graphics/sentry-ward-entity.png",
+      filename = "__orbs__/graphics/sentry-ward-animation.png",
       priority = "high",
-      width = 1024,
-      height = 1024,
-      direction_count = 1,
-      frame_count = 1,
-      line_length = 1,
-      scale = 0.05,
-      shift = {0, -0.5}
+      width = 80,
+      height = 128,
+      direction_count = 64,
+      line_length = 8,
+      apply_projection = false,
+      scale = 0.5,
+      shift = {0, -0.4}
+    },
+    {
+      -- the iris, heart crystal, column runes and the gaze sweeping the ground at night
+      filename = "__orbs__/graphics/sentry-ward-glow.png",
+      priority = "high",
+      width = 224,
+      height = 160,
+      direction_count = 64,
+      line_length = 8,
+      apply_projection = false,
+      draw_as_light = true,
+      scale = 0.5,
+      shift = {0, 0}
+    },
+    {
+      filename = "__orbs__/graphics/sentry-ward-shadow-animation.png",
+      priority = "high",
+      width = 211,
+      height = 83,
+      direction_count = 64,
+      line_length = 8,
+      apply_projection = false,
+      draw_as_shadow = true,
+      scale = 0.5,
+      shift = {1.1, 0.15}
     }
   }
 }
-
--- Remove shadow
 sentry_ward.integration_patch = nil
+sentry_ward.frozen_patch = nil      -- space-age gives the radar a 3x3 frozen patch
+sentry_ward.water_reflection = nil  -- the inherited reflection is the 3x3 radar's
 
 data:extend({
   sentry_ward,
