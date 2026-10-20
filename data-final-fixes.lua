@@ -949,8 +949,8 @@ end
 
 -- Override combat item group icon
 if data.raw["item-group"]["combat"] then
-  data.raw["item-group"]["combat"].icon = "__orbs__/graphics/defense-ward.png"
-  data.raw["item-group"]["combat"].icon_size = 1024
+  data.raw["item-group"]["combat"].icon = "__orbs__/graphics/technology/defense-ward.png"
+  data.raw["item-group"]["combat"].icon_size = 256
 end
 
 -- Disable all vanilla menu simulations and use our custom ones

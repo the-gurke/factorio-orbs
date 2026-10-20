@@ -207,7 +207,10 @@ in this repo; system python's openai package is broken):
 Production-quality entities are instead modelled procedurally in Blender
 (`blender/<entity>.py`, run with `blender -b --factory-startup -P ... --`,
 `--preview` renders one frame). `blender/stitch.py` turns the renders into the
-sheet + shadow in `graphics/`. Factorio's projection is a plain orthographic
+sheet + shadow in `graphics/`. Item icons come from the same model: `--icon
+--preview --frame N` renders a tight perspective shot, and `blender/icon.py`
+turns it into `graphics/icons/<name>.png` (64 px + mipmaps, `icon_size = 64`)
+and `graphics/technology/<name>.png` (`icon_size = 256`). Factorio's projection is a plain orthographic
 camera looking down at 45 degrees (no vertical stretch); a 3x3 machine should
 fill its 3x3 box like vanilla assembling-machine-2.
 

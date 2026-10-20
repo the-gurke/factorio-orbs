@@ -45,6 +45,7 @@ TAU = 2 * math.pi
 args = None
 OUT = None
 N = 64
+RIG = None
 
 
 def parse_args(name, frames=64, samples=192):
@@ -61,6 +62,11 @@ def parse_args(name, frames=64, samples=192):
                     help="render resolution; stitch.py downsamples to 64")
     ap.add_argument("--no-glow", action="store_true", help="skip the glow pass")
     ap.add_argument("--save-blend", action="store_true")
+    ap.add_argument("--icon", action="store_true",
+                    help="render the item icon (icon.png) instead of the sprite passes; "
+                         "pick the pose with --frame, then run blender/icon.py")
+    ap.add_argument("--icon-elevation", type=float, default=None,
+                    help="icon camera angle above the horizon (default ICON_ELEVATION)")
     args = ap.parse_args(argv)
     OUT = Path(args.out).resolve()
     OUT.mkdir(parents=True, exist_ok=True)
@@ -678,13 +684,105 @@ def setup_scene(frame_w, frame_h, frame_cy):
     rig.ground = mesh_obj("ground", bm, BRONZE)
     rig.ground.is_shadow_catcher = True
     rig.ground.hide_render = True
+    global RIG
+    RIG = rig
     return rig
 
 
 def render(path):
-    """Render one still. Holds a lock so parallel jobs share the GPU in turn."""
+    """Render one still. Holds a lock so parallel jobs share the GPU in turn.
+
+    With --icon the first render (the main pass of the first --frame, posed
+    and with the script's own visibility) becomes the icon render instead."""
+    if args.icon:
+        render_icon()
+        sys.exit(0)
     scene = bpy.context.scene
     scene.render.filepath = str(path)
+    lock = OUT.parent / ".gpu.lock"
+    with open(lock, "w") as fh:
+        fcntl.flock(fh, fcntl.LOCK_EX)
+        try:
+            bpy.ops.render.render(write_still=True)
+        finally:
+            fcntl.flock(fh, fcntl.LOCK_UN)
+
+
+# Icon camera: vanilla building icons are separate, tightly framed renders
+# from about the sprite's angle with a little perspective.
+ICON_ELEVATION = 50      # degrees above the horizon
+ICON_LENS = 70           # mm on a 36 mm sensor
+ICON_PX = 512            # blender/icon.py downsamples to 64/32/16/8 and 256
+
+
+def _icon_points():
+    """World-space bounding-box corners of everything the camera would see,
+    skipping flat ground decals (light pools, rugs) that would loosen the crop."""
+    scene = bpy.context.scene
+    pts = []
+    for o in scene.objects:
+        if o.type not in ("MESH", "CURVE", "SURFACE", "META", "FONT"):
+            continue
+        if o.hide_render or not o.visible_camera or o.is_holdout or o.is_shadow_catcher:
+            continue
+        if RIG is not None and o is RIG.ground:
+            continue
+        corners = [o.matrix_world @ Vector(c) for c in o.bound_box]
+        zs = [c.z for c in corners]
+        if max(zs) - min(zs) < 0.02 and min(zs) < 0.03:
+            continue
+        pts += corners
+    return pts
+
+
+def render_icon():
+    """Frame the posed model tightly with a perspective camera and render
+    OUT/icon.png on a transparent background."""
+    scene = bpy.context.scene
+    if RIG is not None:
+        RIG.ground.hide_render = True
+    pts = _icon_points()
+    centre = sum(pts, Vector()) / len(pts)
+    el = math.radians(args.icon_elevation or ICON_ELEVATION)
+    look = Vector((0, math.cos(el), -math.sin(el)))
+    rot = look.to_track_quat("-Z", "Y")
+    cam_data = bpy.data.cameras.new("icon-cam")
+    cam_data.type = "PERSP"
+    cam_data.lens = ICON_LENS
+    cam_data.sensor_width = 36
+    cam_data.clip_end = 500
+    cam = bpy.data.objects.new("icon-cam", cam_data)
+    link(cam)
+    cam.rotation_euler = rot.to_euler()
+    half = math.atan(18 / ICON_LENS)
+    inv = rot.inverted()
+
+    def extent(dist):
+        """Projected half-extents (as tangents) of all corners and their centre."""
+        cam_pos = centre - look * dist
+        xs, ys = [], []
+        for p in pts:
+            q = inv @ (p - cam_pos)
+            xs.append(q.x / -q.z)
+            ys.append(q.y / -q.z)
+        return min(xs), max(xs), min(ys), max(ys)
+
+    lo, hi = 1.0, 200.0           # fill 94% of the frame on the tighter axis
+    for _ in range(50):
+        mid = (lo + hi) / 2
+        x0, x1, y0, y1 = extent(mid)
+        if max(x1 - x0, y1 - y0) / 2 > math.tan(half) * 0.94:
+            lo = mid
+        else:
+            hi = mid
+    cam.location = centre - look * hi
+    x0, x1, y0, y1 = extent(hi)
+    # lens shift recentres the projected box (shift is in units of the frame width)
+    cam_data.shift_x = (x0 + x1) / 2 / (2 * math.tan(half))
+    cam_data.shift_y = (y0 + y1) / 2 / (2 * math.tan(half))
+    scene.camera = cam
+    scene.render.resolution_x = scene.render.resolution_y = ICON_PX
+    scene.render.filepath = str(OUT / "icon.png")
     lock = OUT.parent / ".gpu.lock"
     with open(lock, "w") as fh:
         fcntl.flock(fh, fcntl.LOCK_EX)

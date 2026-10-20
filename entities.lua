@@ -40,7 +40,7 @@ conjuration_machine.module_specification = {
 }
 conjuration_machine.allowed_module_categories = {"orb-speed", "orb-pollution", "orb-productivity"} -- Allow haste orbs and cleansing orbs
 conjuration_machine.module_slots = 3
-conjuration_machine.icon = "__orbs__/graphics/conjuration-machine.png"
+conjuration_machine.icon = "__orbs__/graphics/icons/conjuration-machine.png"
 conjuration_machine.icon_size = 64
 
 -- Set custom graphics for the conjuration machine entity
@@ -148,8 +148,8 @@ local soul_collector = util.table.deepcopy(data.raw["container"]["iron-chest"])
 soul_collector.name = "soul-collector"
 soul_collector.minable = {mining_time = 1, result = "soul-collector"}
 soul_collector.inventory_size = 1 -- Only one stack slot
-soul_collector.icon = "__orbs__/graphics/soul-collector.png"
-soul_collector.icon_size = 1024
+soul_collector.icon = "__orbs__/graphics/icons/soul-collector.png"
+soul_collector.icon_size = 64
 -- Rendered from blender/soul_collector.py; containers only take a static
 -- sprite. The frame extends east to hold the funnel's shadow, hence shift x.
 soul_collector.picture = {
@@ -234,8 +234,8 @@ distillery.crafting_categories = {"distilling"}
 distillery.crafting_speed = 1
 distillery.energy_usage = "50kW"
 distillery.heating_energy = "50kW"  -- Energy needed to maintain working temperature
-distillery.icon = "__orbs__/graphics/distillery.png"
-distillery.icon_size = 1024
+distillery.icon = "__orbs__/graphics/icons/distillery.png"
+distillery.icon_size = 64
 
 -- Rendered from blender/distillery.py: a heat-driven alembic. Heat from the
 -- four connections boils the copper pot; vapour runs through the swan neck
@@ -386,7 +386,7 @@ data:extend({
   {
     type = "item",
     name = "conjuration-machine",
-    icon = "__orbs__/graphics/conjuration-machine.png",
+    icon = "__orbs__/graphics/icons/conjuration-machine.png",
     icon_size = 64,
     subgroup = "production-machine",
     order = "b[assembling-machine-2]",
@@ -396,8 +396,8 @@ data:extend({
   {
     type = "item",
     name = "soul-collector",
-    icon = "__orbs__/graphics/soul-collector.png",
-    icon_size = 1024,
+    icon = "__orbs__/graphics/icons/soul-collector.png",
+    icon_size = 64,
     subgroup = "orbs-machines",
     order = "c[soul-collector]",
     place_result = "soul-collector",
@@ -406,8 +406,8 @@ data:extend({
   {
     type = "item",
     name = "distillery",
-    icon = "__orbs__/graphics/distillery.png",
-    icon_size = 1024,
+    icon = "__orbs__/graphics/icons/distillery.png",
+    icon_size = 64,
     subgroup = "orbs-machines",
     order = "e[distillery]",
     place_result = "distillery",
@@ -432,7 +432,7 @@ data:extend({
     name = "craft-conjuration-machine",
     categories = {"crafting"},
     energy_required = 5,
-    icon = "__orbs__/graphics/conjuration-machine.png",
+    icon = "__orbs__/graphics/icons/conjuration-machine.png",
     icon_size = 64,
     ingredients = {
       {type = "item", name = "assembling-machine-1", amount = 1},
@@ -451,8 +451,8 @@ data:extend({
     name = "craft-soul-collector",
     categories = {"hand-crafting-and-orbs"},
     energy_required = 5,
-    icon = "__orbs__/graphics/soul-collector.png",
-    icon_size = 1024,
+    icon = "__orbs__/graphics/icons/soul-collector.png",
+    icon_size = 64,
     ingredients = {
       {type = "item", name = "iron-chest", amount = 1},
       {type = "item", name = "magic-orb", amount = 1},
@@ -469,8 +469,8 @@ data:extend({
     name = "distillery",
     categories = {"crafting"},
     energy_required = 5,
-    icon = "__orbs__/graphics/distillery.png",
-    icon_size = 1024,
+    icon = "__orbs__/graphics/icons/distillery.png",
+    icon_size = 64,
     ingredients = {
       {type = "item", name = "copper-plate", amount = 2},
       {type = "item", name = "glass", amount = 4}
@@ -691,8 +691,8 @@ defense_ward_laser.action = {
 local defense_ward = util.table.deepcopy(data.raw["electric-turret"]["laser-turret"])
 
 defense_ward.name = "defense-ward"
-defense_ward.icon = "__orbs__/graphics/defense-ward.png"
-defense_ward.icon_size = 1024
+defense_ward.icon = "__orbs__/graphics/icons/defense-ward.png"
+defense_ward.icon_size = 64
 defense_ward.minable = {mining_time = 0.2, result = "defense-ward"}
 defense_ward.max_health = 50
 defense_ward.energy_source = {type = "void"}
@@ -791,8 +791,8 @@ defense_ward.attack_parameters.ammo_type.action.action_delivery.source_offset = 
 local defense_ward_item = {
   type = "item",
   name = "defense-ward",
-  icon = "__orbs__/graphics/defense-ward.png",
-  icon_size = 1024,
+  icon = "__orbs__/graphics/icons/defense-ward.png",
+  icon_size = 64,
   subgroup = "defensive-structure",
   order = "i[defense-ward]",
   place_result = "defense-ward",
@@ -805,8 +805,8 @@ local defense_ward_recipe = {
   name = "defense-ward",
   categories = {"hand-crafting-and-orbs"},
   energy_required = 3,
-  icon = "__orbs__/graphics/defense-ward.png",
-  icon_size = 1024,
+  icon = "__orbs__/graphics/icons/defense-ward.png",
+  icon_size = 64,
   ingredients = {
     {type = "item", name = "active-magic-shard", amount = 1},
     {type = "item", name = "wood", amount = 2},
@@ -1123,6 +1123,8 @@ data:extend({
 })
 
 rune_transformer.name = "rune-transformer"
+rune_transformer.icon = "__orbs__/graphics/icons/rune-transformer.png"
+rune_transformer.icon_size = 64
 rune_transformer.minable = {mining_time = 1, result = "rune-transformer"}
 rune_transformer.crafting_categories = {"rune-transformation"}
 rune_transformer.crafting_speed = 1
@@ -1203,7 +1205,7 @@ rune_transformer.water_reflection = nil  -- the inherited one shows the steel fu
 local rune_transformer_item = {
   type = "item",
   name = "rune-transformer",
-  icon = "__base__/graphics/icons/steel-furnace.png",
+  icon = "__orbs__/graphics/icons/rune-transformer.png",
   icon_size = 64,
   subgroup = "orbs-runes",
   order = "e[rune-transformer]",
@@ -1217,7 +1219,7 @@ local rune_transformer_recipe = {
   name = "rune-transformer",
   categories = {"orbs"},
   energy_required = 5,
-  icon = "__base__/graphics/icons/steel-furnace.png",
+  icon = "__orbs__/graphics/icons/rune-transformer.png",
   icon_size = 64,
   ingredients = {
     {type = "item", name = "stone-brick", amount = 10},
@@ -1289,8 +1291,8 @@ inactive_portal.collision_box = {{-3.4, -3.4}, {3.4, 3.4}}
 inactive_portal.selection_box = {{-3.5, -3.5}, {3.5, 3.5}}
 inactive_portal.collision_mask = {layers = {item = true, meltable = true, object = true, water_tile = true,
                                             is_object = true, is_lower_object = true}}
-inactive_portal.icon = "__orbs__/graphics/portal.png"
-inactive_portal.icon_size = 1024
+inactive_portal.icon = "__orbs__/graphics/icons/portal.png"
+inactive_portal.icon_size = 64
 
 -- Portal graphics, rendered by blender/portal.py (64 px/tile at scale 0.5).
 -- Inactive: the gate dials home - steam cylinders drive the rune ring a glyph
@@ -1370,7 +1372,7 @@ local active_portal = util.table.deepcopy(inactive_portal)
 active_portal.name = "active-portal"
 active_portal.minable = {mining_time = 2, result = "inactive-portal"} -- Always drops inactive portal
 active_portal.crafting_categories = {"active-portal"}
-active_portal.icon = "__orbs__/graphics/portal.png"
+active_portal.icon = "__orbs__/graphics/icons/portal.png"
 -- Module slots are inherited from inactive_portal via deepcopy
 
 active_portal.graphics_set = portal_graphics_set("active", 48)
@@ -1391,6 +1393,8 @@ data:extend({
 local rune_altar = util.table.deepcopy(data.raw["container"]["iron-chest"])
 
 rune_altar.name = "rune-altar"
+rune_altar.icon = "__orbs__/graphics/icons/rune-altar.png"
+rune_altar.icon_size = 64
 rune_altar.minable = {mining_time = 1, result = "rune-altar"}
 rune_altar.inventory_size = 10
 -- Rendered from blender/rune_altar.py; containers only take a static sprite
@@ -1450,8 +1454,8 @@ rune_altar.selection_box = {
 local rune_altar_item = {
   type = "item",
   name = "rune-altar",
-  icon = "__orbs__/graphics/rune-altar.png",
-  icon_size = 1024,
+  icon = "__orbs__/graphics/icons/rune-altar.png",
+  icon_size = 64,
   subgroup = "orbs-runes",
   order = "f[rune-altar]",
   place_result = "rune-altar",
@@ -1464,8 +1468,8 @@ local rune_altar_recipe = {
   name = "rune-altar",
   categories = {"hand-crafting-and-orbs"},
   energy_required = 3,
-  icon = "__orbs__/graphics/rune-altar.png",
-  icon_size = 1024,
+  icon = "__orbs__/graphics/icons/rune-altar.png",
+  icon_size = 64,
   ingredients = {
     {type = "item", name = "stone-brick", amount = 20},
     {type = "item", name = "magic-orb", amount = 1},
@@ -1604,6 +1608,8 @@ data:extend({gold_plate_tile})
 local sentry_ward = util.table.deepcopy(data.raw["radar"]["radar"])
 
 sentry_ward.name = "sentry-ward"
+sentry_ward.icon = "__orbs__/graphics/icons/sentry-ward.png"
+sentry_ward.icon_size = 64
 sentry_ward.minable = {mining_time = 0.5, result = "sentry-ward"}
 sentry_ward.max_health = 50
 sentry_ward.corpse = "small-electric-pole-remnants"
@@ -1671,8 +1677,8 @@ data:extend({
   {
     type = "item",
     name = "sentry-ward",
-    icon = "__orbs__/graphics/sentry-ward.png",
-    icon_size = 1024,
+    icon = "__orbs__/graphics/icons/sentry-ward.png",
+    icon_size = 64,
     subgroup = "defensive-structure",
     order = "d[radar]-b[sentry-ward]",
     place_result = "sentry-ward",
@@ -1687,8 +1693,8 @@ data:extend({
     name = "craft-sentry-ward",
     categories = {"hand-crafting-and-orbs"},
     energy_required = 2,
-    icon = "__orbs__/graphics/sentry-ward.png",
-    icon_size = 1024,
+    icon = "__orbs__/graphics/icons/sentry-ward.png",
+    icon_size = 64,
     ingredients = {
       {type = "item", name = "magic-orb", amount = 1},
       {type = "item", name = "wood", amount = 1}
@@ -1704,6 +1710,8 @@ data:extend({
 local resonance_spire = util.table.deepcopy(data.raw["beacon"]["beacon"])
 
 resonance_spire.name = "resonance-spire"
+resonance_spire.icon = "__orbs__/graphics/icons/resonance-spire.png"
+resonance_spire.icon_size = 64
 resonance_spire.minable = {mining_time = 2, result = "resonance-spire"}
 resonance_spire.energy_source = {type = "void"} -- No power required
 resonance_spire.energy_usage = "1W"
@@ -1830,8 +1838,8 @@ data:extend({
   {
     type = "item",
     name = "resonance-spire",
-    icon = "__orbs__/graphics/resonance-spire.png",
-    icon_size = 1024,
+    icon = "__orbs__/graphics/icons/resonance-spire.png",
+    icon_size = 64,
     subgroup = "orbs-machines",
     order = "h[resonance-spire]",
     place_result = "resonance-spire",
@@ -1846,8 +1854,8 @@ data:extend({
     name = "craft-resonance-spire",
     categories = {"hand-crafting-and-orbs"},
     energy_required = 15,
-    icon = "__orbs__/graphics/resonance-spire.png",
-    icon_size = 1024,
+    icon = "__orbs__/graphics/icons/resonance-spire.png",
+    icon_size = 64,
     ingredients = {
       {type = "item", name = "magic-orb", amount = 1},
       {type = "item", name = "gold-plate", amount = 10},

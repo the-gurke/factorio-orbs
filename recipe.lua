@@ -1209,8 +1209,8 @@ table.insert(recipes, {
   categories = {"hand-crafting-and-orbs"},
   subgroup = "orbs-machines",
   energy_required = 20,
-  icon = "__orbs__/graphics/portal.png",
-  icon_size = 1024,
+  icon = "__orbs__/graphics/icons/portal.png",
+  icon_size = 64,
   ingredients = {
     {type = "item", name = "iron-gear-wheel", amount = 10},
     {type = "item", name = "iron-stick", amount = 5},

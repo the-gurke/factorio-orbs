@@ -749,8 +749,8 @@ data:extend({
   {
     type = "technology",
     name = "soul-collection",
-    icon_size = 1024,
-    icon = "__orbs__/graphics/soul-collector.png",
+    icon_size = 256,
+    icon = "__orbs__/graphics/technology/soul-collector.png",
     effects = {
       {
         type = "unlock-recipe",
@@ -1257,8 +1257,8 @@ data:extend({
   {
     type = "technology",
     name = "potions",
-    icon = "__orbs__/graphics/distillery.png",
-    icon_size = 1024,
+    icon = "__orbs__/graphics/technology/distillery.png",
+    icon_size = 256,
     prerequisites = {"divination", "crushing"},
     unit = {
       count = 60,
@@ -1361,8 +1361,8 @@ data:extend({
   {
     type = "technology",
     name = "sentry-ward",
-    icon = "__orbs__/graphics/sentry-ward.png",
-    icon_size = 1024,
+    icon = "__orbs__/graphics/technology/sentry-ward.png",
+    icon_size = 256,
     prerequisites = {"divination"},
     unit = {
       count = 20,
@@ -1458,8 +1458,8 @@ data:extend({
   {
     type = "technology",
     name = "resonance-spire",
-    icon = "__orbs__/graphics/resonance-spire.png",
-    icon_size = 1024,
+    icon = "__orbs__/graphics/technology/resonance-spire.png",
+    icon_size = 256,
     prerequisites = {"rune-research-packs", "transmutation-ii"},
     unit = {
       count = 10,
@@ -1506,8 +1506,8 @@ data:extend({
   {
     type = "technology",
     name = "defense-ward",
-    icon = "__orbs__/graphics/defense-ward.png",
-    icon_size = 1024,
+    icon = "__orbs__/graphics/technology/defense-ward.png",
+    icon_size = 256,
     prerequisites = {"magic-research"},
     unit = {
       count = 1,
@@ -1591,8 +1591,8 @@ data:extend({
   {
     type = "technology",
     name = "portal",
-    icon = "__orbs__/graphics/portal.png",
-    icon_size = 1024,
+    icon = "__orbs__/graphics/technology/portal.png",
+    icon_size = 256,
     prerequisites = {"transmutation-ii", "rune-research-packs"},
     effects = {
       {

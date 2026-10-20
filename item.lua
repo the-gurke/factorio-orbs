@@ -929,8 +929,8 @@ data:extend({
   {
     type = "item",
     name = "inactive-portal",
-    icon = "__orbs__/graphics/portal.png",
-    icon_size = 1024,
+    icon = "__orbs__/graphics/icons/portal.png",
+    icon_size = 64,
     subgroup = "orbs-machines",
     order = "z[inactive-portal]",
     place_result = "inactive-portal",
