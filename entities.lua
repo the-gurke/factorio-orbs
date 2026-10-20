@@ -232,6 +232,90 @@ distillery.name = "distillery"
 distillery.minable = {mining_time = 0.2, result = "distillery"}
 distillery.crafting_categories = {"distilling"}
 distillery.crafting_speed = 1
+distillery.energy_usage = "50kW"
+distillery.heating_energy = "50kW"  -- Energy needed to maintain working temperature
+distillery.icon = "__orbs__/graphics/distillery.png"
+distillery.icon_size = 1024
+
+-- Rendered from blender/distillery.py: a heat-driven alembic. Heat from the
+-- four connections boils the copper pot; vapour runs through the swan neck
+-- into the worm tub and the spirit safe, and a Geneva-indexed carousel carries
+-- four bottles from the spout (fill) round to the gutter (drain). A hot-air
+-- engine on the heat chamber drives the governor, coolant pump and carousel.
+-- Keep scale 0.5 and these shifts: the heat inlets line up with heat pipes.
+local DIST_SHIFT = {0, -0.2207}       -- puts the front of the base on the footprint edge
+local function dist_layer(file, extra)
+  local l = {
+    filename = "__orbs__/graphics/distillery-machine-" .. file .. ".png",
+    priority = "high", width = 288, height = 264,
+    frame_count = 64, line_length = 8, animation_speed = 0.5,
+    scale = 0.5, shift = DIST_SHIFT
+  }
+  for k, v in pairs(extra or {}) do l[k] = v end
+  return l
+end
+local dist_shadow = {
+  filename = "__orbs__/graphics/distillery-machine-shadow.png",
+  priority = "high", width = 360, height = 264,
+  frame_count = 1, repeat_count = 64, draw_as_shadow = true,
+  scale = 0.5, shift = {0.5625, -0.2207}
+}
+distillery.graphics_set = {
+  animation = {layers = {
+    dist_layer("animation"),
+    -- brew, vapour, distillate and runes light up the night
+    dist_layer("glow", {draw_as_light = true}),
+    dist_shadow
+  }},
+  -- at rest: nothing flows, nothing boils
+  idle_animation = {layers = {
+    dist_layer("idle", {frame_count = 1, repeat_count = 64, line_length = 1}),
+    dist_shadow
+  }},
+  working_visualisations = {
+    {
+      -- vapour puffs from the safety valve on the helmet
+      north_position = {-0.2, -1.55}, east_position = {-0.2, -1.55},
+      south_position = {-0.2, -1.55}, west_position = {-0.2, -1.55},
+      animation = {
+        filename = "__base__/graphics/entity/smoke/smoke.png",
+        priority = "high", width = 152, height = 120,
+        frame_count = 60, line_length = 5, animation_speed = 0.4,
+        scale = 0.35, tint = {r = 1.0, g = 0.75, b = 1.0, a = 0.35}
+      }
+    }
+  }
+}
+
+-- vanilla heat-exchanger end caps, drawn on the neighbour tile when no heat
+-- pipe is connected, continuing the distillery's twin copper stubs
+local function heatex_endings(file, glow)
+  local dirs = {}
+  for i, d in ipairs({"north", "east", "south", "west"}) do
+    local s = {
+      filename = "__base__/graphics/entity/heat-exchanger/" .. file,
+      priority = "extra-high", width = 64, height = 64, x = (i - 1) * 64, scale = 0.5
+    }
+    if glow then
+      local light = util.table.deepcopy(s)
+      s.tint = {0.5, 0.4, 0.3, 0.5}
+      light.draw_as_light = true
+      dirs[d] = {layers = {s, light}}
+    else
+      dirs[d] = s
+    end
+  end
+  return dirs
+end
+local function dist_heat_layer(light)
+  return {
+    filename = "__orbs__/graphics/distillery-machine-heat.png",
+    priority = "extra-high", width = 288, height = 264,
+    scale = 0.5, shift = DIST_SHIFT,
+    tint = (not light) and {0.5, 0.4, 0.3, 0.5} or nil,
+    draw_as_light = light or nil
+  }
+end
 distillery.energy_source = {
   type = "heat",
   max_temperature = 100,
@@ -239,53 +323,18 @@ distillery.energy_source = {
   specific_heat = "1MJ",
   max_transfer = "2GW",
   min_working_temperature = 78,
+  minimum_glow_temperature = 40,
   connections = {
     {position = {0, -1}, direction = defines.direction.north},
     {position = {1, 0}, direction = defines.direction.east},
     {position = {0, 1}, direction = defines.direction.south},
     {position = {-1, 0}, direction = defines.direction.west}
-  }
-}
-distillery.energy_usage = "50kW"
-distillery.heating_energy = "50kW"  -- Energy needed to maintain working temperature
-distillery.icon = "__orbs__/graphics/distillery.png"
-distillery.icon_size = 1024
-
--- Set custom graphics for the distillery entity
-distillery.graphics_set = {
-  animation = {
-    layers = {
-      {
-        filename = "__orbs__/graphics/distillery-sprite.png",
-        priority = "high",
-        width = 512,
-        height = 540,
-        frame_count = 1,
-        line_length = 4,
-        scale = 0.2,
-        shift = {0, 0}
-      }
-    }
   },
-  working_visualisations = {
-    {
-      north_position = {0, 0},
-      east_position = {0, 0},
-      south_position = {0, 0},
-      west_position = {0, 0},
-      animation = {
-        filename = "__orbs__/graphics/distillery-sprite.png",
-        priority = "high",
-        width = 512,
-        height = 540,
-        frame_count = 15,
-        line_length = 4,
-        animation_speed = 0.3,
-        scale = 0.2,
-        shift = {0, 0}
-      }
-    }
-  }
+  pipe_covers = heatex_endings("heatex-endings.png", false),
+  heat_pipe_covers = heatex_endings("heatex-endings-heated.png", true),
+  -- inlet stubs, manifold, chamber coils and engine hot end glow with the
+  -- temperature, like the vanilla heat pipes (same tint + light layer)
+  heat_picture = {layers = {dist_heat_layer(false), dist_heat_layer(true)}}
 }
 
 -- Create the crusher (based on Space Age crusher)
