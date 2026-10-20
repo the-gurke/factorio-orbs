@@ -5,12 +5,16 @@ beacon that spreads the effect of the orb sitting in its cradle).
     blender -b --factory-startup -P blender/resonance_spire.py -- \
         --out graphics/generated/resonance-spire [--preview --frame 0,16]
 
-The spire is a tall gold-and-purple obelisk crowned by a tuning fork. The orb
-sits in a cradle between the tines. A gimbal ring spins around the orb; the
-two ruby strikers on its equator pluck both tines every half turn, the fork
-rings, and each blow sends a resonance wave down the obelisk: its runes light
-up top to bottom, the three floating halo rings jump as the wave passes and
-the rune band on the plinth flashes when it reaches the ground.
+The spire is a whimsical golden music box: a polished bright-gold obelisk
+with cream and sky-blue enamel, a spiral filigree twisting up it, crowned by a
+tuning fork with star finials. The orb sits in a cradle between the tines.
+A gimbal ring (with a crescent on top) spins around the orb; the two sapphire
+strikers on its equator pluck both tines every half turn, the fork rings, and
+each blow sends a resonance wave down the obelisk: the little bells under the
+capital swing, the runes light up top to bottom, the three floating halo
+rings jump as the wave passes and the rune band on the plinth flashes when it
+reaches the ground. Golden motes drift up around the shaft like notes rising
+from a music box.
 
 The orb itself is not part of the animation: Factorio draws it as a beacon
 module visualisation, so the spire shows whichever orb is inserted (or an
@@ -33,7 +37,7 @@ from pathlib import Path
 
 import bmesh
 import bpy
-from mathutils import Vector
+from mathutils import Matrix, Vector
 
 sys.path.insert(0, str(Path(__file__).parent))
 import fblend  # noqa: E402
@@ -44,6 +48,49 @@ from fblend import *  # noqa: E402,F401,F403
 
 N = fblend.N
 OUT = fblend.OUT
+
+# ----------------------------------------------------------------------------
+# Materials: a whimsical golden music box
+# ----------------------------------------------------------------------------
+# The spire stays golden but reads unlike the conjuration machine's heavy dark
+# gold: polished, bright, jewel-like gold and brass over cream enamel panels
+# with sky-blue and rose enamel accents, sapphire/rose-quartz studs and clear
+# quartz points. The shared helpers (frames, filigree, studs) use fblend's
+# GOLD/RUBY, so those names are rebound to the spire's own materials.
+BRIGHT_GOLD = metal("bright_gold", (1.0, 0.8, 0.36), (0.28, 0.16, 0.04), rough=(0.07, 0.22),
+                    dirt=0.06, bump=0.08)
+BRIGHT_BRASS = metal("bright_brass", (0.9, 0.7, 0.36), (0.2, 0.12, 0.04), rough=(0.15, 0.35),
+                     dirt=0.12)
+CREAM = paint("cream_enamel", (0.8, 0.66, 0.44), (0.16, 0.1, 0.05), noise_scale=9.0,
+              bump=0.25, bump_scale=30.0, dirt=0.15)
+SKY = paint("sky_enamel", (0.3, 0.55, 0.78), (0.04, 0.08, 0.14), noise_scale=9.0,
+            bump=0.25, bump_scale=30.0, dirt=0.15)
+ROSE_ENAMEL = paint("rose_enamel", (0.82, 0.45, 0.5), (0.15, 0.05, 0.06), noise_scale=9.0,
+                    bump=0.25, bump_scale=30.0, dirt=0.15)
+SAPPHIRE = gem("sapphire", (0.12, 0.35, 0.85))
+ROSE = gem("rose_quartz", (0.95, 0.42, 0.55))
+
+
+def crystal(name, tint=(0.97, 0.95, 0.9)):
+    """Clear quartz with a thin-film sheen that splits highlights into
+    prismatic glints."""
+    m, nt, bsdf = node_mat(name)
+    bsdf.inputs["Base Color"].default_value = (*tint, 1)
+    bsdf.inputs["Transmission Weight"].default_value = 1.0
+    bsdf.inputs["Roughness"].default_value = 0.03
+    bsdf.inputs["IOR"].default_value = 1.54
+    bsdf.inputs["Thin Film Thickness"].default_value = 420.0
+    bsdf.inputs["Thin Film IOR"].default_value = 1.9
+    return m
+
+
+CRYSTAL = crystal("quartz")
+GOLD = fblend.GOLD = BRIGHT_GOLD
+RUBY = fblend.RUBY = SAPPHIRE
+BRASS = BRIGHT_BRASS
+PURPLE = CREAM               # panels: cream enamel instead of purple paint
+BRONZE = BRIGHT_BRASS
+WARM = (1.0, 0.84, 0.55)     # resonance glow: warm golden white
 
 root = bpy.data.objects.new("resonance_spire", None)
 link(root)
@@ -117,18 +164,18 @@ ROW_Z = [SH_Z0 + (SH_Z1 - SH_Z0) * (k + 0.5) / RUNE_ROWS for k in range(RUNE_ROW
 ROW_EM = []
 ROW_MAT = []
 for k in range(RUNE_ROWS):
-    m, s = emitter(f"rune_row{k}", (0.8, 0.2, 1.0), 0.3, base=(0.08, 0.02, 0.08))
+    m, s = emitter(f"rune_row{k}", WARM, 0.3, base=(0.12, 0.1, 0.08))
     ROW_MAT.append(m)
     ROW_EM.append(s)
 BAND_Z = [SH_Z0 + (SH_Z1 - SH_Z0) * k / RUNE_ROWS for k in range(1, RUNE_ROWS)]
 HALO_Z = [z + 0.05 for z in BAND_Z]         # floating resonator rings over the bands
 HALO_MAT, HALO_EM = [], []
 for k in range(len(HALO_Z)):
-    m, s = emitter(f"halo_band{k}", (0.85, 0.25, 1.0), 0.3, base=(0.1, 0.02, 0.1))
+    m, s = emitter(f"halo_band{k}", WARM, 0.3, base=(0.12, 0.1, 0.08))
     HALO_MAT.append(m)
     HALO_EM.append(s)
-BASE_RUNE, BASE_EM = emitter("base_rune", (0.8, 0.2, 1.0), 0.3, base=(0.08, 0.02, 0.08))
-TINE_RUNE, TINE_EM = emitter("tine_rune", (1.0, 0.45, 1.0), 0.3, base=(0.1, 0.03, 0.1))
+BASE_RUNE, BASE_EM = emitter("base_rune", WARM, 0.3, base=(0.12, 0.1, 0.08))
+TINE_RUNE, TINE_EM = emitter("tine_rune", (1.0, 0.9, 0.72), 0.3, base=(0.12, 0.1, 0.08))
 
 # ----------------------------------------------------------------------------
 # Plinth and pedestal
@@ -146,7 +193,7 @@ for i in (7, 0, 1):          # visible faces: front chamfers and front
     j = (i + 1) % 8
     p = Panel(P3[i], P3[j], T3[j], T3[i])
     if i == 0:
-        # front: glowing rune band between gold bosses; flashes when the wave lands
+        # front: glowing rune band between rose-quartz bosses; flashes when the wave lands
         inner = sub_panel(p, 0.2, 0.8, 0.05, 0.95)
         inner.build("plinth_band", BASE_RUNE, thick=0.004, parent=root)
         glow(bpy.data.objects["plinth_band"])
@@ -156,13 +203,13 @@ for i in (7, 0, 1):          # visible faces: front chamfers and front
                 curve_obj(f"plinth_glyph{gi}_{si}",
                           [g.at(0.15 + 0.7 * a, 0.1 + 0.8 * b, 0.01) for a, b in stroke],
                           GOLD, 0.012, root)
-        p.studs("plinth_boss", [(0.1, 0.5), (0.9, 0.5)], r=0.035, mat=RUBY, parent=root)
+        p.studs("plinth_boss", [(0.1, 0.5), (0.9, 0.5)], r=0.035, mat=ROSE, parent=root)
         gold_frame(inner, "plinth_band_frame", r=0.018)
     else:
         p.studs(f"plinth_rivet{i}", [(0.3, 0.5), (0.7, 0.5)], r=0.02, parent=root)
 
 step = octagon(ST_HALF, ST_CH)
-prism("step", step, PL_H, ST_Z, PURPLE, top_poly=[(x * 0.9, y * 0.9) for x, y in step])
+prism("step", step, PL_H, ST_Z, SKY, top_poly=[(x * 0.9, y * 0.9) for x, y in step])
 rail("step_rail", [(x * 0.9, y * 0.9, ST_Z) for x, y in step], 0.035, closed=True)
 S3 = [Vector((x, y, PL_H + 0.01)) for x, y in step]
 U3 = [Vector((x * 0.9, y * 0.9, ST_Z)) for x, y in step]
@@ -179,15 +226,72 @@ for i in (7, 0, 1):
     else:
         p.studs(f"step_gem{i}", [(0.5, 0.5)], r=0.022, mat=RUBY, parent=root)
 
-# gold scroll buttresses from the pedestal's corners up onto the shaft
+
+
+def prism_crystal(name, base, axis, length, r, parent=root):
+    """Hexagonal quartz point: a six-sided column with a pyramidal tip,
+    grown from `base` along `axis`."""
+    axis = Vector(axis).normalized()
+    o = bpy.data.objects.new(name, None)
+    link(o, parent)
+    o.location = base
+    o.rotation_euler = axis.to_track_quat("Z", "Y").to_euler()
+    body = length * 0.7
+    cyl(name + "_body", r, body, (0, 0, body / 2), CRYSTAL, o, verts=6, bevel=0.003)
+    cyl(name + "_tip", r, length - body, (0, 0, body + (length - body) / 2), CRYSTAL, o,
+        verts=6, r2=0.0, bevel=0.002)
+    return o
+
+
+def flat_shape(name, outline, depth, loc, mat, parent):
+    """Extruded 2D outline (in its local xz plane), tilted back to face the
+    45 degree camera so it reads as a flat cut-out like a music-box ornament."""
+    bm = bmesh.new()
+    f = [bm.verts.new((x, -depth / 2, z)) for x, z in outline]
+    bk = [bm.verts.new((x, depth / 2, z)) for x, z in outline]
+    bm.faces.new(list(reversed(f)))
+    bm.faces.new(bk)
+    n = len(outline)
+    for i in range(n):
+        j = (i + 1) % n
+        bm.faces.new((f[i], f[j], bk[j], bk[i]))
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    o = mesh_obj(name, bm, mat, parent, bevel=depth * 0.35)
+    o.data.shade_flat()
+    o.location = loc
+    o.rotation_euler = (math.radians(-35), 0, 0)
+    return o
+
+
+def star(name, loc, r, mat, parent, points=5):
+    pts = []
+    for i in range(points * 2):
+        a = math.pi / 2 + math.pi * i / points
+        rr = r if i % 2 == 0 else r * 0.45
+        pts.append((rr * math.cos(a), rr * math.sin(a)))
+    return flat_shape(name, pts, 0.03, loc, mat, parent)
+
+
+def crescent(name, loc, r, mat, parent):
+    """Crescent moon: outer arc of radius r minus an offset inner arc."""
+    outer = [(r * math.cos(a), r * math.sin(a)) for a in
+             (math.radians(40 + 280 * i / 20) for i in range(21))]
+    c, ri = 0.45 * r, 0.8 * r
+    inner = [(c + ri * math.cos(a), ri * math.sin(a)) for a in
+             (math.radians(220 - 260 * i / 20) for i in range(21))]
+    return flat_shape(name, outer + inner[1:-1], 0.025, loc, mat, parent)
+
+
+# gold scroll buttresses from the pedestal's corners up onto the shaft, each
+# with a quartz point growing out of its foot
 for k in range(4):
     a = TAU * k / 4 - math.pi / 2          # S, E, N, W corners of the diamond
     d = Vector((math.cos(a), math.sin(a), 0))
     curl = fit(scroll_c(0, 0, 1), 0.0, 0.0, 0.17, 0.42, flip_x=True)
     rail(f"buttress{k}", [d * (sh_w(SH_Z0 + v) + 0.02 + u) + Vector((0, 0, SH_Z0 + v))
                           for u, v in curl], 0.024)
-    sphere(f"buttress_gem{k}", 0.026, tuple(d * (sh_w(SH_Z0) + 0.13) +
-                                            Vector((0, 0, SH_Z0 + 0.03))), RUBY, root)
+    prism_crystal(f"buttress_quartz{k}", d * (sh_w(SH_Z0) + 0.1) + Vector((0, 0, SH_Z0 - 0.02)),
+                  d * 0.55 + Vector((0, 0, 1)), 0.2, 0.032)
 
 # ----------------------------------------------------------------------------
 # Obelisk shaft
@@ -227,9 +331,12 @@ for row in range(RUNE_ROWS):
                                [inner.at(0.18 + 0.64 * u, 0.12 + 0.76 * v, 0.008)
                                 for u, v in stroke], ROW_MAT[row], 0.013, root))
         else:
-            inner.filigree(f"face{row}_{fi}_fil",
-                           [fit(scroll_c(0, 0, 1), 0.05, 0.05, 0.95, 0.95, flip_x=fi == 1)],
-                           radius=0.016, lift=0.01, parent=root)
+            # quartz bar set into the face in silver claws: it catches the
+            # warm light of the runes as the wave passes
+            lo_c, hi_c = Vector(inner.at(0.5, 0.1, 0.03)), Vector(inner.at(0.5, 0.9, 0.03))
+            prism_crystal(f"face{row}_{fi}_quartz", lo_c, hi_c - lo_c, (hi_c - lo_c).length,
+                          0.034)
+            inner.studs(f"face{row}_{fi}_claw", [(0.5, 0.08)], r=0.02, parent=root)
 
 # capital: flared gold collar carrying the fork's yoke
 cyl("capital_neck", sh_w(SH_Z1) * 0.75, 0.06, (0, 0, SH_Z1 + 0.03), GOLD, root, r2=sh_w(SH_Z1) * 0.9)
@@ -237,7 +344,7 @@ cyl("capital", 0.12, CAP_Z - SH_Z1 - 0.06, (0, 0, (CAP_Z + SH_Z1 + 0.06) / 2), G
     r2=0.17, verts=8, bevel=0.01).rotation_euler = (0, 0, math.pi / 8)
 rail("capital_rim", [(0.175 * math.cos(TAU * i / 8 + math.pi / 8),
                       0.175 * math.sin(TAU * i / 8 + math.pi / 8), CAP_Z) for i in range(8)],
-     0.022, closed=True)
+     0.022, closed=True, mat=BRASS)
 for i in range(8):
     a = TAU * i / 8
     sphere(f"capital_gem{i}", 0.02, (0.16 * math.cos(a), 0.16 * math.sin(a), CAP_Z - 0.045),
@@ -259,12 +366,48 @@ for k, z in enumerate(HALO_Z):
     h.location = (0, 0, z)
     r = sh_w(z) + 0.1
     ring(f"halo{k}_ring", r, 0.034, GOLD, h, verts=64, z0=-0.022, z1=0.022)
+    ring(f"halo{k}_enamel", r + 0.012, 0.012, SKY if k % 2 else ROSE_ENAMEL, h, verts=64,
+         z0=0.018, z1=0.026)
     glow(ring(f"halo{k}_band", r - 0.044, 0.008, HALO_MAT[k], h, verts=64, z0=-0.012, z1=0.012))
     for g in range(8):
         a = TAU * (g + 0.5) / 8
         sphere(f"halo{k}_stud{g}", 0.022 if g % 2 else 0.018,
-               (r * math.cos(a), r * math.sin(a), 0.022), RUBY if g % 2 else GOLD, h)
+               (r * math.cos(a), r * math.sin(a), 0.022), RUBY if g % 2 else ROSE, h)
     halos.append(h)
+
+# spiral filigree: two gold strands twisting up the shaft (the music-box
+# twist), passing behind the halo rings
+SPIRAL_TURNS = 1.25
+for k in range(2):
+    pts = []
+    for i in range(97):
+        u = i / 96
+        z = SH_Z0 + 0.06 + u * (SH_Z1 - SH_Z0 - 0.12)
+        a = math.pi * k + TAU * SPIRAL_TURNS * u - math.pi / 2
+        # the shaft is a diamond: hug it at the distance of its faces
+        r = sh_w(z) * (0.71 + 0.29 * abs(math.cos(2 * a))) + 0.022
+        pts.append((r * math.cos(a), r * math.sin(a), z))
+    rail(f"spiral{k}", pts, 0.017)
+
+# little bells hanging under the capital rim; the resonance wave sets them
+# swinging (a damped pendulum kicked by every pluck)
+bells = []
+for k, a in enumerate((math.radians(-135), math.radians(-45), math.radians(45),
+                       math.radians(135))):
+    d = Vector((math.cos(a), math.sin(a), 0))
+    hang = d * 0.31 + Vector((0, 0, CAP_Z + 0.02))
+    rail(f"bell_bracket{k}", [d * 0.15 + Vector((0, 0, CAP_Z - 0.04)), hang], 0.012,
+         mat=BRASS)
+    b = bpy.data.objects.new(f"bell{k}", None)     # pivot at the hanger
+    link(b, root)
+    b.location = hang
+    b.rotation_mode = "XYZ"
+    sphere(f"bell{k}_crown", 0.022, (0, 0, -0.025), GOLD, b)
+    cyl(f"bell{k}_body", 0.045, 0.1, (0, 0, -0.08), GOLD, b, verts=24, r2=0.022)
+    cyl(f"bell{k}_band", 0.05, 0.022, (0, 0, -0.1), SKY if k % 2 else ROSE_ENAMEL, b, verts=24)
+    cyl(f"bell{k}_lip", 0.066, 0.03, (0, 0, -0.14), GOLD, b, verts=24, r2=0.048)
+    sphere(f"bell{k}_clapper", 0.02, (0, 0, -0.165), ROSE if k % 2 else SAPPHIRE, b)
+    bells.append((b, d))
 
 # ----------------------------------------------------------------------------
 # Tuning fork
@@ -291,7 +434,7 @@ for side in (-1, 1):
     box(f"tine{side}_bar", (TT, TD, L), (0, 0, L / 2), GOLD, t, bevel=0.014)
     # enamel strip with a glowing slot down the front face
     box(f"tine{side}_enamel", (TT * 0.6, 0.01, L * 0.78), (0, -TD / 2 - 0.004, L * 0.47),
-        PURPLE, t, bevel=0.003)
+        SKY, t, bevel=0.003)
     glow(box(f"tine{side}_slot", (TT * 0.22, 0.012, L * 0.66), (0, -TD / 2 - 0.008, L * 0.47),
              TINE_RUNE, t, bevel=0.002))
     for zz in (0.06, L * 0.5, L - 0.08):
@@ -302,8 +445,9 @@ for side in (-1, 1):
                                 fit(scroll_c(0, 0, 1), 0.0, L * 0.12, 0.13, L * 0.55,
                                     flip_x=True)], 0.02, parent=t)
     sphere(f"tine{side}_gem", 0.026, (side * (TT / 2 + 0.03), -0.02, L * 0.12), RUBY, t)
-    # tip finial: gold spike with a ruby
-    cyl(f"tine{side}_tipcone", TT * 0.62, 0.12, (0, 0, L + 0.06), GOLD, t, verts=8, r2=0.0)
+    # tip finial: a five-pointed star on a short stalk, turned to the camera
+    cyl(f"tine{side}_stalk", 0.016, 0.06, (0, 0, L + 0.03), GOLD, t, verts=12)
+    star(f"tine{side}_star", (0, 0, L + 0.13), 0.09, GOLD, t)
     sphere(f"tine{side}_tipgem", 0.03, (0, -0.02, L - 0.02), RUBY, t)
     tines.append((side, t))
 
@@ -313,9 +457,9 @@ cyl("spike_stem", 0.03, 0.22, (0, 0.2, CAP_Z + 0.1), GOLD, root)
 # ----------------------------------------------------------------------------
 # Cradle and gimbal
 # ----------------------------------------------------------------------------
-# A bronze stem rises from the capital to a claw cup holding the orb. The
+# A brass stem rises from the capital to a claw cup holding the orb. The
 # gimbal is a meridian ring that turns about the stem on a collar at its
-# lower pole; an equatorial ring is rigidly pinned to it. The two ruby
+# lower pole; an equatorial ring is rigidly pinned to it. The two sapphire
 # strikers on the equator reach out to RB + RBALL, past the tines' inner faces
 # at TINE_X, so every half turn they pluck both tines (outwards, i.e. the
 # tuning fork's natural anti-phase mode).
@@ -346,9 +490,9 @@ mer = ring("gimbal_meridian", RING_R, RING_T, GOLD, gimbal, verts=64, z0=-0.016,
 mer.rotation_euler = (math.radians(90), 0, 0)        # in the local xz plane
 ring("gimbal_equator", RING_R + 0.004, 0.016, BRASS, gimbal, verts=64, z0=-0.014, z1=0.014)
 cyl("gimbal_collar", 0.05, 0.06, (0, 0, -RING_R), BRASS, gimbal, verts=24)
-sphere("gimbal_pole_gem", 0.026, (0, 0, RING_R + 0.012), RUBY, gimbal)
+crescent("gimbal_crescent", (0, 0, RING_R + 0.07), 0.065, GOLD, gimbal)
 for sx in (-1, 1):
-    # striker: pin boss on the equator, arm, ruby ball
+    # striker: pin boss on the equator, arm, sapphire ball
     cyl(f"striker{sx}_arm", 0.014, RB - RING_R, (sx * (RING_R + RB) / 2, 0, 0), STEEL, gimbal,
         rot=(0, math.radians(90), 0), verts=12)
     sphere(f"striker{sx}_boss", 0.026, (sx * RING_R, 0, 0), GOLD, gimbal)
@@ -395,6 +539,23 @@ orb_light_d.shadow_soft_size = 0.05
 orb_light = bpy.data.objects.new("orb_light", orb_light_d)
 link(orb_light, root)
 orb_light.location = (0, 0, ORB_Z)
+
+# golden motes drifting up around the spire, like notes rising from a music box
+MOTE, MOTE_EM = emitter("mote", WARM, 4.0)
+MOTES = 9
+motes = [glow(sphere(f"mote{k}", 0.019, (0, 0, 0), MOTE, root, segs=8)) for k in range(MOTES)]
+
+
+def pose_motes(f):
+    for k, m in enumerate(motes):
+        u = (f / N + k / MOTES) % 1.0              # one climb per loop: seamless
+        z = SH_Z0 + 0.1 + u * (CAP_Z - SH_Z0)
+        a = TAU * (1.5 * u + k * 0.38)
+        r = sh_w(z) + 0.2 + 0.03 * math.sin(TAU * (2 * u + k * 0.3))
+        m.location = (r * math.cos(a), r * math.sin(a), z)
+        s_ = math.sin(math.pi * u) ** 0.5           # fade in at the base, out at the top
+        m.scale = (s_, s_, s_)
+
 
 # ----------------------------------------------------------------------------
 # Kinematics
@@ -470,6 +631,7 @@ print("deflection", " ".join(f"{d:.3f}" for d in DEFLECT))
 assert len(STRIKES) == 2, STRIKES
 
 WAVE_SPEED = 0.22        # tiles of height per frame for the resonance wave
+BELL_AMP, BELL_PERIOD, BELL_DECAY = math.radians(28), 12.0, 10.0   # loop-safe: decayed by N/2
 
 
 def since_strike(f, delay=0.0):
@@ -503,6 +665,14 @@ def pose(f):
         h.rotation_euler = (0, 0, TAU * f / N * (1 if k % 2 else -1) / 4)
         HALO_EM[k].default_value = 0.25 + 3.0 * pulse(age, 3.0)
     BASE_EM.default_value = 0.3 + 3.0 * pulse(since_strike(f, (ROOT_Z - PL_H) / WAVE_SPEED), 3.0)
+    # bells: damped pendulums kicked as the wave passes the capital; they
+    # swing outwards (about the horizontal axis tangent to the rim)
+    age = since_strike(f, (ROOT_Z - CAP_Z) / WAVE_SPEED)
+    swing = BELL_AMP * math.exp(-age / BELL_DECAY) * math.sin(TAU * age / BELL_PERIOD)
+    for b, d in bells:
+        tangent = Vector((-d.y, d.x, 0))
+        b.rotation_euler = Matrix.Rotation(swing, 3, tangent).to_euler()
+    pose_motes(f)
 
 
 # ----------------------------------------------------------------------------
