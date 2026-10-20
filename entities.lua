@@ -150,18 +150,36 @@ soul_collector.minable = {mining_time = 1, result = "soul-collector"}
 soul_collector.inventory_size = 1 -- Only one stack slot
 soul_collector.icon = "__orbs__/graphics/soul-collector.png"
 soul_collector.icon_size = 1024
+-- Rendered from blender/soul_collector.py; containers only take a static
+-- sprite. The frame extends east to hold the funnel's shadow, hence shift x.
 soul_collector.picture = {
   layers = {
     {
-      filename = "__orbs__/graphics/soul-collector-entity.png",
-      priority = "extra-high",
-      width = 1024,
-      height = 1024,
-      scale = 0.2,
-      shift = {
-            0,
-            -2
-      }
+      filename = "__orbs__/graphics/soul-collector-picture.png",
+      priority = "high",
+      width = 339,
+      height = 237,
+      scale = 0.5,
+      shift = {1.1, -0.19}
+    },
+    {
+      -- captured soul, intake vortex and runes light up the night
+      filename = "__orbs__/graphics/soul-collector-glow.png",
+      priority = "high",
+      width = 339,
+      height = 237,
+      draw_as_light = true,
+      scale = 0.5,
+      shift = {1.1, -0.19}
+    },
+    {
+      filename = "__orbs__/graphics/soul-collector-shadow.png",
+      priority = "high",
+      width = 339,
+      height = 237,
+      draw_as_shadow = true,
+      scale = 0.5,
+      shift = {1.1, -0.19}
     }
   }
 }
