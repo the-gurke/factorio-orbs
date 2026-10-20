@@ -190,7 +190,7 @@ data:extend({
     spoil_ticks = 10 * 60, -- 10 seconds * 60 ticks per second
     spoil_result = nil, -- Spoils into nothing
     fuel_value = "1MJ",
-    fuel_category = "divination-energy"
+    fuel_categories = {"divination-energy"}
   },
 
   -- Spark of Luck (spoils in 1s to nothing)
@@ -312,7 +312,7 @@ data:extend({
     stack_size = orb_stack_size,
     spoil_ticks = 10 * 60 * 60, -- 10 minutes * 60 seconds * 60 ticks per second
     spoil_result = "magic-orb",
-    fuel_category = "chemical",
+    fuel_categories = {"chemical"},
     fuel_value = "100MJ",
     burnt_result = "magic-orb",
     magazine_size = 100,
@@ -341,7 +341,7 @@ data:extend({
     subgroup = "intermediate-product",
     order = "z[smoldering-remains]",
     stack_size = 50,
-    fuel_category = "chemical",
+    fuel_categories = {"chemical"},
     fuel_value = "100kJ",
     spoil_ticks = 60 * 60 * 60, -- 1 hour
     spoil_result = nil -- Spoils into nothing
@@ -377,7 +377,7 @@ data:extend({
     subgroup = "intermediate-product",
     order = "z[burning-wood]",
     stack_size = 50,
-    fuel_category = "chemical",
+    fuel_categories = {"chemical"},
     fuel_value = "4MJ",
     spoil_ticks = 2 * 60 * 60,
     spoil_result = "smoldering-remains"
@@ -413,7 +413,7 @@ data:extend({
     subgroup = "intermediate-product",
     order = "z[burning-coal]",
     stack_size = 50,
-    fuel_category = "chemical",
+    fuel_categories = {"chemical"},
     fuel_value = "8MJ",
     spoil_ticks = 5 * 60 * 60,
     spoil_result = "smoldering-remains"
@@ -898,7 +898,7 @@ data:extend({
     stack_size = 50,
     spoil_ticks = 3 * 60, -- 3 seconds * 60 ticks per second
     spoil_result = nil, -- Spoils into nothing
-    fuel_category = "chemical",
+    fuel_categories = {"chemical"},
     fuel_value = "10MJ"
   },
 

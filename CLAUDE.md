@@ -213,13 +213,14 @@ fill its 3x3 box like vanilla assembling-machine-2.
 
 Intermediates land in `graphics/generated/` (gitignored); ship-ready sheets
 get copied to `graphics/`. Engine-side sprite layout (frame size vs PNG) is
-only validated by a real graphical game launch, not by `./test.sh`.
+only validated by a real graphical start: `./test.sh --sprites` (opens a
+game window until the main menu; needs Steam running).
 
 ## To keep in mind for Claude
 
 - Technologies-related code should be added to `technology.lua`, not `data-final-fixes.lua`.
 - Whenever you introduce new items, entities, technologies, etc., you need to add the corresponding locale strings for their names to `locale/en/strings.cfg`.
-- Don't try to run the lua code directly. Instead, after every change, run `./test.sh` to validate that prototypes load correctly. If a save file is relevant, run `./test.sh ~/.factorio/saves/ORBS.zip` to also test runtime.
+- Don't try to run the lua code directly. Instead, after every change, run `./test.sh` to validate that prototypes load correctly. If a save file is relevant, run `./test.sh ~/.factorio/saves/ORBS.zip` to also test runtime. After changing sprites, run `./test.sh --sprites`.
 
 ## Where to find Examples and Documentation
 
