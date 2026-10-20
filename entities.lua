@@ -1202,18 +1202,35 @@ local rune_altar = util.table.deepcopy(data.raw["container"]["iron-chest"])
 rune_altar.name = "rune-altar"
 rune_altar.minable = {mining_time = 1, result = "rune-altar"}
 rune_altar.inventory_size = 10
+-- Rendered from blender/rune_altar.py; containers only take a static sprite
 rune_altar.picture = {
   layers = {
     {
-      filename = "__orbs__/graphics/rune-altar.png",
+      filename = "__orbs__/graphics/rune-altar-picture.png",
       priority = "extra-high",
-      width = 1024,
-      height = 1024,
-      scale = 0.06,
-      shift = {
-            0,
-            0
-      }
+      width = 256,
+      height = 192,
+      scale = 0.5,
+      shift = {0, 0.03}
+    },
+    {
+      -- rune letters, channels, crystal, candle and brazier flames light up the night
+      filename = "__orbs__/graphics/rune-altar-glow.png",
+      priority = "extra-high",
+      width = 256,
+      height = 192,
+      scale = 0.5,
+      shift = {0, 0.03},
+      draw_as_light = true
+    },
+    {
+      filename = "__orbs__/graphics/rune-altar-shadow.png",
+      priority = "extra-high",
+      width = 256,
+      height = 192,
+      scale = 0.5,
+      shift = {0, 0.03},
+      draw_as_shadow = true
     }
   }
 }
