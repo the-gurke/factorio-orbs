@@ -7,8 +7,14 @@ mechanism as a seamless loop and renders the frames Factorio needs:
     blender -b --factory-startup -P blender/conjuration_machine.py -- \
         --out graphics/generated/conjuration-machine [--preview] [--frames 32]
 
-Shared helpers live in blender/fblend.py. Then stitch with blender/stitch.py. World units are Factorio tiles; the entity
-is 3x3 centred on the origin, +y is north, +z is up.
+Shared helpers live in blender/fblend.py. Then stitch with
+
+    .venv/bin/python blender/stitch.py graphics/generated/conjuration-machine \
+        --name conjuration-machine --ppt 56.32
+
+(0.88 of the model's size, to match assembling-machine-2 on screen; scale 0.5006
+in entities.lua). World units are Factorio tiles; the entity is 3x3 centred on
+the origin, +y is north, +z is up.
 """
 
 import math

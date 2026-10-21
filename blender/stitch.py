@@ -19,7 +19,7 @@ ap.add_argument("dir")
 ap.add_argument("--name", required=True)
 ap.add_argument("--cols", type=int, default=8)
 ap.add_argument("--render-ppt", type=int, default=128)
-ap.add_argument("--ppt", type=int, default=64)
+ap.add_argument("--ppt", type=float, default=64)
 ap.add_argument("--dest", default="graphics")
 args = ap.parse_args()
 

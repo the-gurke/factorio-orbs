@@ -37,4 +37,4 @@ orbs_*.zip
 # Sprite pipeline
 .venv/
 __pycache__/
-graphics/generated/
+graphics/generated

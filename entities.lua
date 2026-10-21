@@ -44,45 +44,46 @@ conjuration_machine.icon = "__orbs__/graphics/icons/conjuration-machine.png"
 conjuration_machine.icon_size = 64
 
 -- Set custom graphics for the conjuration machine entity
--- Rendered from the Blender model in blender/conjuration_machine.py. Scale
--- 0.44 (not 0.5) matches assembling-machine-2's on-screen size (174 px wide
--- content), and the shift sits the plinth where AM2's sits.
+-- Rendered from the Blender model in blender/conjuration_machine.py, stitched
+-- at --ppt 56.32 so the model shows at 0.88 of its size (the on-screen size of
+-- assembling-machine-2, 174 px wide content) while the sheet stays at 64 px per
+-- tile (scale ~0.5). The shift sits the plinth where AM2's sits.
 conjuration_machine.graphics_set = {
   animation = {
     layers = {
       {
         filename = "__orbs__/graphics/conjuration-machine-animation.png",
         priority = "high",
-        width = 256,
-        height = 256,
+        width = 225,
+        height = 225,
         frame_count = 64,
         line_length = 8,
         animation_speed = 0.5,
-        scale = 0.44,
+        scale = 0.5006,
         shift = {0, 0.134}
       },
       {
         -- orb, potions, runes and forge sparks light up the night
         filename = "__orbs__/graphics/conjuration-machine-glow.png",
         priority = "high",
-        width = 256,
-        height = 256,
+        width = 225,
+        height = 225,
         frame_count = 64,
         line_length = 8,
         animation_speed = 0.5,
         draw_as_light = true,
-        scale = 0.44,
+        scale = 0.5006,
         shift = {0, 0.134}
       },
       {
         filename = "__orbs__/graphics/conjuration-machine-shadow.png",
         priority = "high",
-        width = 256,
-        height = 256,
+        width = 225,
+        height = 225,
         frame_count = 1,
         repeat_count = 64,
         draw_as_shadow = true,
-        scale = 0.44,
+        scale = 0.5006,
         shift = {0, 0.134}
       }
     }
