@@ -379,14 +379,14 @@ def oct_notched_top(h, ch, inset):
 T1_H, T2_H = 3.47, 3.13
 _, t1p = prism("tier1", oct_notched(T1_H, 0.95), 0.0, T1_Z, SLATE,
                top_poly=oct_notched_top(T1_H, 0.95, 0.12))
-_, t2p = prism("tier2", oct_notched(T2_H, 0.82), T1_Z, DAIS_Z, PURPLE,
+TIER2, t2p = prism("tier2", oct_notched(T2_H, 0.82), T1_Z, DAIS_Z, PURPLE,
                top_poly=oct_notched_top(T2_H, 0.82, 0.1))
 T2_TOP = oct_notched_top(T2_H, 0.82, 0.1)
 # paving on the dais top
 bm = bmesh.new()
 vs = [bm.verts.new((x, y, DAIS_Z + 0.002)) for x, y in T2_TOP]
 bm.faces.new(vs)
-mesh_obj("dais_floor", bm, PAVING, root)
+DAIS_FLOOR = mesh_obj("dais_floor", bm, PAVING, root)
 # heavy gold rails along the tier edges, rivets on the slate tier
 rail("t1_top_rail", [(x, y, T1_Z + 0.01) for x, y in oct_notched_top(T1_H, 0.95, 0.12)], 0.05,
      closed=True)
@@ -798,15 +798,45 @@ CR_X, CR_Z = 2.35, DAIS_Z + 0.42
 cr_bot = [(-CR_X, YG - 0.55), (CR_X, YG - 0.55), (CR_X, YG + 0.5), (-CR_X, YG + 0.5)]
 cr_top = [(-CR_X + 0.15, YG - 0.4), (CR_X - 0.15, YG - 0.4), (CR_X - 0.15, YG + 0.4),
           (-CR_X + 0.15, YG + 0.4)]
-_, crp = prism("cradle", cr_bot, DAIS_Z, CR_Z, PURPLE, top_poly=cr_top)
-decorate(crp[0], "cradle_front", seg_len=0.9, fil_r=0.034)
-rail("cradle_rail", [(x, y, CR_Z + 0.01) for x, y in cr_top], 0.06, closed=True)
-for k, p in enumerate((crp[1], crp[3])):
-    decorate(p, f"cradle_side{k}", seg_len=1.0, fil_r=0.03)
-# threshold step in the aperture: gold-edged, where the player walks through
-box("threshold", (2 * RA - 0.6, 0.9, 0.06), (0, YG, CR_Z + 0.03), SLATE, bevel=0.015)
-rail("threshold_edge", [(-RA + 0.3, YG - 0.45, CR_Z + 0.06), (RA - 0.3, YG - 0.45, CR_Z + 0.06)],
-     0.04)
+# The saddle is split into two blocks under the ring's flanks
+# and the ring sinks into a gold-lipped trench between them, so the whole
+# circle of the ring and the vortex shows instead of a straight cut-off.
+CR_IN = 1.55
+for sx in (-1, 1):
+    xi, xo = sx * CR_IN, sx * CR_X
+    xo_t = sx * (CR_X - 0.15)
+    bot = [(xi, YG - 0.55), (xo, YG - 0.55), (xo, YG + 0.5), (xi, YG + 0.5)]
+    top = [(xi, YG - 0.4), (xo_t, YG - 0.4), (xo_t, YG + 0.4), (xi, YG + 0.4)]
+    if sx < 0:
+        bot = [bot[1], bot[0], bot[3], bot[2]]
+        top = [top[1], top[0], top[3], top[2]]
+    _, crp = prism(f"cradle{sx}", bot, DAIS_Z, CR_Z, PURPLE, top_poly=top)
+    decorate(crp[0], f"cradle_front{sx}", seg_len=0.9, fil_r=0.034,
+             motif=lambda k, n: "lyre")
+    rail(f"cradle_rail{sx}", [(x, y, CR_Z + 0.01) for x, y in top], 0.06, closed=True)
+    cyl(f"cradle_post{sx}", 0.09, 0.2, (xi, YG - 0.45, CR_Z + 0.1), GOLD, verts=16)
+    sphere(f"cradle_post_gem{sx}", 0.06, (xi, YG - 0.45, CR_Z + 0.24), RUBY)
+# a real pit cut into the dais: from 45 deg above the camera sees down
+# into it as deep as it is wide, so the lower lip of the ring shows
+PIT_Y0, PIT_Y1, PIT_Z = YG - 0.42, YG + 0.42, 0.2
+cutter = box("pit_cutter", (2 * CR_IN, PIT_Y1 - PIT_Y0, DAIS_Z - PIT_Z + 0.2),
+             (0, YG, (DAIS_Z + PIT_Z + 0.2) / 2), DARK, bevel=0.0)
+cutter.hide_render = True
+for target in (TIER2, DAIS_FLOOR):
+    bo = target.modifiers.new("pit", "BOOLEAN")
+    bo.operation = "DIFFERENCE"
+    bo.object = cutter
+    bo.solver = "EXACT"
+    if target.modifiers[0].name != "pit":     # cut before bevelling
+        bpy.context.view_layer.objects.active = target
+        bpy.ops.object.modifier_move_to_index(modifier="pit", index=0)
+box("pit_floor", (2 * CR_IN, PIT_Y1 - PIT_Y0, 0.04), (0, YG, PIT_Z + 0.02), DARK, bevel=0.0)
+for k in range(7):       # bronze grating ribs on the pit floor
+    x = -CR_IN + 2 * CR_IN * (k + 0.5) / 7
+    box(f"pit_rib{k}", (0.05, PIT_Y1 - PIT_Y0, 0.05), (x, YG, PIT_Z + 0.06), BRONZE,
+        bevel=0.006)
+for yy in (PIT_Y0, PIT_Y1):            # gold lips round the pit
+    rail(f"pit_lip{yy}", [(-CR_IN, yy, DAIS_Z + 0.02), (CR_IN, yy, DAIS_Z + 0.02)], 0.05)
 
 # crystal obelisks at the back corners: they store the essence for the dial
 OB = 2.38
