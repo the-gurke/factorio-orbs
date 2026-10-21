@@ -325,36 +325,37 @@ magic_inserter.energy_source = {
 }
 magic_inserter.energy_per_movement = "0kW"
 magic_inserter.energy_per_rotation = "0kW"
--- Rendered by blender/magic_inserter.py: a low gold-and-purple plate with a
--- magic orb resting in a cradle (its prow points at the drop side), and a
--- floating white glove instead of an arm. The glove does the work exactly
--- like a vanilla hand; it keeps the vanilla hand canvas (72x164, grip where
--- the vanilla tines grip) so the engine places and stretches it the same way.
-local function mi_plat(suffix, extra)
-  local s = {filename = "__orbs__/graphics/magic-inserter-platform" .. suffix .. ".png",
+-- Rendered by blender/magic_inserter_wisp.py: a low gold-and-purple plate with
+-- a white magic orb resting in a ring (its prow points at the drop side) and
+-- violet lightning crackling all over the orb. Instead of an arm, a thin magic
+-- tendril tears loose from the orb's surface (the arm's root over the orb is
+-- transparent, bridged by bolts) and arcs along the arm to a little cloud of
+-- haze that carries the item (its icon is drawn on top). The hand canvases
+-- keep the vanilla height and grip row so the engine anchors them the same.
+local function miw(name, w, h, extra)
+  local s = {filename = "__orbs__/graphics/magic-inserter-wisp-" .. name .. ".png",
+    priority = "extra-high", width = w, height = h, scale = 0.25}
+  for k, v in pairs(extra or {}) do s[k] = v end
+  return s
+end
+local function miw_plat(suffix, extra)
+  local s = {filename = "__orbs__/graphics/magic-inserter-wisp-platform" .. suffix .. ".png",
     priority = "extra-high", width = 64, height = 48, shift = {0.0625, 0}, scale = 0.5}
   for k, v in pairs(extra or {}) do s[k] = v end
   return s
 end
-local function mi_hand(state, suffix, extra)
-  local s = {filename = "__orbs__/graphics/magic-inserter-hand-" .. state .. suffix .. ".png",
-    priority = "extra-high", width = 72, height = 164, scale = 0.25}
-  for k, v in pairs(extra or {}) do s[k] = v end
-  return s
-end
+-- Inserter platforms draw below the shadow pass, so a draw_as_shadow sheet
+-- would darken the plate itself; the shadow is baked in, as in vanilla.
 magic_inserter.platform_picture = {sheets = {
-  mi_plat(""),
-  mi_plat("-glow", {draw_as_light = true}),
-  mi_plat("-shadow", {draw_as_shadow = true})
+  miw_plat(""),
+  miw_plat("-light", {draw_as_light = true})
 }}
--- the glove floats: no arm
-magic_inserter.hand_base_picture = util.empty_sprite()
-magic_inserter.hand_base_shadow = util.empty_sprite()
-magic_inserter.hand_open_picture = {layers = {mi_hand("open", ""), mi_hand("open", "-light", {draw_as_light = true})}}
-magic_inserter.hand_closed_picture = {layers = {mi_hand("closed", ""), mi_hand("closed", "-light", {draw_as_light = true})}}
-magic_inserter.hand_open_shadow = mi_hand("open", "-shadow")
-magic_inserter.hand_closed_shadow = mi_hand("closed", "-shadow")
--- drawing only: a straighter invisible arm keeps the glove's length steadier
+magic_inserter.hand_base_picture = {layers = {miw("base", 48, 136), miw("base-light", 48, 136, {draw_as_light = true})}}
+magic_inserter.hand_base_shadow = miw("base-shadow", 48, 136)
+magic_inserter.hand_open_picture = {layers = {miw("hand-open", 112, 164), miw("hand-open-light", 112, 164, {draw_as_light = true})}}
+magic_inserter.hand_closed_picture = {layers = {miw("hand-closed", 112, 164), miw("hand-closed-light", 112, 164, {draw_as_light = true})}}
+magic_inserter.hand_open_shadow = miw("hand-open-shadow", 112, 164)
+magic_inserter.hand_closed_shadow = miw("hand-closed-shadow", 112, 164)
 magic_inserter.hand_size = 0.6
 -- Space Age frozen overlays are shaped like the vanilla arm and platform
 magic_inserter.platform_frozen = nil

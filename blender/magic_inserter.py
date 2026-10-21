@@ -44,13 +44,14 @@ import math
 import sys
 from pathlib import Path
 
-HAND_W_PX, HAND_H_PX = 72, 164      # vanilla fast-inserter hand canvas
+HAND_W_PX, HAND_H_PX = 128, 164     # vanilla height; wider than vanilla (72) so the
+                                    # digits wrapped round a held item fit
 HAND_PPT = 128                      # its pixels per tile (scale 0.25)
 GRIP_ROW = 18                       # vanilla tine centre: the held item's row
 HAND_STRETCH = 1.25                 # pre-stretch against the engine's measured ~0.6-0.77 squash
 PLAT = dict(w=1.0, h=0.75, cx=0.0625, cy=0.0)   # platform frame box, screen tiles
 SS = 4                              # hand supersampling
-GLOVE_SCALE = 1.1                   # the glove as modelled below -> on screen (~0.55 x 0.36 tiles)
+GLOVE_SCALE = 1.0                   # the glove below is modelled at on-screen size
 
 
 def stitch(src, dest="graphics", name="magic-inserter", render_ppt=128, ppt=64):
@@ -87,13 +88,22 @@ def stitch(src, dest="graphics", name="magic-inserter", render_ppt=128, ppt=64):
         out.putalpha(a)
         return out
 
-    # platform: one 4-frame row per pass
-    for kind, suffix in (("main", ""), ("glow", "-glow"), ("shadow", "-shadow")):
+    # platform: one 4-frame row per pass. The shadow is baked into the main
+    # sheet like vanilla's platform: inserter platforms sit on a render layer
+    # below the shadow pass, so a separate draw_as_shadow sheet gets drawn
+    # OVER the plate in the engine (seen in 2.1.22: the plate came out at
+    # ~45% brightness). Vanilla's baked shadow is black at alpha ~128.
+    for kind, suffix in (("main", ""), ("glow", "-glow")):
         imgs = [load(src / f"platform-{kind}-{d}.png") for d in range(4)]
         if kind == "glow":
             imgs = [as_light(im) for im in imgs]
-        if kind == "shadow":
-            imgs = [shadow(im) for im in imgs]
+        else:
+            baked = []
+            for d, im in enumerate(imgs):
+                sh = shadow(load(src / f"platform-shadow-{d}.png"), 0.5)
+                sh.alpha_composite(im)
+                baked.append(sh)
+            imgs = baked
         w, h = imgs[0].size
         out = Image.new("RGBA", (w * 4, h))
         for d, im in enumerate(imgs):
@@ -107,8 +117,17 @@ def stitch(src, dest="graphics", name="magic-inserter", render_ppt=128, ppt=64):
         main.save(dest / f"{name}-hand-{state}.png", optimize=True)
         glow = as_light(load(src / f"hand-{state}-glow.png", (HAND_W_PX, HAND_H_PX)))
         glow.save(dest / f"{name}-hand-{state}-light.png", optimize=True)
-        # vanilla hand shadows: the silhouette at half density, slightly soft
-        sh = shadow(main, 0.5).filter(ImageFilter.GaussianBlur(0.6))
+        # soft ground shadow of a hovering hand: the silhouette shrunk a little
+        # about its centre, blurred, light density (the engine draws it
+        # displaced on the ground, which is what sells the height)
+        sil = shadow(main, 0.42)
+        bb = sil.getchannel("A").getbbox()
+        cx, cy = (bb[0] + bb[2]) / 2, (bb[1] + bb[3]) / 2
+        k = 0.88
+        small = sil.resize((round(sil.width * k), round(sil.height * k)), Image.LANCZOS)
+        sh = Image.new("RGBA", sil.size, (0, 0, 0, 0))
+        sh.paste(small, (round(cx - cx * k), round(cy - cy * k)))
+        sh = sh.filter(ImageFilter.GaussianBlur(2.5))
         sh.save(dest / f"{name}-hand-{state}-shadow.png", optimize=True)
         print(f"hand {state}: {main.size}")
 
@@ -136,34 +155,29 @@ STONE = paint("stone", (0.20, 0.185, 0.17), (0.035, 0.03, 0.028), noise_scale=14
 
 
 def orb_material():
-    """Glassy self-lit orb: swirling streaks of magenta light (heavily
-    distorted bands) brightest at the core, fading to deep purple at the rim,
-    under a clear coat that catches the sun."""
-    m, em = emitter("magic_orb", (0.95, 0.25, 1.0), 1.1, base=(0.10, 0.0, 0.12), glass=True)
+    """The magic orb item's look: pale, faintly blue-white glass with a milky,
+    softly clouded inside, a little brighter in the core, under a clear coat
+    that takes a sharp sun highlight."""
+    m, em = emitter("magic_orb", (0.82, 0.9, 1.0), 0.55, base=(0.78, 0.84, 0.9), glass=True)
     nt = m.node_tree
     L = nt.links.new
     bsdf = nt.nodes["Principled BSDF"]
     tc = nt.nodes.new("ShaderNodeTexCoord")
-    wave = nt.nodes.new("ShaderNodeTexWave")
-    wave.wave_type = "BANDS"
-    wave.bands_direction = "DIAGONAL"
-    wave.inputs["Scale"].default_value = 2.2
-    wave.inputs["Distortion"].default_value = 9.0
-    wave.inputs["Detail"].default_value = 2.5
-    wave.inputs["Detail Scale"].default_value = 1.5
-    L(tc.outputs["Object"], wave.inputs["Vector"])
+    noise = nt.nodes.new("ShaderNodeTexNoise")
+    noise.inputs["Scale"].default_value = 2.5
+    noise.inputs["Detail"].default_value = 3.0
+    noise.inputs["Distortion"].default_value = 1.5
+    L(tc.outputs["Object"], noise.inputs["Vector"])
     ramp = nt.nodes.new("ShaderNodeValToRGB")
     els = ramp.color_ramp.elements
-    els[0].position, els[0].color = 0.25, (0.20, 0.0, 0.30, 1)
-    els[1].position, els[1].color = 0.8, (1.0, 0.35, 1.0, 1)
-    e = els.new(0.55)
-    e.color = (0.62, 0.06, 0.78, 1)
-    L(wave.outputs["Fac"], ramp.inputs["Fac"])
+    els[0].position, els[0].color = 0.3, (0.62, 0.72, 0.82, 1)
+    els[1].position, els[1].color = 0.75, (0.95, 0.98, 1.0, 1)
+    L(noise.outputs["Fac"], ramp.inputs["Fac"])
     lw = nt.nodes.new("ShaderNodeLayerWeight")
     lw.inputs["Blend"].default_value = 0.5
-    core = nt.nodes.new("ShaderNodeMapRange")       # facing -> 1 at centre, 0.2 at rim
+    core = nt.nodes.new("ShaderNodeMapRange")       # facing -> 1 at centre, 0.45 at rim
     core.inputs["To Min"].default_value = 1.0
-    core.inputs["To Max"].default_value = 0.2
+    core.inputs["To Max"].default_value = 0.45
     L(lw.outputs["Facing"], core.inputs["Value"])
     mul = nt.nodes.new("ShaderNodeMix")
     mul.data_type = "RGBA"
@@ -172,8 +186,9 @@ def orb_material():
     L(ramp.outputs["Color"], mul.inputs["A"])
     L(core.outputs["Result"], mul.inputs["B"])
     L(mul.outputs["Result"], bsdf.inputs["Emission Color"])
-    bsdf.inputs["Roughness"].default_value = 0.04
-    bsdf.inputs["Coat Roughness"].default_value = 0.02
+    L(mul.outputs["Result"], bsdf.inputs["Base Color"])
+    bsdf.inputs["Roughness"].default_value = 0.15
+    bsdf.inputs["Coat Roughness"].default_value = 0.03
     return m, em
 
 
@@ -183,21 +198,37 @@ GEM_EM_MAT, GEM_EM = emitter("cuff_gem", (0.8, 0.2, 1.0), 0.6, base=(0.35, 0.05,
 
 
 def cloth():
-    """Off-white glove fabric: soft, a faint weave bump, a touch of sheen and
-    grime in the creases so it isn't a flat white blob at 32 px per tile."""
-    m = paint("glove", (0.86, 0.85, 0.81), (0.40, 0.38, 0.37), noise_scale=30.0,
-              bump=0.25, bump_scale=160.0, dirt=0.0, ao_dist=0.05)
-    b = m.node_tree.nodes["Principled BSDF"]
-    b.inputs["Sheen Weight"].default_value = 0.4
-    b.inputs["Subsurface Weight"].default_value = 0.15
+    """Cream glove fabric: soft weave bump, a touch of sheen, and a slightly
+    darker rim (by facing ratio) so the silhouette holds on light ground."""
+    m = paint("glove", (0.93, 0.9, 0.81), (0.45, 0.42, 0.38), noise_scale=30.0,
+              bump=0.35, bump_scale=220.0, dirt=0.0, ao_dist=0.08)
+    nt = m.node_tree
+    b = nt.nodes["Principled BSDF"]
+    b.inputs["Sheen Weight"].default_value = 0.35
+    b.inputs["Subsurface Weight"].default_value = 0.1
     b.inputs["Subsurface Radius"].default_value = (0.02, 0.02, 0.02)
+    col = b.inputs["Base Color"].links[0].from_socket
+    lw = nt.nodes.new("ShaderNodeLayerWeight")
+    lw.inputs["Blend"].default_value = 0.35
+    rim = nt.nodes.new("ShaderNodeMix")
+    rim.data_type = "RGBA"
+    rim.inputs["B"].default_value = (0.5, 0.46, 0.4, 1)
+    fr = nt.nodes.new("ShaderNodeMapRange")
+    fr.inputs["From Min"].default_value = 0.55
+    fr.inputs["From Max"].default_value = 1.0
+    fr.inputs["To Max"].default_value = 0.8
+    nt.links.new(lw.outputs["Facing"], fr.inputs["Value"])
+    nt.links.new(fr.outputs["Result"], rim.inputs["Factor"])
+    nt.links.new(col, rim.inputs["A"])
+    nt.links.new(rim.outputs["Result"], b.inputs["Base Color"])
     return m
 
 
 CLOTH = cloth()
 DECK = paint("deck", (0.18, 0.03, 0.135), (0.02, 0.003, 0.016), noise_scale=9.0, bump=0.6,
              bump_scale=25.0, dirt=0.2, hammered=True)    # PURPLE, darker: it faces the sun
-STITCH = paint("stitch", (0.30, 0.29, 0.29), (0.12, 0.11, 0.11), bump=0.0, dirt=0.0)
+SEAM = paint("seam", (0.72, 0.68, 0.6), (0.4, 0.37, 0.33), bump=0.0, dirt=0.0)
+CUFF_IN = paint("cuff_inside", (0.35, 0.32, 0.28), (0.08, 0.07, 0.06), bump=0.0, dirt=0.0)
 
 
 def lathe(name, profile, mat, parent=None, segs=48, axis="Z"):
@@ -326,33 +357,37 @@ sphere("prow_ruby", 0.026, (0.0, -0.375, DECK_Z + 0.0), RUBY, plat, segs=16)
 curve_obj("prow_bezel", ring_pts(0.03, DECK_Z - 0.004, 20, 0.0, -0.375), GOLD, 0.009, plat,
           closed=True)
 
-# cradle: turned gold cup on a short bronze pedestal, four claws holding the orb
-ORB_R = 0.095
-ORB_Z = 0.232
-cup = lathe("cradle", [(0.105, DECK_Z), (0.105, DECK_Z + 0.012), (0.08, DECK_Z + 0.022),
-                       (0.05, DECK_Z + 0.04), (0.045, DECK_Z + 0.06), (0.06, DECK_Z + 0.075),
-                       (0.088, DECK_Z + 0.095), (0.1, DECK_Z + 0.112), (0.094, DECK_Z + 0.118),
-                       (0.075, DECK_Z + 0.105), (0.0, DECK_Z + 0.08)], GOLD, plat)
-curve_obj("cradle_lip", ring_pts(0.098, DECK_Z + 0.114, 40), GOLD, 0.012, plat, closed=True)
-curve_obj("cradle_collar", ring_pts(0.05, DECK_Z + 0.048, 32), BRONZE, 0.014, plat, closed=True)
+# The orb is the magic orb item itself (graphics/magic-orb.png: pale,
+# slightly blue-white glass) at the size it shows lying on the ground: items
+# on the ground are drawn with the icon 0.5 tiles wide and the sphere fills
+# 62% of the icon, so ~0.31 tiles across. It rests in a low, open gold ring
+# with four short claws, so the orb dominates the plate.
+ORB_R = 0.155
+SEAT_R, SEAT_Z = 0.112, DECK_Z + 0.035        # ring the orb sits in
+ORB_Z = SEAT_Z + math.sqrt(ORB_R ** 2 - SEAT_R ** 2)
+lathe("cradle", [(0.13, DECK_Z), (0.13, DECK_Z + 0.01), (0.11, DECK_Z + 0.02),
+                 (0.105, SEAT_Z - 0.005), (0.118, SEAT_Z + 0.004), (0.11, SEAT_Z + 0.008),
+                 (0.07, SEAT_Z - 0.01), (0.0, SEAT_Z - 0.012)], GOLD, plat)
+curve_obj("cradle_lip", ring_pts(SEAT_R + 0.006, SEAT_Z + 0.004, 48), GOLD, 0.013, plat,
+          closed=True)
+curve_obj("cradle_foot", ring_pts(0.13, DECK_Z + 0.006, 48), BRONZE, 0.012, plat, closed=True)
 for k in range(4):
     a = k * math.pi / 2 + math.pi / 4
-    c, s = math.cos(a), math.sin(a)
-    # claw follows the orb's surface 0.012 out, from the cup lip up past the
-    # equator, so it really holds the sphere
+    c, s_ = math.cos(a), math.sin(a)
+    # short claws following the orb's lower half, 0.012 off its surface
     pts = []
-    for t in range(7):
-        el = math.radians(-35 + t * 12)     # elevation on the orb
-        rr = ORB_R + 0.014
-        pts.append((c * rr * math.cos(el), s * rr * math.cos(el), ORB_Z + rr * math.sin(el)))
-    curve_obj(f"claw{k}", pts, GOLD, 0.013, plat, taper=lambda t: 1.15 - 0.45 * t)
-    sphere(f"claw_tip{k}", 0.014, pts[-1], GOLD, plat, segs=12)
+    for t in range(5):
+        el = math.radians(-45 + t * 10)
+        rr = ORB_R + 0.012
+        pts.append((c * rr * math.cos(el), s_ * rr * math.cos(el), ORB_Z + rr * math.sin(el)))
+    curve_obj(f"claw{k}", pts, GOLD, 0.013, plat, taper=lambda t: 1.15 - 0.4 * t)
+    sphere(f"claw_tip{k}", 0.015, pts[-1], RUBY if k % 2 else GOLD, plat, segs=12)
 
-orb = sphere("orb", ORB_R, (0, 0, ORB_Z), ORB, plat, segs=48)
+orb = sphere("orb", ORB_R, (0, 0, ORB_Z), ORB, plat, segs=64)
 glow(orb)
 orb.visible_shadow = False          # the orb light sits inside it
 orb_light_d = bpy.data.lights.new("orb_light", "POINT")
-orb_light_d.color = (0.85, 0.25, 1.0)
+orb_light_d.color = (0.82, 0.9, 1.0)
 orb_light_d.energy = 0.35
 orb_light_d.shadow_soft_size = ORB_R * 0.8
 orb_light = bpy.data.objects.new("orb_light", orb_light_d)
@@ -362,16 +397,36 @@ orb_light.location = (0, 0, ORB_Z)
 PLATFORM_OBJS = [plat] + list(plat.children_recursive)
 
 # ============================================================================
-# Glove (natural proportions; local frame: grip point at the origin, fingers
-# towards +y, back of the hand up +z; a right hand, so the thumb is on -x)
+# Glove (natural on-screen proportions; local frame: grip point at the origin,
+# fingers towards +y, up +z towards the camera; a right hand, thumb on -x)
 # ============================================================================
+#
+# The engine draws the held item's icon AFTER the hand sprite, centred on the
+# grip point and NOT rotated with the hand (2.1.22 screenshots): a ~0.5 tile
+# box whose content (an iron plate, ~85% of the box for most icons) covers
+# everything within ~ITEM_R of the grip, whatever the arm's angle. So the
+# glove pinches the item from behind: palm, back of the hand and cuff sit on
+# the arm side, and the thumb and the fingers reach forward round the item's
+# left and right edges, staying outside ITEM_R so they read as wrapped round
+# it, not hidden under it. Open, the same hand hovers with the digits spread
+# and hanging down, ready to pinch. Fingertips point down, so seen from above
+# they are foreshortened knobs; the cuff rises towards the (invisible) arm, so
+# its opening shows. That, overhead light and soft occlusion between the
+# digits give it volume.
+#
+# Lengthwise the engine squashes the canvas by s ~ 0.55-1.0 on top of
+# HAND_STRETCH, so a natural y shows at y * HAND_STRETCH * s: things beside
+# the item (|x| > ITEM_R) are safe at any squash, the palm's front edge sits
+# back far enough to clear the item at the typical squash.
 
 MB_K = 0.575        # metaball surface radius / element radius (stiffness 2, threshold 0.6)
+ITEM_R = 0.24       # screen radius around the grip covered by a held item icon (plates and
+                    # gears reach ~0.23-0.24; the fingertips just touch that edge)
 
 
 def blob(name, elems, mat, parent):
     """Smooth blobby mesh from metaball capsules/ellipsoids. elems: list of
-    ("cap", p0, p1, r) or ("ell", centre, (rx, ry, rz)) in surface radii."""
+    ("cap", p0, p1, r) or ("ell", centre, (rx, ry, rz), pitch) in surface radii."""
     mb = bpy.data.metaballs.new(name)
     mb.resolution = mb.render_resolution = 0.006
     mb.threshold = 0.6
@@ -387,12 +442,13 @@ def blob(name, elems, mat, parent):
             el.size_x = (p1 - p0).length / 2
             el.rotation = (p1 - p0).to_track_quat("X", "Z")
         else:
-            _, c, (rx, ry, rz) = e
+            _, c, (rx, ry, rz), pitch = e
             el.type = "ELLIPSOID"
             el.co = c
             rmax = max(rx, ry, rz)
             el.radius = rmax / MB_K
             el.size_x, el.size_y, el.size_z = rx / rmax, ry / rmax, rz / rmax
+            el.rotation = Euler((pitch, 0, 0)).to_quaternion()
     tmp = bpy.data.objects.new(name + "_mb", mb)
     link(tmp)
     dg = bpy.context.evaluated_depsgraph_get()
@@ -405,111 +461,122 @@ def blob(name, elems, mat, parent):
     return o
 
 
-# Lengthwise layout (y, natural tiles). The item (~0.42 tiles on screen) is
-# centred on the grip point, so it spans y = -0.21..0.21: the open glove's
-# fingers reach over it, the fist grips its back edge from y ~ -0.1.
-CUFF_END, CUFF_START = -0.468, -0.38
-WRIST_Y = -0.37
+def digit(name, pts, radii, parent):
+    """A finger or thumb: a chain of capsules through pts, tapering."""
+    return blob(name, [("cap", pts[i], pts[i + 1], radii[i]) for i in range(len(pts) - 1)],
+                CLOTH, parent)
+
+
+WRIST = Vector((0.0, -0.59, 0.20))
+CUFF_TILT = math.atan(0.5)          # the cuff rises towards the arm
+CUFF_LEN = 0.12
 
 
 def cuff(name, parent):
-    """Rolled cuff: a flared fabric tube with a fat rolled lip, a thin gold
-    band and a small purple gem on top (the only magic about the glove)."""
-    tube = lathe(name + "_tube", [(0.07, CUFF_START + 0.02), (0.078, CUFF_START - 0.02),
-                                  (0.09, CUFF_END + 0.035), (0.098, CUFF_END + 0.01),
-                                  (0.08, CUFF_END + 0.005)], CLOTH, parent, axis="Y")
-    tube.scale = (1.0, 1.0, 0.72)        # the wrist is flatter than it is wide
-    lip = curve_obj(name + "_lip", [(0.098 * math.cos(t), CUFF_END + 0.018,
-                                     0.098 * 0.72 * math.sin(t))
+    """Rolled cuff rising back towards the invisible arm: a flared fabric tube
+    with a fat rolled lip (its opening shows from above), a thin gold band
+    and a small purple gem on top."""
+    holder = bpy.data.objects.new(name, None)
+    link(holder, parent)
+    holder.location = WRIST
+    holder.rotation_euler = (-CUFF_TILT, 0, 0)
+    tube = lathe(name + "_tube", [(0.07, 0.03), (0.08, 0.0), (0.088, -0.06),
+                                  (0.1, -CUFF_LEN + 0.012), (0.096, -CUFF_LEN)], CLOTH, holder,
+                 axis="Y")
+    tube.scale = (1.0, 1.0, 0.8)
+    inner = lathe(name + "_inside", [(0.088, -CUFF_LEN + 0.004), (0.07, -0.03)], CUFF_IN, holder,
+                  axis="Y")
+    inner.scale = (1.0, 1.0, 0.8)
+    lip = curve_obj(name + "_lip", [(0.1 * math.cos(t), -CUFF_LEN + 0.008, 0.08 * math.sin(t))
                                     for t in (TAU * k / 48 for k in range(48))],
-                    CLOTH, 0.022, parent, closed=True)
+                    CLOTH, 0.024, holder, closed=True)
     lip.data.bevel_resolution = 6
-    bz = CUFF_START - 0.035
-    band = curve_obj(name + "_band", [(0.084 * math.cos(t), bz, 0.084 * 0.72 * math.sin(t))
-                                      for t in (TAU * k / 48 for k in range(48))],
-                     GOLD, 0.011, parent, closed=True)
-    gz = 0.084 * 0.72 + 0.008
-    curve_obj(name + "_bezel", [(0.022 * math.cos(t), bz + 0.022 * math.sin(t), gz)
-                                for t in (TAU * k / 24 for k in range(24))], GOLD, 0.007, parent,
+    bz = -0.035
+    curve_obj(name + "_band", [(0.088 * math.cos(t), bz, 0.0715 * math.sin(t))
+                               for t in (TAU * k / 48 for k in range(48))],
+              GOLD, 0.011, holder, closed=True)
+    gz = 0.0715 + 0.008
+    curve_obj(name + "_bezel", [(0.021 * math.cos(t), bz + 0.021 * math.sin(t), gz)
+                                for t in (TAU * k / 24 for k in range(24))], GOLD, 0.007, holder,
               closed=True)
-    gem = sphere(name + "_gem", 0.017, (0.0, bz, gz + 0.004), GEM_EM_MAT, parent, segs=20)
+    gem = sphere(name + "_gem", 0.016, (0.0, bz, gz + 0.004), GEM_EM_MAT, holder, segs=20)
     gem.scale = (1, 1, 0.7)
     gem["gem"] = True
-    return tube, band, gem
+    return holder
 
 
-def stitches(name, hand, parent, y0, y1, xs=(-0.036, 0.0, 0.036)):
-    """The three stitched lines on the back of the glove, laid on its surface
-    by ray-casting down onto the mesh."""
-    dg = bpy.context.evaluated_depsgraph_get()
+def seam(name, hand, parent):
+    """One faint seam down the middle of the back, laid on the surface."""
     inv = hand.matrix_world.inverted()
-    for i, x in enumerate(xs):
-        pts = []
-        for k in range(9):
-            t = k / 8
-            y = y0 + (y1 - y0) * t
-            xx = x * (1 + 0.25 * t)        # fan out slightly towards the knuckles
-            ok, loc, *_ = hand.ray_cast(inv @ Vector((xx, y, 1.0)), Vector((0, 0, -1)))
-            if ok:
-                pts.append((xx, y, loc.z + 0.002))
-        curve_obj(f"{name}_stitch{i}", pts, STITCH, 0.005, parent)
+    pts = []
+    for k in range(10):
+        y = -0.51 + 0.16 * k / 9
+        ok, loc, *_ = hand.ray_cast(inv @ Vector((0.02, y, 1.0)), Vector((0, 0, -1)))
+        if ok:
+            pts.append((0.02, y, loc.z + 0.001))
+    curve_obj(name + "_seam", pts, SEAM, 0.0035, parent)
+
+
+def hand_back(name, parent):
+    """Big puffy back of the hand hovering just behind the item, tipped down
+    at the front, and the wrist rising to the cuff. Cartoon proportions: the
+    palm is about as wide as the item it holds."""
+    return blob(name, [("ell", (0.0, -0.41, 0.16), (0.2, 0.15, 0.1), math.radians(-14)),
+                       ("cap", (0.0, -0.47, 0.18), tuple(WRIST + Vector((0, 0.02, 0))), 0.095)],
+                CLOTH, parent)
+
+
+# fat, short cartoon digits with round tips
+R_FINGER = (0.064, 0.06)
+R_THUMB = (0.07, 0.066)
 
 
 def glove_open():
     root = bpy.data.objects.new("glove_open", None)
     link(root)
-    palm = blob("open_palm", [("ell", (0.0, -0.265, 0.0), (0.105, 0.115, 0.042)),
-                              ("cap", (0.0, -0.3, -0.004), (0.0, WRIST_Y - 0.02, -0.004), 0.066)],
-                CLOTH, root)
-    # four puffy fingers fanning out from the knuckle line, middle longest
-    fingers = ((-0.066, 0.165, 0.2), (-0.022, 0.19, 0.06), (0.024, 0.175, -0.07),
-               (0.068, 0.135, -0.21))
-    for i, (x, ln, ang) in enumerate(fingers):
-        base = Vector((x * 0.95, -0.185, 0.004))
-        d = Vector((-math.sin(ang), math.cos(ang), 0.0))
-        tip = base + d * ln
-        blob(f"open_finger{i}", [("cap", tuple(base), tuple(base + d * ln * 0.5 + Vector((0, 0, 0.008))),
-                                  0.027),
-                                 ("cap", tuple(base + d * ln * 0.5 + Vector((0, 0, 0.008))), tuple(tip),
-                                  0.027)], CLOTH, root)
-    blob("open_thumb", [("cap", (-0.07, -0.3, -0.005), (-0.15, -0.215, -0.002), 0.031),
-                        ("cap", (-0.15, -0.215, -0.002), (-0.178, -0.145, 0.004), 0.029)],
-         CLOTH, root)
+    back = hand_back("open_back", root)
+    # spread and hanging down, ready to pinch: thumb out to the left, fingers
+    # fanning round the right and front of where the item will be
+    digit("open_thumb", [(-0.17, -0.39, 0.15), (-0.33, -0.27, 0.11), (-0.38, -0.11, 0.04)],
+          R_THUMB, root)
+    digit("open_index", [(0.04, -0.3, 0.19), (0.12, -0.14, 0.15), (0.17, 0.0, 0.05)],
+          R_FINGER, root)
+    digit("open_middle", [(0.12, -0.32, 0.18), (0.27, -0.21, 0.14), (0.35, -0.07, 0.04)],
+          R_FINGER, root)
+    digit("open_ring", [(0.17, -0.39, 0.17), (0.33, -0.33, 0.12), (0.39, -0.22, 0.04)],
+          (0.06, 0.056), root)
+    digit("open_pinky", [(0.17, -0.47, 0.15), (0.31, -0.47, 0.1), (0.36, -0.38, 0.04)],
+          (0.052, 0.048), root)
     cuff("open_cuff", root)
-    stitches("open", palm, root, -0.345, -0.215)
+    seam("open", back, root)
     return root
 
 
 def glove_closed():
     root = bpy.data.objects.new("glove_closed", None)
     link(root)
-    palm = blob("fist_palm", [("ell", (0.0, -0.285, 0.0), (0.105, 0.105, 0.055)),
-                              ("cap", (0.0, -0.31, -0.004), (0.0, WRIST_Y - 0.02, -0.004), 0.066)],
-                CLOTH, root)
-    # curled fingers: proximal phalanx forward and down from the knuckles,
-    # the rest folded back under the palm - the knuckle row is the fist's
-    # front edge, gripping the back edge of the item
-    for i, x in enumerate((-0.066, -0.022, 0.023, 0.066)):
-        reach = (0.0, 0.012, 0.008, -0.006)[i]
-        k0 = Vector((x, -0.205, 0.022))
-        k1 = Vector((x * 1.02, -0.135 + reach, -0.004))
-        k2 = Vector((x * 1.02, -0.15 + reach, -0.055))
-        k3 = Vector((x, -0.2, -0.07))
-        blob(f"fist_finger{i}", [("cap", tuple(k0), tuple(k1), 0.03), ("cap", tuple(k1), tuple(k2), 0.028),
-                                 ("cap", tuple(k2), tuple(k3), 0.026)], CLOTH, root)
-    # thumb folded across the front of the fingers' side, tip forward
-    blob("fist_thumb", [("cap", (-0.075, -0.31, -0.01), (-0.12, -0.225, 0.0), 0.032),
-                        ("cap", (-0.12, -0.225, 0.0), (-0.1, -0.15, 0.012), 0.029)],
-         CLOTH, root)
+    back = hand_back("fist_back", root)
+    # pinching the item from behind: the thumb wraps down its left edge, index
+    # and middle wrap down its right edge, staying outside ITEM_R so the icon
+    # drawn over the hand leaves them visible; ring and pinky curled in
+    xt = ITEM_R + R_THUMB[1]
+    xf = ITEM_R + R_FINGER[1]
+    digit("fist_thumb", [(-0.17, -0.36, 0.15), (-xt - 0.04, -0.2, 0.1), (-xt, -0.03, 0.03)],
+          R_THUMB, root)
+    digit("fist_index", [(0.13, -0.3, 0.18), (xf + 0.03, -0.17, 0.12), (xf, -0.01, 0.03)],
+          R_FINGER, root)
+    digit("fist_middle", [(0.17, -0.37, 0.17), (xf + 0.06, -0.28, 0.1), (xf + 0.04, -0.15, 0.02)],
+          R_FINGER, root)
+    digit("fist_ring", [(0.18, -0.44, 0.15), (0.31, -0.43, 0.09), (0.31, -0.37, 0.04)],
+          (0.056, 0.052), root)
+    digit("fist_pinky", [(0.15, -0.5, 0.13), (0.27, -0.51, 0.08)], (0.048,), root)
     cuff("fist_cuff", root)
-    stitches("fist", palm, root, -0.36, -0.24)
+    seam("fist", back, root)
     return root
 
 
 GLOVES = {"open": glove_open(), "closed": glove_closed()}
 for g in GLOVES.values():
-    # a bit bigger than the vanilla claw is wide, scaled about the grip point
-    # so the item stays where the vanilla tines hold it
     g.scale = (GLOVE_SCALE,) * 3
 HAND_OBJS = {k: [g] + list(g.children_recursive) for k, g in GLOVES.items()}
 
@@ -561,7 +628,7 @@ def render_platform():
             if o.type != "LIGHT":
                 o.visible_camera = True
         lights()
-        ORB_EM.default_value = 1.1
+        ORB_EM.default_value = 0.55
         render(OUT / f"platform-main-{d}.png")
         # light pass: only the orb's own light, so the cradle and deck pick up
         # its purple spill; turned into a light sprite by --stitch
