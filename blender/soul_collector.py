@@ -3,10 +3,37 @@ Procedural Blender model + Factorio render of the soul collector.
 
 The soul collector is a container (one slot) that pulls the soul of anything
 dying within 35 tiles into itself and keeps it. Containers only take a static
-`picture`, so this renders a single frame (main + glow + shadow):
+`picture`, so control.lua draws one of two 64-frame seamless loops over it,
+picked by whether a soul is inside (the picture is the empty loop's frame 0):
 
     blender -b --factory-startup -P blender/soul_collector.py -- \
-        --out graphics/generated/soul-collector [--preview] [--samples 32]
+        --state empty|full --out graphics/generated/soul-collector-<state> \
+        [--preview --frame 0,8] [--samples 32]
+    .venv/bin/python blender/stitch.py graphics/generated/soul-collector-<state> \
+        --name soul-collector-<state> --crop
+
+(stitch prints the shift for entities.lua; the empty run's shadow becomes
+graphics/soul-collector-shadow.png, shared by both states.)
+
+The two states, and why things move the way they do:
+  * empty - hunting. The valve is open, so the funnel draws: the teal vortex
+    turns once per loop (a rotating inward spiral reads as pouring down the
+    throat), flickering, and five motes of soul-stuff drift in over the lip
+    and spiral down the funnel wall into the throat, speeding up as the
+    radius shrinks (angle ~ 1/r, like water down a drain). The reliquary is
+    dark, its shackle lies open on the chamber floor with the chains slack,
+    the runes are dim and breathe once per loop, the soul lamp is out and the
+    gauge needle rests on "0".
+  * full - caught. The handwheel is turned a third of a turn to shut the
+    valve, so the vortex stands still and fades to a dull residue. A teal
+    ghost (head, shoulders, tail - the soul item's silhouette) stands in the
+    glass with its tail in the shackle. Twice per loop it tugs: a sudden jerk
+    away to the front-left, then front-right, a strained shiver, a slow sag
+    back. The shackle pivot moves with it, and the three chains are posed
+    every frame along a parabola of fixed length from their floor pins: each
+    snaps taut at the peak of the pull away from it and sags (onto the floor)
+    otherwise. Runes, cage bars, soul lamp and skull eyes glow bright teal
+    and flare with each tug; the gauge needle pins "1" and judders.
 
 Shared helpers live in blender/fblend.py; stitch with blender/stitch.py.
 World units are Factorio tiles; the entity is 2x2 centred on the origin,
@@ -32,12 +59,20 @@ from pathlib import Path
 
 import bmesh
 import bpy
-from mathutils import Vector
+from mathutils import Matrix, Quaternion, Vector
 
 sys.path.insert(0, str(Path(__file__).parent))
 import fblend  # noqa: E402
 
-args = fblend.parse_args("soul-collector", frames=1, samples=192)
+# --state empty|full picks which of the two loops to render (see docstring)
+STATE = "full"
+if "--state" in sys.argv:
+    _i = sys.argv.index("--state")
+    STATE = sys.argv[_i + 1]
+    del sys.argv[_i:_i + 2]
+assert STATE in ("empty", "full"), STATE
+FULL = STATE == "full"
+args = fblend.parse_args(f"soul-collector-{STATE}", frames=64, samples=192)
 fblend.standard_materials()
 from fblend import *  # noqa: E402,F401,F403
 
@@ -155,6 +190,20 @@ VORTEX, VORTEX_EM = emitter("vortex", (0.18, 0.92, 0.82), 0.62, base=(0.01, 0.06
 GAUGE_FACE = paint("gauge_face", (0.8, 0.74, 0.58), (0.3, 0.25, 0.15), dirt=0.1, bump=0.05)
 SOOT = paint("soot", (0.02, 0.018, 0.02), (0.0, 0.0, 0.0), dirt=0.0, bump=0.0)
 RUNE_EM.default_value = 0.6
+# State tells, each with its own animatable strength: the soul lamp by the
+# gauge, the skull's eyes, and a cold teal charge in the cage bars that only
+# shows while the cage holds something.
+LAMP, LAMP_EM = emitter("soul_lamp", (0.2, 0.95, 0.85), 0.6, base=(0.02, 0.07, 0.07), glass=True)
+EYES, EYES_EM = emitter("skull_eyes", (0.2, 0.95, 0.85), 0.6, base=(0.01, 0.04, 0.04))
+# motes of soul-stuff the open funnel sucks in while it hunts
+MOTE, MOTE_EM = emitter("mote", (0.4, 0.97, 0.9), 0.9, base=(0.05, 0.2, 0.2))
+CAGE = metal("cage_iron", (0.17, 0.165, 0.16), (0.018, 0.017, 0.016), rough=(0.35, 0.62),
+             wear=(0.42, 0.4, 0.37), dirt=0.3)
+_cb = CAGE.node_tree.nodes["Principled BSDF"]
+_cb.inputs["Emission Color"].default_value = (0.2, 0.95, 0.85, 1)
+CAGE_EM = _cb.inputs["Emission Strength"]
+CAGE_EM.default_value = 0.0
+SOUL_MATS = []      # (emission strength socket, base strength, noise offset socket)
 
 
 def soul_material(name, strength, dens_lo, dens_hi, blend):
@@ -205,14 +254,15 @@ def soul_material(name, strength, dens_lo, dens_hi, blend):
     L(tr.outputs[0], mix.inputs[1])
     L(em.outputs[0], mix.inputs[2])
     L(mix.outputs[0], out.inputs[0])
+    SOUL_MATS.append((em.inputs["Strength"], strength, mp.inputs["Location"]))
     return m
 
 
 # Layered like smoke: a faint, frayed outer veil, a denser core inside it and
 # loose wisps, each translucent, so the soul shades softly instead of
 # reading as a solid shape. Strengths stay low so overlaps do not clip.
-SOUL = soul_material("soul", 0.62, 0.0, 0.55, 0.65)
-SOUL_CORE = soul_material("soul_core", 0.8, 0.5, 1.2, 0.4)
+SOUL = soul_material("soul", 0.62, 0.05, 0.8, 0.65)
+SOUL_CORE = soul_material("soul_core", 0.85, 0.8, 1.6, 0.4)
 SOUL_WISP = soul_material("soul_wisp", 0.55, 0.2, 0.8, 0.5)
 
 
@@ -482,28 +532,30 @@ for k in range(6):
     a = TAU * k / 6
     pts = [(CX + (glass_r(z) + 0.022) * math.cos(a), CY + (glass_r(z) + 0.022) * math.sin(a), z)
            for z in [GL_Z0 + (GL_Z1 - GL_Z0) * i / 16 for i in range(17)]]
-    rail(f"cage_rib{k}", pts, 0.017, mat=IRON)
+    glow(rail(f"cage_rib{k}", pts, 0.017, mat=CAGE))
 
-# --- the soul: a wispy teal wraith, like a cold flame, twisting up from the
-# floor socket. No face - at 64 px per tile features read as an emoji; only a
-# faint hollow on the head hints at one.
+# --- the soul: a wispy teal ghost - round head, shoulders, a body thinning
+# into the tail that is shackled to the chamber floor (the silhouette of the
+# soul item, so it reads as "a soul" even at 64 px per tile). No face -
+# features read as an emoji at that size; only a faint hollow hints at one.
 SOUL_Z = GL_Z0 + 0.04
-SOUL_Y = CY - 0.04   # leaning towards the glass so it is in view under the lid
-WRAITH = [(0.0, 0.0), (0.05, 0.04), (0.11, 0.13), (0.155, 0.26), (0.165, 0.38), (0.15, 0.48),
-          (0.12, 0.56), (0.11, 0.62), (0.09, 0.68), (0.05, 0.75), (0.02, 0.8), (0.0, 0.84)]
+# Well forward of the axis and kept short: at 45 degrees the lid hides the top
+# of the bulb's back half, and the soul's head must stay in view under it.
+SOUL_Y = CY - 0.1
+SOUL_H = 0.85        # the lid's clamp lugs hide anything above ~1.35 tiles
+WRAITH = [(0.0, 0.0), (0.025, 0.04), (0.05, 0.12), (0.085, 0.24), (0.115, 0.36), (0.13, 0.44),
+          (0.12, 0.49), (0.075, 0.525), (0.045, 0.55), (0.065, 0.58), (0.085, 0.625),
+          (0.078, 0.67), (0.05, 0.705), (0.0, 0.72)]
+HEAD_Z = 0.625
 
 
-def wraith(name, scale, mat, twist, noise, disp):
-    o = lathe(name, [(r * scale, z * (0.92 + 0.08 * scale)) for r, z in WRAITH], mat,
+def wraith(name, scale, mat, noise, disp):
+    # radius scaled about the head's outline, so the inner core keeps a head
+    o = lathe(name, [(r * scale, z * SOUL_H) for r, z in WRAITH], mat,
               (CX, SOUL_Y, SOUL_Z), segs=40)
-    # twist it into a rising spiral and fray the surface so it reads as smoke
-    tw = o.modifiers.new("twist", "SIMPLE_DEFORM")
-    tw.deform_method = "TWIST"
-    tw.angle = math.radians(twist)
-    tw.deform_axis = "Z"
-    bend = o.modifiers.new("bend", "SIMPLE_DEFORM")     # tip curls over like a flame
+    bend = o.modifiers.new("bend", "SIMPLE_DEFORM")     # the body sways and bows
     bend.deform_method = "BEND"
-    bend.angle = math.radians(25)
+    bend.angle = math.radians(10)
     bend.deform_axis = "Y"
     sub = o.modifiers.new("sub", "SUBSURF")
     sub.levels = sub.render_levels = 2
@@ -517,32 +569,59 @@ def wraith(name, scale, mat, twist, noise, disp):
     return glow(o)
 
 
-soul = wraith("soul_veil", 0.8, SOUL, 150, 0.07, 0.07)
-wraith("soul_core", 0.42, SOUL_CORE, 200, 0.1, 0.035)
+# Everything that is the soul hangs off SOUL_RIG, a pivot at the shackle round
+# its tail: the soul lunges and leans about that point, dragging the shackle
+# (and so the chains) with it.
+SHACKLE_Z = SOUL_Z + 0.1
+SHACKLE_R = 0.085
+SOUL_P0 = Vector((CX, SOUL_Y, SHACKLE_Z))
+SOUL_RIG = bpy.data.objects.new("soul_rig", None)
+link(SOUL_RIG, root)
+SOUL_RIG.location = SOUL_P0
+SOUL_BITS = []          # hidden while the collector is empty
+
+
+def adopt(o, pivot, origin):
+    """Re-parent o (built in world space) to a pivot empty sitting at origin."""
+    o.parent = pivot
+    o.matrix_parent_inverse = Matrix.Translation(-Vector(origin))
+    return o
+
+
+soul = wraith("soul_veil", 1.12, SOUL, 0.05, 0.03)
+core = wraith("soul_core", 0.7, SOUL_CORE, 0.08, 0.01)
+# the noise the smoke is displaced by drifts round a closed loop (seamless)
+NOISE_DRIFT = bpy.data.objects.new("soul_noise_drift", None)
+link(NOISE_DRIFT, SOUL_RIG)
+for o in (soul, core):
+    o.modifiers["disp"].texture_coords_object = NOISE_DRIFT
+    SOUL_BITS.append(adopt(o, SOUL_RIG, SOUL_P0))
 # the faintest suggestion of a face: a soft, half-transparent hollow
 HOLLOW, _, _ = node_mat("soul_hollow")
 _nt = HOLLOW.node_tree
 _mix = _nt.nodes.new("ShaderNodeMixShader")
-_mix.inputs["Fac"].default_value = 0.35
+_mix.inputs["Fac"].default_value = 0.22
 _tr = _nt.nodes.new("ShaderNodeBsdfTransparent")
 _nt.links.new(_tr.outputs[0], _mix.inputs[1])
 _nt.links.new(_nt.nodes["Principled BSDF"].outputs[0], _mix.inputs[2])
 _nt.nodes["Principled BSDF"].inputs["Base Color"].default_value = (0.0, 0.03, 0.04, 1)
 _nt.links.new(_mix.outputs[0], _nt.nodes["Material Output"].inputs[0])
-HEAD = Vector((CX, SOUL_Y, SOUL_Z + 0.6))
-h = sphere("soul_hollow", 0.045, (HEAD.x + 0.01, HEAD.y - 0.06, HEAD.z), HOLLOW, root, segs=16)
+HEAD = Vector((CX, SOUL_Y, SOUL_Z + HEAD_Z * SOUL_H))
+h = sphere("soul_hollow", 0.032, (HEAD.x, HEAD.y - 0.068, HEAD.z - 0.005), HOLLOW, root, segs=16)
 h.scale = (1.3, 0.5, 0.8)
 h["see_through"] = True        # no hard black hole in the glow layer
-# smoke curling off the body into the bulb
+SOUL_BITS.append(adopt(h, SOUL_RIG, SOUL_P0))
+# smoke streaming off the tail and flanks and curling up round the body
 rng = random.Random(7)
-for k in range(14):
+for k in range(9):
     a0 = rng.uniform(0, TAU)
-    r0 = rng.uniform(0.1, 0.17)
-    z0 = SOUL_Z + rng.uniform(0.05, 0.4)
-    pts = [(CX + (r0 + 0.08 * t) * math.cos(a0 + 2.2 * t), SOUL_Y + (r0 + 0.08 * t) * math.sin(a0 + 2.2 * t),
-            z0 + 0.25 * t) for t in (i / 10 for i in range(11))]
-    glow(curve_obj(f"soul_wisp{k}", pts, SOUL_WISP, 0.026, root, res=2,
-                   taper=lambda t: (1.0 - t) ** 0.7))
+    r0 = rng.uniform(0.06, 0.12)
+    z0 = SOUL_Z + rng.uniform(0.04, 0.3)
+    pts = [(CX + (r0 + 0.07 * t) * math.cos(a0 + 2.2 * t), SOUL_Y + (r0 + 0.07 * t) * math.sin(a0 + 2.2 * t),
+            z0 + 0.2 * t) for t in (i / 10 for i in range(11))]
+    w = glow(curve_obj(f"soul_wisp{k}", pts, SOUL_WISP, 0.026, root, res=2,
+                       taper=lambda t: (1.0 - t) ** 0.7))
+    SOUL_BITS.append(adopt(w, SOUL_RIG, SOUL_P0))
 
 soul_light_d = bpy.data.lights.new("soul_light", "POINT")
 soul_light_d.color = SOUL_C
@@ -551,56 +630,92 @@ soul_light_d.shadow_soft_size = 0.15
 o = bpy.data.objects.new("soul_light", soul_light_d)
 link(o, root)
 o.location = (CX, CY - 0.05, SOUL_Z + 0.4)
+adopt(o, SOUL_RIG, SOUL_P0)
 
 
-# --- chains: the soul is bound by gold chain wound round it, pinned to the floor
-def chain_link(name, p, d, w, k):
-    """One oval link at p, long axis along d, alternate links turned 90 deg."""
+# --- chains: three iron chains from pins in the chamber floor to a shackle
+# round the soul's tail. Each link is a rigid ring posed every frame along the
+# chain's current curve, so the chains go taut when the soul pulls away from
+# their pin and sag (onto the floor if need be) when it eases back.
+LINK_L, LINK_W = 0.048, 0.03
+FLOOR_Z = GL_Z0 + 0.016
+
+
+def chain_link(name):
+    """One oval link in local space (long axis x); posed with set_link()."""
+    pts = [(LINK_L * math.cos(TAU * i / 16), LINK_W * math.sin(TAU * i / 16), 0.0)
+           for i in range(16)]
+    return curve_obj(name, pts, IRON, 0.014, root, closed=True, res=2)
+
+
+def set_link(o, p, d, k):
+    """Place link o at p, long axis along d, alternate links turned 90 deg."""
     d = d.normalized()
     side = d.cross(Vector((0, 0, 1)))
     if side.length < 1e-3:
         side = Vector((1, 0, 0))
     side.normalize()
-    up = side.cross(d)
+    up = d.cross(side)
     if k % 2:
-        side, up = up, side
-    L, W = 0.048, 0.03
-    pts = [tuple(p + d * L * math.cos(TAU * i / 16) + side * W * math.sin(TAU * i / 16))
-           for i in range(16)]
-    return curve_obj(name, pts, IRON, 0.014, root, closed=True, res=2)
+        side, up = up, -side
+    m = Matrix((d, side, up)).transposed().to_4x4()
+    m.translation = p
+    o.matrix_parent_inverse = Matrix.Identity(4)
+    o.matrix_basis = m
 
 
-def chain(name, path, step=0.068):
-    """Lay links along a polyline at constant spacing."""
-    pts = [Vector(p) for p in path]
-    segs = list(zip(pts, pts[1:]))
-    total = sum((b - a).length for a, b in segs)
-    n = int(total / step)
-    for k in range(n + 1):
-        s = k * step
-        for a, b in segs:
-            ln = (b - a).length
-            if s <= ln:
-                chain_link(f"{name}{k}", a.lerp(b, s / ln), b - a, 0.024, k)
-                break
-            s -= ln
+def chain_path(a, b, length, n=24):
+    """Points of a chain of the given length hung from a to b: straight when
+    taut, a parabolic sag otherwise (arc length of a shallow parabola is
+    D + 8 s^2 / 3D), resting on the chamber floor where it would dip below."""
+    D = (b - a).length
+    s = math.sqrt(max(0.0, 3 * D * (length - D) / 8))
+    pts = []
+    for i in range(n + 1):
+        t = i / n
+        p = a.lerp(b, t) - Vector((0, 0, 4 * s * t * (1 - t)))
+        p.z = max(p.z, FLOOR_Z)
+        pts.append(p)
+    return pts
 
 
-# The chains hold only the soul's tail: links crossing the glowing body read
-# as dark scribbles (eyes and mouths) at game scale.
-SHACKLE_Z = SOUL_Z + 0.1
-SHACKLE_R = 0.085
+def along(pts, s):
+    """Point and direction at arc length s along a polyline."""
+    for p, q in zip(pts, pts[1:]):
+        ln = (q - p).length
+        if s <= ln or q is pts[-1]:
+            return p.lerp(q, min(1.0, s / max(ln, 1e-6))), q - p
+        s -= ln
+
+
+class Chain:
+    def __init__(self, ci, anchor, attach_local, nlinks):
+        self.anchor = anchor
+        self.attach = attach_local         # on the shackle, relative to SOUL_P0
+        self.links = [chain_link(f"chain{ci}_{k}") for k in range(nlinks)]
+        self.length = None                 # set from the pose range, see below
+
+    def pose(self, end, length):
+        pts = chain_path(self.anchor, end, length)
+        total = sum((q - p).length for p, q in zip(pts, pts[1:]))
+        n = len(self.links)
+        for k, o in enumerate(self.links):
+            p, d = along(pts, total * (k + 0.5) / n)
+            set_link(o, p, d, k)
+
+
 anchors = [(CX - 0.22, CY - 0.12, GL_Z0 + 0.01), (CX + 0.22, CY - 0.1, GL_Z0 + 0.01),
            (CX, CY + 0.2, GL_Z0 + 0.01)]
+CHAINS = []
 for ci, (ax, ay, az) in enumerate(anchors):
     d = Vector((ax - CX, ay - SOUL_Y, 0)).normalized()
-    end = Vector((CX, SOUL_Y, SHACKLE_Z)) + d * SHACKLE_R
-    mid = Vector((ax, ay, az)).lerp(end, 0.5) - Vector((0, 0, 0.02))   # slight sag
-    chain(f"chain{ci}_", [(ax, ay, az + 0.02), tuple(mid), tuple(end)], step=0.075)
+    CHAINS.append(Chain(ci, Vector((ax, ay, az + 0.02)), d * SHACKLE_R, 4))
     cyl(f"chain_eye{ci}", 0.04, 0.03, (ax, ay, az), GOLD, root, verts=20)
     sphere(f"chain_pin{ci}", 0.022, (ax, ay, az + 0.02), RUBY, root, segs=10)
-rail("soul_shackle", [(CX + SHACKLE_R * math.cos(TAU * k / 32), SOUL_Y + SHACKLE_R * math.sin(TAU * k / 32),
-                       SHACKLE_Z) for k in range(32)], 0.022, closed=True)
+shackle = rail("soul_shackle", [(CX + SHACKLE_R * math.cos(TAU * k / 32),
+                                 SOUL_Y + SHACKLE_R * math.sin(TAU * k / 32), SHACKLE_Z)
+                                for k in range(32)], 0.022, closed=True)
+adopt(shackle, SOUL_RIG, SOUL_P0)
 
 # ----------------------------------------------------------------------------
 # Lid, valve and intake funnel
@@ -635,15 +750,22 @@ cyl("valve_body", 0.055, 0.08, tuple(VALVE + Vector((0, 0.02, 0))), BRASS, root,
 cyl("valve_stem", 0.016, 0.12, tuple(VALVE - Vector((0, 0.06, 0))), STEEL, root, rot=rx)
 WHEEL = VALVE - Vector((0, 0.12, 0))
 WR = 0.1
-rail("valve_wheel", mat=REAL_GOLD, pts=[(WHEEL.x + WR * math.cos(TAU * k / 32), WHEEL.y, WHEEL.z + WR * math.sin(TAU * k / 32))
-                     for k in range(32)], r=0.018, closed=True)
+# the wheel turns about the stem (world y); closed = a third of a turn on
+WHEEL_PIVOT = bpy.data.objects.new("valve_pivot", None)
+link(WHEEL_PIVOT, root)
+WHEEL_PIVOT.location = WHEEL
+adopt(rail("valve_wheel", mat=REAL_GOLD, pts=[(WHEEL.x + WR * math.cos(TAU * k / 32), WHEEL.y,
+                                                WHEEL.z + WR * math.sin(TAU * k / 32))
+                                               for k in range(32)], r=0.018, closed=True),
+      WHEEL_PIVOT, WHEEL)
 for k in range(5):
     a = TAU * k / 5 + 0.3
-    rail(f"valve_spoke{k}", [tuple(WHEEL), (WHEEL.x + WR * math.cos(a), WHEEL.y, WHEEL.z + WR * math.sin(a))],
-         0.011)
-    sphere(f"valve_knob{k}", 0.017, (WHEEL.x + WR * math.cos(a), WHEEL.y, WHEEL.z + WR * math.sin(a)),
-           GOLD, root, segs=10)
-sphere("valve_hub", 0.026, tuple(WHEEL), RUBY, root, segs=12)
+    adopt(rail(f"valve_spoke{k}", [tuple(WHEEL), (WHEEL.x + WR * math.cos(a), WHEEL.y,
+                                                  WHEEL.z + WR * math.sin(a))], 0.011),
+          WHEEL_PIVOT, WHEEL)
+    adopt(sphere(f"valve_knob{k}", 0.017, (WHEEL.x + WR * math.cos(a), WHEEL.y, WHEEL.z + WR * math.sin(a)),
+                 GOLD, root, segs=10), WHEEL_PIVOT, WHEEL)
+adopt(sphere("valve_hub", 0.026, tuple(WHEEL), RUBY, root, segs=12), WHEEL_PIVOT, WHEEL)
 
 # funnel: flared trumpet, gold outside, dark bronze inside
 FUN_Z = NECK_Z1 - 0.02
@@ -683,7 +805,11 @@ for k in range(6):
         r = fun_r(t) - 0.03
         pts.append((CX + r * math.cos(a), CY + r * math.sin(a), FUN_Z + t + 0.015))
     rail(f"vane{k}", pts, 0.017, mat=BONE)      # rib-bone vanes
-# the vortex: glowing teal streams spiralling down the throat
+# the vortex: glowing teal streams spiralling down the throat; they turn
+# about the funnel axis (VORTEX_PIVOT) while the valve is open
+VORTEX_PIVOT = bpy.data.objects.new("vortex_pivot", None)
+link(VORTEX_PIVOT, root)
+VORTEX_PIVOT.location = (CX, CY, FUN_Z)
 for k in range(5):
     pts = []
     for i in range(25):
@@ -692,8 +818,9 @@ for k in range(5):
         a = TAU * k / 5 + 0.7 + 3.4 * s
         r = (fun_r(t) - 0.06) * (1 - 0.15 * s)
         pts.append((CX + r * math.cos(a), CY + r * math.sin(a), FUN_Z + t + 0.03))
-    glow(curve_obj(f"vortex{k}", pts, VORTEX, 0.016, root, res=2,
-                   taper=lambda t: 0.35 + 0.65 * math.sin(math.pi * min(1.0, t * 1.2))))
+    adopt(glow(curve_obj(f"vortex{k}", pts, VORTEX, 0.016, root, res=2,
+                         taper=lambda t: 0.35 + 0.65 * math.sin(math.pi * min(1.0, t * 1.2)))),
+          VORTEX_PIVOT, VORTEX_PIVOT.location)
 throat = cyl("throat", 0.075, 0.01, (CX, CY, FUN_Z + 0.012), VORTEX, root, verts=24)
 glow(throat)
 
@@ -727,6 +854,51 @@ vlight_d.shadow_soft_size = 0.1
 o = bpy.data.objects.new("vortex_light", vlight_d)
 link(o, root)
 o.location = (CX, CY, FUN_Z + 0.12)
+VORTEX_LIGHT = o
+
+
+# Motes: while the valve is open the funnel hunts - wisps of soul-stuff drift
+# in from the air above, fall over the lip and spiral down the funnel wall into
+# the throat. They speed up as they close in (angular momentum: the angle
+# advances like 1/r), each a bright head with a fading tail along its track.
+def _mote_track(n=400):
+    pts = []
+    for i in range(n + 1):
+        u = i / n
+        if u < 0.3:                 # drifting in over the lip
+            s = u / 0.3
+            e = s * s * (3 - 2 * s)
+            r = 0.56 + (fun_r(FUN_PROFILE[-1][1]) - 0.06 - 0.56) * s
+            z = FUN_TOP + 0.22 - 0.19 * e
+        else:                       # sliding down the funnel wall to the throat
+            s = (u - 0.3) / 0.7
+            t = FUN_PROFILE[-1][1] * (1 - s) ** 1.3 + 0.03 * (1 - (1 - s) ** 1.3)
+            r = max(0.05, fun_r(t) - 0.05)
+            z = FUN_Z + t + 0.03
+        pts.append((r, z))
+    ang = [0.0]
+    for (r0, _), (r1, _) in zip(pts, pts[1:]):
+        ang.append(ang[-1] + 1.0 / (0.5 * (r0 + r1)))
+    k = 2.25 * TAU / ang[-1]        # two and a quarter turns lip to throat
+    return [(r, z, a * k) for (r, z), a in zip(pts, ang)]
+
+
+MOTE_TRACK = _mote_track()
+
+
+def mote_at(u, a0):
+    i = min(len(MOTE_TRACK) - 1, max(0, round(u * (len(MOTE_TRACK) - 1))))
+    r, z, a = MOTE_TRACK[i]
+    return Vector((CX + r * math.cos(a0 + a), CY + r * math.sin(a0 + a), z))
+
+
+N_MOTES, MOTE_TAIL = 5, 10
+MOTES = []
+for k in range(N_MOTES):
+    head = glow(sphere(f"mote{k}", 0.024, (0, 0, 0), MOTE, root, segs=12))
+    tail = glow(curve_obj(f"mote{k}_tail", [(0, 0, 0)] * MOTE_TAIL, MOTE, 0.02, root, res=2,
+                          taper=lambda t: (1.0 - t) ** 1.2))
+    MOTES.append((head, tail))
 
 # braces from the tall back posts to the neck, with scroll curls
 for sx in (-1, 1):
@@ -766,16 +938,19 @@ for k in range(5):     # tick marks
     rail(f"gauge_tick{k}", [(GA.x + 0.045 * math.cos(a), GA.y - 0.034, GA.z + 0.045 * math.sin(a)),
                             (GA.x + 0.062 * math.cos(a), GA.y - 0.034, GA.z + 0.062 * math.sin(a))],
          0.005, mat=SOOT)
-a = math.radians(-30)  # full: one soul held
-rail("gauge_needle", [(GA.x, GA.y - 0.038, GA.z),
-                      (GA.x + 0.058 * math.cos(a), GA.y - 0.038, GA.z + 0.058 * math.sin(a))],
-     0.008, mat=RUBY)
+# needle on a pivot: rests on "0" (210 deg) when empty, "1" (-30 deg) when full
+NEEDLE = bpy.data.objects.new("gauge_needle_pivot", None)
+link(NEEDLE, root)
+NEEDLE.location = (GA.x, GA.y - 0.038, GA.z)
+adopt(rail("gauge_needle", [(GA.x - 0.012, GA.y - 0.038, GA.z), (GA.x + 0.058, GA.y - 0.038, GA.z)],
+           0.008, mat=RUBY), NEEDLE, NEEDLE.location)
+sphere("gauge_cap", 0.012, (GA.x, GA.y - 0.042, GA.z), REAL_GOLD, root, segs=10)
 box("gauge_bracket", (0.05, 0.05, 0.08), (GA.x, GA.y + 0.03, DECK_Z + 0.04), BRONZE, root, bevel=0.01)
 
 # soul lamp on the other side of the socket: lit while a soul is held
 LP = Vector((CX - 0.27, CY - 0.43, DECK_Z + 0.1))
 cyl("lamp_base", 0.05, 0.05, (LP.x, LP.y, DECK_Z + 0.03), BRONZE, root, verts=24)
-lamp = sphere("lamp_glass", 0.045, tuple(LP), VORTEX, root, segs=16)
+lamp = sphere("lamp_glass", 0.045, tuple(LP), LAMP, root, segs=16)
 glow(lamp)
 for k in range(4):
     a = TAU * k / 4 + math.pi / 4
@@ -792,7 +967,7 @@ box("skull_jaw", (0.09, 0.06, 0.045), tuple(SK + Vector((0, -0.01, -0.06))), BON
 for sx in (-1, 1):
     e = sphere(f"skull_socket{sx}", 0.025, tuple(SK + Vector((sx * 0.032, -0.066, 0.01))), SOOT, root,
                segs=10)
-    glow(sphere(f"skull_eye{sx}", 0.012, tuple(SK + Vector((sx * 0.032, -0.08, 0.01))), VORTEX,
+    glow(sphere(f"skull_eye{sx}", 0.012, tuple(SK + Vector((sx * 0.032, -0.08, 0.01))), EYES,
                 root, segs=8))
 sphere("skull_nose", 0.014, tuple(SK + Vector((0, -0.075, -0.022))), SOOT, root, segs=8)
 for sx in (-1, 1):       # crossed bones behind it
@@ -804,6 +979,147 @@ for sx in (-1, 1):       # crossed bones behind it
         sphere(f"skull_knob{sx}{e}", 0.02, tuple(c + d * e * 1.05), BONE, root, segs=10)
 
 # ----------------------------------------------------------------------------
+# Animation: two seamless loops, one per state (see the docstring)
+# ----------------------------------------------------------------------------
+# Everything is a function of the loop phase f / N with whole periods per
+# loop, so frame N continues frame 0.
+
+VALVE_OPEN, VALVE_SHUT = 0.0, math.radians(120)
+NEEDLE_EMPTY, NEEDLE_FULL = math.radians(210), math.radians(-30)
+for o in (SOUL_RIG, VORTEX_PIVOT):
+    o.rotation_mode = "QUATERNION"
+
+
+def lunge(x):
+    """One tug, x = phase within the cycle: a sudden jerk at the chains, a
+    strained hold, a slow sag back, then rest until the next one."""
+    if x < 0.07:
+        return math.sin(0.5 * math.pi * x / 0.07)
+    if x < 0.17:
+        return 1.0
+    if x < 0.45:
+        return 0.5 + 0.5 * math.cos(math.pi * (x - 0.17) / 0.28)
+    return 0.0
+
+
+# two tugs per loop: away to the front-left, then to the front-right, each
+# rising a little (the tail is held down; it can't go far up)
+LUNGES = ((0.0, Vector((-0.06, -0.02, 0.025))), (0.5, Vector((0.06, -0.01, 0.02))))
+
+
+def soul_motion(f):
+    """(offset of the shackle pivot, rotation, strain 0..1) at frame f."""
+    ph = f / N
+    off = Vector((0.0, 0.0, 0.0))
+    strain = 0.0
+    for p0, dv in LUNGES:
+        g = lunge((ph - p0) % 1.0)
+        off += dv * g
+        strain = max(strain, g)
+    # restless sway at rest, a shiver while it strains against the chains
+    off += Vector((0.012 * math.sin(TAU * ph), 0.01 * math.sin(TAU * 2 * ph + 1.0),
+                   0.008 * math.sin(TAU * 3 * ph + 2.0)))
+    off += Vector((0.006 * math.sin(TAU * 16 * ph), 0.0, 0.004 * math.sin(TAU * 16 * ph + 1.3))) * strain
+    # the body leans into the pull (z turned towards the horizontal offset)
+    hz = Vector((off.x, off.y, 0.0))
+    rot = Quaternion((0, 0, 1), 0.5 * math.sin(TAU * ph))       # writhing about its axis
+    if hz.length > 1e-6:
+        rot = Quaternion(Vector((0, 0, 1)).cross(hz).normalized(), 2.2 * hz.length) @ rot
+    return off, rot, strain
+
+
+def attach_world(chain, off, rot):
+    return SOUL_P0 + off + rot @ chain.attach
+
+
+# chain length = the anchor-to-shackle distance at the hardest pull: each
+# chain snaps taut at the peak of the tug away from it and hangs slack otherwise
+for ch in CHAINS:
+    ch.length = max((attach_world(ch, *soul_motion(f)[:2]) - ch.anchor).length for f in range(N))
+
+GLOW_PASS = False
+LIGHT_ENERGY = {}
+
+
+def set_energy(light, e):
+    LIGHT_ENERGY[light] = e
+    light.energy = 0.0 if GLOW_PASS else e
+
+
+def fade(u):
+    a = min(1.0, u / 0.08)
+    b = min(1.0, (1.0 - u) / 0.12)
+    return (a * a * (3 - 2 * a)) * (b * b * (3 - 2 * b))
+
+
+def pose(f):
+    ph = f / N
+    if FULL:
+        off, rot, strain = soul_motion(f)
+        SOUL_RIG.location = SOUL_P0 + off
+        SOUL_RIG.rotation_quaternion = rot
+        for o in SOUL_BITS:
+            o.hide_render = False
+        # writhing: the body sways, the smoke noise drifts round a loop
+        soul.modifiers["bend"].angle = math.radians(10 * math.sin(TAU * ph + 0.5))
+        core.modifiers["bend"].angle = math.radians(12 * math.sin(TAU * ph + 0.9))
+        NOISE_DRIFT.location = (0.06 * math.cos(TAU * ph), 0.06 * math.sin(TAU * ph),
+                                0.04 * math.sin(TAU * ph))
+        for k, (em, base, loc) in enumerate(SOUL_MATS):
+            em.default_value = base * (1.3 + 0.2 * strain)
+            loc.default_value = (0.35 * math.cos(TAU * ph + k), 0.0, 0.35 * math.sin(TAU * ph + k))
+        for ch in CHAINS:
+            ch.pose(attach_world(ch, off, rot), ch.length)
+        # valve shut, vortex stilled to a dull residue, the cage charged
+        WHEEL_PIVOT.rotation_euler = (0, VALVE_SHUT, 0)
+        VORTEX_PIVOT.rotation_quaternion = Quaternion()
+        VORTEX_EM.default_value = 0.07
+        for head, tail in MOTES:
+            head.hide_render = tail.hide_render = True
+        RUNE_EM.default_value = 0.55 + 0.35 * strain
+        CAGE_EM.default_value = 0.25 + 0.35 * strain
+        LAMP_EM.default_value = 0.6 + 0.3 * strain
+        EYES_EM.default_value = 0.7 + 0.25 * strain
+        # the needle pins "1" and judders while the soul strains
+        NEEDLE.rotation_euler = (0, -(NEEDLE_FULL + math.radians(4) * strain
+                                      * math.sin(TAU * 16 * ph)), 0)
+        set_energy(soul_light_d, 5.0 + 3.0 * strain)
+        set_energy(vlight_d, 0.1)
+    else:
+        # nothing caught: the shackle lies open on the chamber floor
+        SOUL_RIG.location = (CX, SOUL_Y, FLOOR_Z + 0.006)
+        SOUL_RIG.rotation_quaternion = Quaternion()
+        for o in SOUL_BITS:
+            o.hide_render = True
+        off = SOUL_RIG.location - SOUL_P0
+        for ch in CHAINS:
+            ch.pose(attach_world(ch, off, Quaternion()), ch.length)
+        WHEEL_PIVOT.rotation_euler = (0, VALVE_OPEN, 0)
+        # the open funnel hunts: the vortex turns (one turn per loop, its five
+        # arms appear to pour inwards) and flickers, motes spiral down into it
+        VORTEX_PIVOT.rotation_quaternion = Quaternion((0, 0, 1), TAU * ph)
+        VORTEX_EM.default_value = 0.55 + 0.1 * math.sin(TAU * 3 * ph)
+        for k, (head, tail) in enumerate(MOTES):
+            u = (2 * ph + k / N_MOTES) % 1.0
+            a0 = TAU * k * 2 / N_MOTES
+            fd = fade(u)
+            head.hide_render = tail.hide_render = fd < 0.02
+            head.location = mote_at(u, a0)
+            head.scale = (fd, fd, fd)
+            for j, p in enumerate(tail.data.splines[0].points):
+                p.co = (*mote_at(max(0.0, u - 0.014 * j), a0), 1)
+            tail.data.bevel_depth = 0.02 * fd
+        # dim, slowly breathing runes; the lamp is out, the needle on "0"
+        RUNE_EM.default_value = 0.16 + 0.12 * (0.5 - 0.5 * math.cos(TAU * ph))
+        CAGE_EM.default_value = 0.0
+        LAMP_EM.default_value = 0.0
+        EYES_EM.default_value = 0.12
+        NEEDLE.rotation_euler = (0, -NEEDLE_EMPTY, 0)
+        set_energy(soul_light_d, 0.0)
+        set_energy(vlight_d, 1.2 + 0.3 * math.sin(TAU * 3 * ph))
+
+
+# ----------------------------------------------------------------------------
 # Render
 # ----------------------------------------------------------------------------
 #
@@ -812,40 +1128,52 @@ for sx in (-1, 1):       # crossed bones behind it
 # here, but see-through objects are hidden from the glow pass instead.
 
 # frame widened and slid east so the long south-east shadow of the funnel fits;
-# the Lua shift compensates (x = +FRAME_CX tiles at scale 0.5)
+# the Lua shift compensates (x = +FRAME_CX tiles at scale 0.5). stitch.py
+# --crop trims the animation frames back to the building.
 FRAME_CX = 1.1
 rig = setup_scene(frame_w=5.3, frame_h=3.7, frame_cy=0.52)
 bpy.context.scene.camera.location.x += FRAME_CX
-LIGHTS = (rig.sun_d, rig.fill_d, soul_light_d, vlight_d)
 
 
-def render_static():
+def render_anim():
+    global GLOW_PASS
     scene = bpy.context.scene
-    render(OUT / "main-000.png")
+    frames = [int(f) for f in args.frame.split(",")] if args.preview else range(N)
+    if args.save_blend:
+        pose(frames[0])
+        bpy.ops.wm.save_as_mainfile(filepath=str(OUT / f"soul-collector-{STATE}.blend"))
+    for f in frames:
+        pose(f)
+        render(OUT / f"main-{f:03d}.png")
     if not args.no_glow:
-        energies = [l.energy for l in LIGHTS]
+        GLOW_PASS = True
+        sun, fill = rig.sun_d.energy, rig.fill_d.energy
         bg = rig.bg.inputs["Strength"].default_value
         rig.bg.inputs["Strength"].default_value = 0.0
-        for l in LIGHTS:
-            l.energy = 0.0
+        rig.sun_d.energy = rig.fill_d.energy = 0.0
         for o in scene.objects:
             if o.type in ("MESH", "CURVE"):
                 if o.get("see_through"):
                     o.visible_camera = False
                 else:
                     o.is_holdout = not o.get("glow", False)
-        render(OUT / "glow-000.png")
+        for f in frames:
+            pose(f)
+            render(OUT / f"glow-{f:03d}.png")
         for o in scene.objects:
             if o.type in ("MESH", "CURVE"):
                 o.is_holdout = False
                 o.visible_camera = True
-        for l, e in zip(LIGHTS, energies):
-            l.energy = e
+        GLOW_PASS = False
+        rig.sun_d.energy, rig.fill_d.energy = sun, fill
         rig.bg.inputs["Strength"].default_value = bg
-    # shadow: key light only, lowered so the shadow falls south-east like vanilla
+    # shadow (frame 0): key light only, lowered so the shadow falls south-east
+    # like vanilla. The soul barely casts any, so both states share it.
+    pose(0)
     rig.ground.hide_render = False
-    for l in LIGHTS:
+    for l in LIGHT_ENERGY:
         l.energy = 0.0
+    rig.fill_d.energy = 0.0
     rig.sun_d.energy = 4.6
     for o in scene.objects:
         if o is not rig.ground and o.type in ("MESH", "CURVE"):
@@ -855,6 +1183,4 @@ def render_static():
     render(OUT / "shadow.png")
 
 
-if args.save_blend:
-    bpy.ops.wm.save_as_mainfile(filepath=str(OUT / "soul-collector.blend"))
-render_static()
+render_anim()

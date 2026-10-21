@@ -151,27 +151,27 @@ soul_collector.minable = {mining_time = 1, result = "soul-collector"}
 soul_collector.inventory_size = 1 -- Only one stack slot
 soul_collector.icon = "__orbs__/graphics/icons/soul-collector.png"
 soul_collector.icon_size = 64
--- Rendered from blender/soul_collector.py; containers only take a static
--- sprite. The frame extends east to hold the funnel's shadow, hence shift x.
+-- Rendered from blender/soul_collector.py in two looping states, "empty"
+-- (valve open, the funnel's vortex hunting, motes sucked in, runes dim) and
+-- "full" (valve shut, a chained soul tugging in the glowing reliquary).
+-- Containers only take a static picture, so control.lua draws the state's
+-- animation (and its glow as light) over the entity; the picture is the empty
+-- state's first frame (ghosts, blueprints) plus the shared shadow. The sheets
+-- are cropped to the building (stitch.py --crop); the shadow frame extends
+-- east to hold the funnel's shadow, hence its shift x.
+local SOUL_COLLECTOR_FRAMES = {
+  empty = {width = 133, height = 185, shift = {0.00625, -0.393125}},
+  full = {width = 133, height = 173, shift = {0.00625, -0.299375}}
+}
 soul_collector.picture = {
   layers = {
     {
-      filename = "__orbs__/graphics/soul-collector-picture.png",
+      filename = "__orbs__/graphics/soul-collector-empty-animation.png",
       priority = "high",
-      width = 339,
-      height = 237,
+      width = SOUL_COLLECTOR_FRAMES.empty.width,
+      height = SOUL_COLLECTOR_FRAMES.empty.height,
       scale = 0.5,
-      shift = {1.1, -0.19}
-    },
-    {
-      -- captured soul, intake vortex and runes light up the night
-      filename = "__orbs__/graphics/soul-collector-glow.png",
-      priority = "high",
-      width = 339,
-      height = 237,
-      draw_as_light = true,
-      scale = 0.5,
-      shift = {1.1, -0.19}
+      shift = SOUL_COLLECTOR_FRAMES.empty.shift
     },
     {
       filename = "__orbs__/graphics/soul-collector-shadow.png",
@@ -184,6 +184,26 @@ soul_collector.picture = {
     }
   }
 }
+-- Script-drawn overlays: 64-frame loops, 8 per row. control.lua draws them
+-- 1/64 tile south of the entity so they sort just above its picture; the
+-- shift takes that back out.
+for state, frame in pairs(SOUL_COLLECTOR_FRAMES) do
+  for _, suffix in pairs({"", "-glow"}) do
+    data:extend({{
+      type = "animation",
+      name = "soul-collector-" .. state .. suffix,
+      filename = "__orbs__/graphics/soul-collector-" .. state ..
+        (suffix == "" and "-animation" or suffix) .. ".png",
+      priority = "high",
+      width = frame.width,
+      height = frame.height,
+      frame_count = 64,
+      line_length = 8,
+      scale = 0.5,
+      shift = {frame.shift[1], frame.shift[2] - 1 / 64}
+    }})
+  end
+end
 soul_collector.collision_box = {
   {
     -0.8,

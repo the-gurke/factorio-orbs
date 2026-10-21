@@ -259,6 +259,7 @@ script.on_configuration_changed(function()
     -- Enable technologies whose prerequisites are met
     enable_dependent_technologies(force, nil)
   end
+  rebuild_soul_collector_visuals()
 end)
 
 --------------------------------------------------------
@@ -281,7 +282,8 @@ function collect_soul_from_death(surface, position, force)
         -- Try to insert a soul into the collector
         local inserted = inventory.insert({name = "soul", count = 1})
         if inserted > 0 then
-          -- Successfully collected a soul
+          -- Successfully collected a soul: show it in the reliquary now
+          refresh_soul_collector(collector)
           -- game.print("A soul has been collected by a Soul Collector at " ..
           --          string.format("%.1f, %.1f", collector.position.x, collector.position.y))
           return true -- Only collect one soul per death, first collector wins
@@ -291,6 +293,133 @@ function collect_soul_from_death(surface, position, force)
   end
   return false
 end
+
+--------------------------------------------------------
+--  Soul collector visuals                            --
+--------------------------------------------------------
+
+-- The soul collector is a plain one-slot container, and containers only
+-- have a static picture. So the building is drawn by script on top of it: a
+-- looping animation per state (entities.lua, rendered by
+-- blender/soul_collector.py) - "empty" (valve open, funnel hunting) or "full"
+-- (a soul caught in the reliquary) - plus its glow drawn as light, and a teal
+-- lamp light while it holds a soul. The static picture underneath is the
+-- empty state's first frame, so ghosts and blueprints still look right.
+-- Render objects die with their target entity; stale entries are pruned on
+-- the next poll. Containers raise no event when inserters or players take
+-- the soul out (or it spoils), hence the cheap periodic poll.
+local SOUL_COLLECTOR_SPEED = {empty = 1 / 4, full = 1 / 3}   -- frames per tick
+-- drawn a hair south of the entity so it sorts just after the static picture
+-- (the animation prototypes' shift subtracts the same offset)
+local SOUL_COLLECTOR_SORT_OFFSET = 1 / 64
+
+local function soul_collector_state(entity)
+  local inventory = entity.get_inventory(defines.inventory.chest)
+  if inventory and inventory.get_item_count("soul") > 0 then
+    return "full"
+  end
+  return "empty"
+end
+
+local function destroy_soul_collector_visuals(entry)
+  for _, key in pairs({"main", "glow", "light"}) do
+    local object = entry[key]
+    if object and object.valid then
+      object.destroy()
+    end
+    entry[key] = nil
+  end
+end
+
+local function draw_soul_collector(entry, state)
+  destroy_soul_collector_visuals(entry)
+  local entity = entry.entity
+  local target = {entity = entity, offset = {0, SOUL_COLLECTOR_SORT_OFFSET}}
+  -- neighbours don't all pulse in lockstep
+  local offset = (entity.unit_number * 37) % 64
+  local common = {
+    surface = entity.surface,
+    target = target,
+    render_layer = "object",
+    animation_speed = SOUL_COLLECTOR_SPEED[state],
+    animation_offset = offset
+  }
+  common.animation = "soul-collector-" .. state
+  common.light_mode = "occluder"
+  entry.main = rendering.draw_animation(common)
+  common.animation = "soul-collector-" .. state .. "-glow"
+  common.light_mode = "light"
+  entry.glow = rendering.draw_animation(common)
+  if state == "full" then
+    -- the caught soul lights up its surroundings at night
+    entry.light = rendering.draw_light{
+      sprite = "utility/light_medium",
+      surface = entity.surface,
+      target = {entity = entity, offset = {0, -0.6}},
+      color = {0.35, 1, 0.9},
+      intensity = 0.55,
+      scale = 0.9
+    }
+  end
+  entry.state = state
+end
+
+-- Track a collector (or redraw it if its contents changed).
+function refresh_soul_collector(entity)
+  if not (entity and entity.valid and entity.name == "soul-collector") then return end
+  storage.soul_collectors = storage.soul_collectors or {}
+  local entry = storage.soul_collectors[entity.unit_number]
+  if not entry then
+    entry = {entity = entity}
+    storage.soul_collectors[entity.unit_number] = entry
+  end
+  local state = soul_collector_state(entity)
+  if entry.state ~= state or not (entry.main and entry.main.valid) then
+    draw_soul_collector(entry, state)
+  end
+end
+
+-- Redraw every collector on every surface (new game, mod update/added).
+function rebuild_soul_collector_visuals()
+  for _, entry in pairs(storage.soul_collectors or {}) do
+    destroy_soul_collector_visuals(entry)
+  end
+  storage.soul_collectors = {}
+  for _, surface in pairs(game.surfaces) do
+    for _, entity in pairs(surface.find_entities_filtered{name = "soul-collector"}) do
+      refresh_soul_collector(entity)
+    end
+  end
+end
+
+local soul_collector_filter = {{filter = "name", name = "soul-collector"}}
+for _, event_id in pairs({
+  defines.events.on_built_entity,
+  defines.events.on_robot_built_entity,
+  defines.events.on_space_platform_built_entity,
+  defines.events.script_raised_built,
+  defines.events.script_raised_revive,
+  defines.events.on_entity_cloned
+}) do
+  script.on_event(event_id, function(event)
+    refresh_soul_collector(event.entity or event.destination)
+  end, soul_collector_filter)
+end
+
+-- Poll for souls taken out, put in or spoiled; prune mined collectors.
+script.on_nth_tick(29, function()
+  local collectors = storage.soul_collectors
+  if not collectors then return end
+  for unit_number, entry in pairs(collectors) do
+    local entity = entry.entity
+    if entity.valid then
+      refresh_soul_collector(entity)
+    else
+      destroy_soul_collector_visuals(entry)
+      collectors[unit_number] = nil
+    end
+  end
+end)
 
 
 -- Handle player death and soul collection
@@ -465,6 +594,8 @@ script.on_init(function()
   for _, force in pairs(game.forces) do
     enable_dependent_technologies(force, nil)
   end
+
+  rebuild_soul_collector_visuals()
 
   -- Remove crash site and customize intro using freeplay remote interface
   if remote.interfaces["freeplay"] then
