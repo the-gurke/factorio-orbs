@@ -33,3 +33,8 @@ luac.out
 
 # Factorio Mod Distribution
 orbs_*.zip
+
+# Sprite pipeline
+.venv/
+__pycache__/
+graphics/generated/
