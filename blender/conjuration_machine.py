@@ -30,10 +30,63 @@ from fblend import *  # noqa: E402,F401,F403
 N = fblend.N
 OUT = fblend.OUT
 
+
+def worn_paint(name, base, dark, faded, grimy):
+    """The mod's hammered purple paint, worn like the vanilla machines' plates:
+    large soft faded blotches and smaller dark grimy patches. Noise runs in
+    object space (tiles for the walls), sized so the blotches are 0.1-0.4 tiles
+    and survive 64 px per tile. (No pointiness edge wear: the wall panels are
+    single quads, so it would bleach whole faces; the gold frames cover the
+    edges anyway.)"""
+    m = paint(name, base, dark, noise_scale=9.0, bump=0.6, bump_scale=25.0, dirt=0.2,
+              hammered=True)
+    nt = m.node_tree
+    L = nt.links.new
+    bsdf = nt.nodes["Principled BSDF"]
+    color = bsdf.inputs["Base Color"].links[0].from_socket
+    tc = nt.nodes.new("ShaderNodeTexCoord")
+
+    def blotch(scale, lo, hi, detail=2.0):
+        nz = nt.nodes.new("ShaderNodeTexNoise")
+        nz.inputs["Scale"].default_value = scale
+        nz.inputs["Detail"].default_value = detail
+        L(tc.outputs["Object"], nz.inputs["Vector"])
+        r = nt.nodes.new("ShaderNodeMapRange")
+        r.inputs["From Min"].default_value = lo
+        r.inputs["From Max"].default_value = hi
+        L(nz.outputs["Fac"], r.inputs["Value"])
+        return r.outputs["Result"]
+
+    def mix(color, fac, rgb, amount):
+        k = nt.nodes.new("ShaderNodeMath")
+        k.operation = "MULTIPLY"
+        k.inputs[1].default_value = amount
+        L(fac, k.inputs[0])
+        mx = nt.nodes.new("ShaderNodeMix")
+        mx.data_type = "RGBA"
+        mx.inputs["B"].default_value = (*rgb, 1)
+        L(k.outputs[0], mx.inputs["Factor"])
+        L(color, mx.inputs["A"])
+        return mx.outputs["Result"]
+
+    color = mix(color, blotch(3.5, 0.56, 0.7), faded, 0.3)        # ~0.3 tile faded blotches
+    color = mix(color, blotch(9.0, 0.58, 0.72, 4.0), grimy, 0.5)    # ~0.1 tile grime
+    L(color, bsdf.inputs["Base Color"])
+    return m
+
+
+# This building's own paint (fblend's shared PURPLE stays as it is): a notch
+# more violet than the mod's magenta (hue -13 deg, same saturation and value)
+# and worn.
+PURPLE = worn_paint("purple_worn", (0.36, 0.07, 0.33), (0.03, 0.005, 0.028),
+                    faded=(0.36, 0.15, 0.38), grimy=(0.11, 0.03, 0.11))
+LEATHER = paint("leather", (0.22, 0.08, 0.05), (0.04, 0.012, 0.008), noise_scale=14.0,
+                bump=0.4, bump_scale=40.0)
 POTION, POTION_EM = emitter("potion", (0.7, 0.15, 0.6), 0.9)
 TANK_LIQ, _ = emitter("tank_liquid", (0.45, 0.06, 0.38), 0.35, base=(0.25, 0.03, 0.2))
 POTION_TEAL, _ = emitter("potion_teal", (0.12, 0.55, 0.5), 0.7)
 POTION_AMBER, _ = emitter("potion_amber", (0.8, 0.45, 0.1), 0.7)
+POTION_GREEN, _ = emitter("potion_green", (0.3, 0.7, 0.12), 0.6)
 BREW, _ = emitter("brew", (0.7, 0.15, 0.62), 0.8)
 ORB, ORB_EM = emitter("orb", (0.85, 0.08, 0.75), 1.0, base=(0.5, 0.03, 0.42), glass=True)
 SPARK, _ = emitter("spark", (1.0, 0.45, 0.12), 5.0)
@@ -984,6 +1037,236 @@ def pose_linkage(f):
 
 
 # ----------------------------------------------------------------------------
+# Interior detail
+# ----------------------------------------------------------------------------
+#
+# The vanilla assemblers' pits are packed with machinery; these fill the empty
+# floor, each driven by the existing train:
+#   * forge bellows under the camshaft (west), pumped by an eccentric on the
+#     camshaft, blowing through a tuyere onto the anvil;
+#   * potion feed pump under the camshaft (east), worked by a second
+#     eccentric half a turn later, pushing brew through a valve into the tank;
+#   * a vial carousel, its gear meshing with the gold gear (2 rev per loop);
+#   * a rack of ingredient jars in front, and a clamped tube bundle along the
+#     west floor from the coil spool to the forge.
+
+INTERIOR = []      # per-frame objects (rods), rebuilt in pose_interior
+
+
+def ecc_centre(x, e, a0, ph):
+    """Centre of an eccentric sheave on the camshaft (offset e at angle a0 from
+    +z towards +y), turned with the shaft (rotation -ph about +x)."""
+    v = Matrix.Rotation(-ph, 3, "X") @ Vector((0, e * math.sin(a0), e * math.cos(a0)))
+    return Vector((x, SHAFT_Y, SHAFT_Z)) + v
+
+
+class EccDrive:
+    """Eccentric sheave on the camshaft + strap + rod to a pin sliding
+    vertically below the shaft (exact slider-crank: rod length is fixed)."""
+
+    def __init__(self, name, x, e, a0, rod_l):
+        self.name, self.x, self.e, self.a0, self.l = name, x, e, a0, rod_l
+        sh = cyl(name + "_sheave", 0.075, 0.04, (x, e * math.sin(a0), e * math.cos(a0)), BRASS,
+                 camshaft, rot=ry, verts=32)
+        cyl(name + "_sheave_hub", 0.045, 0.06, (0, 0, 0), STEEL, sh, verts=20)
+        self.strap = mesh_obj(name + "_strap", ring_mesh(
+            [(0.095 * math.cos(TAU * i / 32), 0.095 * math.sin(TAU * i / 32)) for i in range(32)],
+            [(0.077 * math.cos(TAU * i / 32), 0.077 * math.sin(TAU * i / 32)) for i in range(32)],
+            -0.025, 0.025), GOLD, mech, smooth=True, bevel=0.006)
+        self.strap.rotation_euler = ry
+
+    def pin_z(self, ph):
+        c = ecc_centre(self.x, self.e, self.a0, ph)
+        return c.z - math.sqrt(self.l ** 2 - (c.y - SHAFT_Y) ** 2)
+
+    def pose(self, ph):
+        c = ecc_centre(self.x, self.e, self.a0, ph)
+        self.strap.location = c
+        pin = Vector((self.x, SHAFT_Y, self.pin_z(ph)))
+        o = bpy.data.objects.new(self.name + "_rod", None)
+        link(o, mech)
+        o.location = pin
+        d = c - pin
+        o.rotation_euler = d.to_track_quat("Z", "Y").to_euler()
+        cyl(self.name + "_rod_bar", 0.022, d.length - 0.09, (0, 0, (d.length - 0.09) / 2), STEEL, o,
+            verts=12)
+        box(self.name + "_rod_fork", (0.05, 0.05, 0.06), (0, 0, 0.0), BRASS, o, bevel=0.01)
+        INTERIOR.append(o)
+        return pin.z
+
+
+# --- forge bellows --------------------------------------------------------------
+BEL_X, BEL_E = -0.36, 0.045
+BEL_BASE = FLOOR_Z + 0.06
+BEL_TOP0 = 0.87                                  # mean height of the top board
+bellows = EccDrive("bellows", BEL_X, BEL_E, 0.0, SHAFT_Z - BEL_TOP0)
+box("bellows_base", (0.3, 0.22, 0.06), (BEL_X, SHAFT_Y, FLOOR_Z + 0.03), BRONZE, mech,
+    bevel=0.012)
+bel_top = bpy.data.objects.new("bellows_top", None)
+link(bel_top, mech)
+box("bellows_board", (0.3, 0.22, 0.04), (0, 0, 0.02), BRONZE, bel_top, bevel=0.01)
+gold_rim = [(sx * 0.15, sy * 0.11) for sx, sy in ((-1, -1), (1, -1), (1, 1), (-1, 1))]
+curve_obj("bellows_trim", [(x_, y_, 0.04) for x_, y_ in gold_rim], GOLD, 0.014, bel_top,
+          closed=True)
+sphere("bellows_boss", 0.03, (0, 0, 0.045), GOLD, bel_top)
+BEL_FOLDS = []
+for k in range(5):                               # leather folds, alternating in and out
+    w = 0.28 if k % 2 == 0 else 0.23
+    o = box(f"bellows_fold{k}", (w, w * 0.73, 1.0), (BEL_X, SHAFT_Y, 0), LEATHER, mech, bevel=0)
+    BEL_FOLDS.append(o)
+for sx in (-1, 1):                               # guide rods through the top board
+    cyl(f"bellows_guide{sx}", 0.014, 0.42, (BEL_X + sx * 0.13, SHAFT_Y + 0.09, FLOOR_Z + 0.21),
+        STEEL, mech, verts=10)
+    sphere(f"bellows_guide_cap{sx}", 0.022, (BEL_X + sx * 0.13, SHAFT_Y + 0.09, FLOOR_Z + 0.43),
+           GOLD, mech)
+# tuyere: from the bellows box to the anvil, ending in a gold nozzle at the shard
+tuy = [(BEL_X - 0.12, SHAFT_Y - 0.1, FLOOR_Z + 0.08), (BEL_X - 0.2, SHAFT_Y - 0.2, FLOOR_Z + 0.08),
+       (HX + 0.22, ANVIL.y + 0.12, FLOOR_Z + 0.12), (HX + 0.2, ANVIL.y + 0.1, ANVIL.z - 0.02)]
+curve_obj("tuyere", tuy, COPPER, 0.032, mech, res=3)
+cyl("tuyere_nozzle", 0.03, 0.08, (HX + 0.2, ANVIL.y + 0.1, ANVIL.z + 0.0), GOLD, mech, r2=0.018)
+
+
+def pose_bellows(ph):
+    top = bellows.pose(ph) - 0.05               # rod pin sits on the board's boss
+    bel_top.location = (BEL_X, SHAFT_Y, top)
+    h = (top - BEL_BASE) / len(BEL_FOLDS)
+    for k, o in enumerate(BEL_FOLDS):
+        o.location.z = BEL_BASE + h * (k + 0.5)
+        o.scale.z = h * 1.02
+
+
+# --- potion feed pump ---------------------------------------------------------------
+PUMP_X, PUMP_E = 0.7, 0.04
+PUMP_TOP = FLOOR_Z + 0.36                        # top of the pump barrel
+pump = EccDrive("pump", PUMP_X, PUMP_E, math.pi, SHAFT_Z - (PUMP_TOP + 0.14))
+cyl("pump_barrel", 0.065, PUMP_TOP - FLOOR_Z, (PUMP_X, SHAFT_Y, (PUMP_TOP + FLOOR_Z) / 2), BRASS,
+    mech, verts=32)
+for zz in (FLOOR_Z + 0.04, PUMP_TOP - 0.02):
+    cyl(f"pump_band{zz}", 0.075, 0.035, (PUMP_X, SHAFT_Y, zz), GOLD, mech, verts=32)
+cyl("pump_gland", 0.035, 0.04, (PUMP_X, SHAFT_Y, PUMP_TOP + 0.02), STEEL, mech, verts=16)
+plunger = cyl("pump_plunger", 0.022, 1.0, (PUMP_X, SHAFT_Y, 0), STEEL, mech, verts=12)
+# outlet: up the barrel's side, through a gold-wheeled valve, along the floor to the tank
+out_pipe = [(PUMP_X + 0.07, SHAFT_Y, FLOOR_Z + 0.12), (0.84, SHAFT_Y + 0.05, FLOOR_Z + 0.08),
+            (0.84, 0.3, FLOOR_Z + 0.08), (0.84, 0.55, FLOOR_Z + 0.08),
+            (0.78, 0.66, FLOOR_Z + 0.08)]
+curve_obj("pump_outlet", out_pipe, COPPER, 0.035, mech, res=3)
+VALVE = Vector((0.84, 0.3, FLOOR_Z + 0.08))
+cyl("valve_body", 0.055, 0.12, VALVE, BRASS, mech, rot=rx, verts=24)
+cyl("valve_bonnet", 0.03, 0.12, VALVE + Vector((0, 0, 0.08)), BRASS, mech, verts=16)
+wheel = mesh_obj("valve_wheel", ring_mesh(
+    [(0.07 * math.cos(TAU * i / 32), 0.07 * math.sin(TAU * i / 32)) for i in range(32)],
+    [(0.054 * math.cos(TAU * i / 32), 0.054 * math.sin(TAU * i / 32)) for i in range(32)],
+    -0.012, 0.012), GOLD, mech, smooth=True, bevel=0.005)
+wheel.location = VALVE + Vector((0, 0, 0.15))
+for k in range(4):
+    a = TAU * k / 4 + 0.4
+    box(f"valve_spoke{k}", (0.12, 0.014, 0.014), wheel.location, GOLD, mech, rot=(0, 0, a),
+        bevel=0.003)
+sphere("valve_cap", 0.022, VALVE + Vector((0, 0, 0.165)), RUBY, mech)
+# inlet: from the floor main (x = 0.32) into the barrel's foot
+curve_obj("pump_inlet", [(0.32, SHAFT_Y, FLOOR_Z + 0.07), (PUMP_X - 0.07, SHAFT_Y,
+                                                           FLOOR_Z + 0.07)], BRASS, 0.03, mech)
+for xx in (0.45, 0.58):
+    cyl(f"pump_inlet_band{xx}", 0.04, 0.025, (xx, SHAFT_Y, FLOOR_Z + 0.07), GOLD, mech, rot=ry)
+
+
+def pose_pump(ph):
+    z = pump.pose(ph)
+    lo = PUMP_TOP - 0.1
+    plunger.location.z = (lo + z) / 2
+    plunger.scale.z = z - lo
+
+
+# --- vial carousel driven off the gold gear ------------------------------------------
+CAR_T = 12
+CAR_R = G1_R * CAR_T / G1_T
+car_alpha = math.radians(-15)
+CAR = Vector((G1.location.x + (G1_R + CAR_R) * math.cos(car_alpha),
+              G1.location.y + (G1_R + CAR_R) * math.sin(car_alpha), GZ))
+assert (CAR.xy - G4.location.xy).length > CAR_R + G4_R + 0.03, "carousel hits the dark gear"
+assert (CAR.xy - G2.location.xy).length > CAR_R + G2_R + 0.03, "carousel hits the steel gear"
+car = gear("carousel_gear", CAR_T, CAR_R, 0.055, BRASS, mech, spokes=4)
+car.location = CAR
+CAR_DISC_Z = 0.82
+cyl("carousel_shaft", 0.03, GZ - FLOOR_Z, (0, 0, -(GZ - FLOOR_Z) / 2), STEEL, car, verts=16)
+cyl("carousel_disc", 0.15, 0.03, (0, 0, CAR_DISC_Z - GZ), GOLD, car, verts=40)
+for k, mat in enumerate((POTION_TEAL, POTION_AMBER, POTION, POTION_GREEN)):
+    a = TAU * k / 4 + math.pi / 4
+    vx, vy = 0.105 * math.cos(a), 0.105 * math.sin(a)
+    cyl(f"vial{k}_glass", 0.036, 0.17, (vx, vy, CAR_DISC_Z - GZ + 0.1), GLASS, car, verts=16)
+    glow(cyl(f"vial{k}_liquid", 0.028, 0.11, (vx, vy, CAR_DISC_Z - GZ + 0.075), mat, car,
+             verts=16))
+    cyl(f"vial{k}_cork", 0.03, 0.03, (vx, vy, CAR_DISC_Z - GZ + 0.2), BRASS, car, verts=12)
+box("carousel_bearing", (0.09, 0.09, 0.1), (CAR.x, CAR.y, FLOOR_Z + 0.05), BRONZE, mech,
+    bevel=0.012)
+# mesh with the gold gear: put a gap at the contact point for the gold gear's phase
+th_car = (mesh_angle(car_alpha + math.pi, CAR_T, gap=True)
+          + (th1 - mesh_angle(car_alpha, G1_T, gap=False)) * (-G1_T / CAR_T))
+animated.append((car, lambda o, ph: spin(o, ph, th_car, -G1_T / CAR_T)))
+
+# --- ingredient jars on a gold-trimmed rack in front --------------------------------
+# raised on legs over the drain, where the front wall does not hide it
+RACK = Vector((-0.14, -0.47, FLOOR_Z + 0.1))
+box("rack_shelf", (0.56, 0.14, 0.04), RACK + Vector((0, 0, 0.02)), BRONZE, mech, bevel=0.01)
+for lx in (-0.25, 0.25):
+    for ly in (-0.05, 0.05):
+        box(f"rack_leg{lx}{ly}", (0.03, 0.03, 0.1), RACK + Vector((lx, ly, -0.05)), BRONZE, mech,
+            bevel=0.005)
+curve_obj("rack_rail", [tuple(RACK + Vector((x_, -0.065, 0.06))) for x_ in (-0.25, 0.25)], GOLD,
+          0.016, mech)
+for x_ in (-0.25, 0.25):
+    sphere(f"rack_knob{x_}", 0.025, RACK + Vector((x_, -0.065, 0.06)), GOLD, mech)
+for k, (mat, hgt) in enumerate(((POTION_GREEN, 0.18), (POTION_AMBER, 0.24), (POTION_TEAL, 0.16),
+                                (POTION, 0.21))):
+    jx = -0.195 + 0.13 * k
+    base_ = RACK + Vector((jx, 0.0, 0.04))
+    cyl(f"jar{k}_glass", 0.055, hgt, base_ + Vector((0, 0, hgt / 2)), GLASS, mech, verts=20)
+    glow(cyl(f"jar{k}_liquid", 0.042, hgt * 0.65, base_ + Vector((0, 0, hgt * 0.33)), mat, mech,
+             verts=20))
+    cyl(f"jar{k}_lid", 0.056, 0.03, base_ + Vector((0, 0, hgt + 0.01)), GOLD, mech, verts=20)
+    sphere(f"jar{k}_knob", 0.02, base_ + Vector((0, 0, hgt + 0.035)), RUBY, mech)
+
+# --- tray of forged shards waiting for the cauldron (they flare with each blow) ---
+TRAY = Vector((0.235, -0.47, FLOOR_Z))
+box("shard_tray", (0.17, 0.14, 0.05), TRAY + Vector((0, 0, 0.025)), BRONZE, mech, bevel=0.012)
+curve_obj("shard_tray_rim", [tuple(TRAY + Vector((sx * 0.085, sy * 0.07, 0.052)))
+                             for sx, sy in ((-1, -1), (1, -1), (1, 1), (-1, 1))], GOLD, 0.012,
+          mech, closed=True)
+rng_ = random.Random(3)
+for k in range(6):
+    bm = bmesh.new()
+    bmesh.ops.create_cone(bm, cap_ends=True, segments=6, radius1=0.028, radius2=0.0, depth=0.1)
+    o = mesh_obj(f"tray_shard{k}", bm, SHARD, mech)
+    o.data.shade_flat()
+    o.location = TRAY + Vector((rng_.uniform(-0.05, 0.05), rng_.uniform(-0.04, 0.04), 0.08))
+    o.rotation_euler = (rng_.uniform(-0.9, 0.9), rng_.uniform(-0.9, 0.9), rng_.uniform(0, TAU))
+    glow(o)
+
+# --- tube bundle from the coil spool to the forge, along the west floor --------------
+for k, (mat, off) in enumerate(((COPPER, -0.045), (BRASS, 0.0), (BRONZE, 0.045))):
+    # hops over the floor main at y = 0.15
+    pts = [(-0.72 + off, 0.74, FLOOR_Z + 0.05), (-0.76 + off, 0.5, FLOOR_Z + 0.04),
+           (-0.76 + off, 0.26, FLOOR_Z + 0.05), (-0.76 + off, 0.15, FLOOR_Z + 0.14),
+           (-0.76 + off, 0.04, FLOOR_Z + 0.05), (-0.76 + off, -0.12, FLOOR_Z + 0.04),
+           (-0.72 + off, -0.26, FLOOR_Z + 0.06)]
+    curve_obj(f"tube{k}", pts, mat, 0.024, mech, res=2)
+for k, yy in enumerate((0.42, -0.08)):
+    box(f"tube_clamp{k}", (0.16, 0.04, 0.05), (-0.76, yy, FLOOR_Z + 0.045), GOLD, mech,
+        bevel=0.01)
+
+
+def pose_interior(f):
+    for o in INTERIOR:
+        for c in o.children_recursive:
+            bpy.data.objects.remove(c, do_unlink=True)
+        bpy.data.objects.remove(o, do_unlink=True)
+    INTERIOR.clear()
+    ph = TAU * f / N
+    pose_bellows(ph)
+    pose_pump(ph)
+
+
+# ----------------------------------------------------------------------------
 # Render
 # ----------------------------------------------------------------------------
 
@@ -995,6 +1278,7 @@ def pose(f):
     for o, fn in animated:
         fn(o, ph)
     pose_linkage(f)
+    pose_interior(f)
     pose_stream(f)
     pose_refill(f)
     pose_sparks(f)
